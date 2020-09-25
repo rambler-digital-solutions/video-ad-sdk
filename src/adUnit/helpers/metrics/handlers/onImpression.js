@@ -1,7 +1,7 @@
 /* eslint-disable promise/prefer-await-to-callbacks, callback-return */
 import {linearEvents} from '../../../../tracker';
 
-const {impression} = linearEvents;
+const {impression, creativeView} = linearEvents;
 
 const onImpression = ({videoElement}, callback) => {
   const impressionHandler = () => {
@@ -9,6 +9,7 @@ const onImpression = ({videoElement}, callback) => {
 
     if (currentTime >= 2) {
       callback(impression);
+      callback(creativeView);
       videoElement.removeEventListener('timeupdate', impressionHandler);
     }
   };

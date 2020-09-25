@@ -1,10 +1,6 @@
 /* eslint-disable promise/prefer-await-to-callbacks, class-methods-use-this, import/no-named-as-default-member */
 import linearEvents from '../tracker/linearEvents';
-import {
-  acceptInvitation,
-  creativeView,
-  adCollapse
-} from '../tracker/nonLinearEvents';
+import {acceptInvitation, adCollapse} from '../tracker/nonLinearEvents';
 import {getClickThrough} from '../vastSelectors';
 import {volumeChanged, adProgress} from './adUnitEvents';
 import loadCreative from './helpers/vpaid/loadCreative';
@@ -62,7 +58,8 @@ const {
   thirdQuartile,
   clickThrough,
   error: errorEvt,
-  closeLinear
+  closeLinear,
+  creativeView
 } = linearEvents;
 
 // NOTE some ads only allow one handler per event and we need to subscribe to the adLoaded to know the creative is loaded.

@@ -172,10 +172,18 @@ export const iconView = 'iconView';
  */
 export const closeLinear = 'closeLinear';
 
+/**
+ * Not to be confused with an impression, this event indicates that an individual creative portion of the ad was viewed.
+ *
+ * @event LinearEvents#creativeView
+ */
+export const creativeView = 'creativeView';
+
 const linearEvents = {
   clickThrough,
   closeLinear,
   complete,
+  creativeView,
   error,
   exitFullscreen,
   firstQuartile,

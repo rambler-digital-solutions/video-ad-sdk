@@ -44,8 +44,8 @@
        <Tracking event="resume"><![CDATA[https://test.example.com/resume2]]></Tracking>
        <Tracking event="fullscreen"><![CDATA[https://test.example.com/fullscreen]]></Tracking>
        <Tracking event="fullscreen"><![CDATA[https://test.example.com/fullscreen2]]></Tracking>
-       <Tracking event="creativeView"><![CDATA[https://test.example.com/creativeview]]></Tracking>
-       <Tracking event="creativeView"><![CDATA[https://test.example.com/creativeview2]]></Tracking>
+       <Tracking event="creativeView"><![CDATA[https://test.example.com/creativeView]]></Tracking>
+       <Tracking event="creativeView"><![CDATA[https://test.example.com/creativeView2]]></Tracking>
        <Tracking event="exitFullscreen"><![CDATA[https://test.example.com/exitfullscreen]]></Tracking>
        <Tracking event="exitFullscreen"><![CDATA[https://test.example.com/exitfullscreen]]></Tracking>
        <Tracking event="acceptInvitationLinear"><![CDATA[https://test.example.com/acceptinvitationlinear]]></Tracking>

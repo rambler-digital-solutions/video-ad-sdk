@@ -1,7 +1,7 @@
 import {linearEvents} from '../../../../../tracker';
 import onImpression from '../onImpression';
 
-const {impression} = linearEvents;
+const {impression, creativeView} = linearEvents;
 let videoElement;
 
 beforeEach(() => {
@@ -20,7 +20,7 @@ afterEach(() => {
   videoElement = null;
 });
 
-test('onImpression must call the callback with impression when there is a impression of the current video', () => {
+test('onImpression must call the callback with impression and creativeView when there is a impression of the current video', () => {
   const callback = jest.fn();
   const disconnect = onImpression({videoElement}, callback);
 
@@ -34,8 +34,9 @@ test('onImpression must call the callback with impression when there is a impres
 
   videoElement.currentTime = 2;
   videoElement.dispatchEvent(new Event('timeupdate'));
-  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback).toHaveBeenCalledTimes(2);
   expect(callback).toHaveBeenCalledWith(impression);
+  expect(callback).toHaveBeenCalledWith(creativeView);
   callback.mockClear();
 
   videoElement.currentTime = 2.5;
