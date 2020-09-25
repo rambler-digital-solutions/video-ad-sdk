@@ -26,26 +26,18 @@ test('onImpression must call the callback with impression and creativeView when 
 
   videoElement.currentTime = 1;
   videoElement.dispatchEvent(new Event('timeupdate'));
-  expect(callback).toHaveBeenCalledTimes(0);
-
-  videoElement.currentTime = 1.5;
-  videoElement.dispatchEvent(new Event('timeupdate'));
-  expect(callback).toHaveBeenCalledTimes(0);
-
-  videoElement.currentTime = 2;
-  videoElement.dispatchEvent(new Event('timeupdate'));
   expect(callback).toHaveBeenCalledTimes(2);
   expect(callback).toHaveBeenCalledWith(impression);
   expect(callback).toHaveBeenCalledWith(creativeView);
   callback.mockClear();
 
+  videoElement.currentTime = 1.5;
+  videoElement.dispatchEvent(new Event('timeupdate'));
+
+  videoElement.currentTime = 2;
+  videoElement.dispatchEvent(new Event('timeupdate'));
+
   videoElement.currentTime = 2.5;
-  videoElement.dispatchEvent(new Event('timeupdate'));
-
-  videoElement.currentTime = 3;
-  videoElement.dispatchEvent(new Event('timeupdate'));
-
-  videoElement.currentTime = 3.5;
   videoElement.dispatchEvent(new Event('timeupdate'));
   expect(callback).toHaveBeenCalledTimes(0);
   disconnect();
