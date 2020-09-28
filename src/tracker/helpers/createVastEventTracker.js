@@ -11,7 +11,7 @@ const createVastEventTracker = (vastChainSelector) => (vastChain, {data, tracker
         break;
       }
       case Array.isArray(value): {
-        value.map(({uri}) => tracker(uri, data));
+        value.map(({uri}) => uri && tracker(uri, data));
         break;
       }
       }
