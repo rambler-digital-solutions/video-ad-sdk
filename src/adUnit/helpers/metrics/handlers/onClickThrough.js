@@ -25,6 +25,10 @@ const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl} = {
     }
 
     if (videoElement.paused) {
+      if (Event.prototype.preventDefault !== undefined) {
+        event.preventDefault();
+      }
+
       videoElement.play();
     } else {
       videoElement.pause();
