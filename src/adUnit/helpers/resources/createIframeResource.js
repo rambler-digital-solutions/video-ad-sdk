@@ -7,6 +7,7 @@ const createIframeResource = (src, {document, data}) => {
 
   iframeElement.src = src;
   iframeElement.sandbox = 'allow-forms allow-popups allow-scripts';
+  iframeElement.loading = 'eager';
 
   if (width) {
     iframeElement.width = width;
