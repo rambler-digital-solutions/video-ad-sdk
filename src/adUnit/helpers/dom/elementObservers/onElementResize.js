@@ -62,23 +62,24 @@ const onMutation = (target, callback) => {
   };
 };
 
-const createResizeObjElement = (callback) => {
-  const obj = document.createElement('iframe');
+const createResizeElement = (callback) => {
+  const iframe = document.createElement('iframe');
 
   // eslint-disable-next-line max-len
-  obj.setAttribute('style', 'display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; border: 0; overflow: hidden; pointer-events: none; z-index: -1;');
-  obj.onload = function () {
+  iframe.setAttribute('style', 'display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; border: 0; overflow: hidden; pointer-events: none; z-index: -1;');
+  iframe.onload = function () {
     if (this.contentWindow) {
       this.contentWindow.addEventListener('resize', callback);
     }
   };
-  obj.type = 'text/html';
-  obj.data = 'about:blank';
+  iframe.type = 'text/html';
+  iframe.data = 'about:blank';
+  iframe.loading = 'eager';
 
-  return obj;
+  return iframe;
 };
 const resizeHandlers = Symbol('resizeHandlers');
-const resizeObject = Symbol('resizeObj');
+const resizeElement = Symbol('resizeElement');
 
 // Original code http://www.backalleycoder.com/2013/03/18/cross-browser-event-based-element-resize-detection/
 const onResize = (target, callback) => {
@@ -90,13 +91,13 @@ const onResize = (target, callback) => {
       }
     };
 
-    target[resizeObject] = createResizeObjElement(execHandlers);
+    target[resizeElement] = createResizeElement(execHandlers);
 
     if (getComputedStyle(target).position === 'static') {
       target.style.position = 'relative';
     }
 
-    target.appendChild(target[resizeObject]);
+    target.appendChild(target[resizeElement]);
   }
 
   target[resizeHandlers].push(callback);
@@ -105,9 +106,9 @@ const onResize = (target, callback) => {
     target[resizeHandlers] = target[resizeHandlers].filter((handler) => handler !== callback);
 
     if (target[resizeHandlers].length === 0) {
-      target.removeChild(target[resizeObject]);
+      target.removeChild(target[resizeElement]);
       delete target[resizeHandlers];
-      delete target[resizeObject];
+      delete target[resizeElement];
     }
   };
 };
