@@ -73,7 +73,7 @@ const createResizeElement = (callback) => {
     }
   };
   iframe.type = 'text/html';
-  iframe.data = 'about:blank';
+  iframe.src = 'about:blank';
   iframe.loading = 'eager';
 
   return iframe;
