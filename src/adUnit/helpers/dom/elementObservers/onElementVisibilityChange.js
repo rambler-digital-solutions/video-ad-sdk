@@ -1,26 +1,6 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
 import debounce from 'lodash.debounce';
-import isElementVisible from './helpers/isElementVisible';
-
-let elementEntries = [];
-
-const checkIsVisible = (entry) => {
-  const {element, callback, lastInViewport, viewportOffset} = entry;
-  const isInViewport = isElementVisible(element, viewportOffset);
-
-  if (isInViewport !== lastInViewport) {
-    entry.lastInViewport = isInViewport;
-
-    // eslint-disable-next-line callback-return
-    callback(isInViewport);
-  }
-};
-
-const checkVisibility = () => {
-  for (const entry of elementEntries) {
-    checkIsVisible(entry);
-  }
-};
+import IntersectionObserver from './helpers/IntersectionObserver';
 
 const validate = (target, callback) => {
   if (!(target instanceof Element)) {
@@ -32,42 +12,106 @@ const validate = (target, callback) => {
   }
 };
 
-const onElementVisibilityChange = function (target, callback, {threshold = 100, scrollableElement = window, viewabilityOffset = 0.4} = {}) {
-  validate(target, callback);
+const noop = () => {};
 
-  const viewportEventHandler = threshold > 0 ? debounce(checkVisibility) : checkVisibility;
+const intersectionHandlers = Symbol('intersectionHandlers');
+const observerKey = Symbol('intersectionObserver');
 
-  const entry = {
-    callback,
-    element: target,
-    lastInViewport: false,
-    scrollableElement,
-    viewabilityOffset
+const onIntersection = (target, callback) => {
+  if (!target[intersectionHandlers]) {
+    target[intersectionHandlers] = [];
+
+    const execHandlers = (...args) => {
+      if (target[intersectionHandlers]) {
+        target[intersectionHandlers].forEach((handler) => handler(...args));
+      }
+    };
+
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: [...new Array(11)].map((item, index) => index / 10)
+    };
+
+    target[observerKey] = new IntersectionObserver(execHandlers, options);
+    target[observerKey].observe(target);
+  }
+
+  target[intersectionHandlers].push(callback);
+
+  return () => {
+    target[intersectionHandlers] = target[intersectionHandlers].filter((handler) => handler !== callback);
+
+    if (target[intersectionHandlers].length === 0) {
+      target[observerKey].disconnect();
+
+      delete target[intersectionHandlers];
+      delete target[observerKey];
+    }
+  };
+};
+
+let visibilityHandlers = [];
+
+const onVisibilityChange = (target, callback) => {
+  const execHandlers = (...args) => {
+    if (visibilityHandlers) {
+      visibilityHandlers.forEach((handler) => handler(...args));
+    }
   };
 
-  checkIsVisible(entry);
-  elementEntries.push(entry);
+  visibilityHandlers.push(callback);
 
-  scrollableElement.addEventListener('scroll', viewportEventHandler);
-
-  if (elementEntries.length === 1) {
-    window.addEventListener('resize', viewportEventHandler);
-    window.addEventListener('orientationchange', viewportEventHandler);
-    document.addEventListener('visibilitychange', viewportEventHandler);
+  if (visibilityHandlers.length === 1) {
+    document.addEventListener('visibilitychange', execHandlers);
   }
 
   return () => {
-    elementEntries = elementEntries.filter((elementEntry) => elementEntry !== entry);
+    visibilityHandlers = visibilityHandlers.filter((handler) => handler !== callback);
 
-    if (elementEntries.length === 0) {
-      window.removeEventListener('resize', viewportEventHandler);
-      window.removeEventListener('orientationchange', viewportEventHandler);
-      document.removeEventListener('visibilitychange', viewportEventHandler);
+    if (visibilityHandlers.length === 0) {
+      document.removeEventListener('visibilitychange', execHandlers);
     }
+  };
+};
 
-    if (elementEntries.every((elementEntry) => elementEntry.scrollableElement !== scrollableElement)) {
-      scrollableElement.removeEventListener('scroll', viewportEventHandler);
-    }
+let lastIntersectionEntries = [];
+
+const onElementVisibilityChange = (target, callback, {threshold = 100, viewabilityOffset = 0.4} = {}) => {
+  validate(target, callback);
+
+  if (!Boolean(IntersectionObserver)) {
+    // NOTE: visibility is not determined
+    callback(undefined);
+
+    return noop;
+  }
+
+  let lastIsInViewport = false;
+
+  const checkVisibility = (entries) => {
+    entries.forEach((entry) => {
+      if (entry.target === target) {
+        const isInViewport = !document.hidden && entry.intersectionRatio > viewabilityOffset;
+
+        if (isInViewport !== lastIsInViewport) {
+          lastIsInViewport = isInViewport;
+
+          // eslint-disable-next-line callback-return
+          callback(isInViewport);
+        }
+      }
+    });
+    lastIntersectionEntries = entries;
+  };
+
+  const visibilityHandler = debounce(checkVisibility, threshold);
+  const stopObservingIntersection = onIntersection(target, visibilityHandler);
+  const stopListeningToVisibilityChange = onVisibilityChange(target, () => visibilityHandler(lastIntersectionEntries));
+
+  return () => {
+    stopObservingIntersection();
+    stopListeningToVisibilityChange();
   };
 };
 

@@ -26,6 +26,11 @@ jest.mock('../../tracker', () => ({
   trackNonLinearEvent: jest.fn()
 }));
 
+jest.mock('../helpers/dom/elementObservers', () => ({
+  onElementResize: jest.fn(),
+  onElementVisibilityChange: jest.fn()
+}));
+
 describe('createVideoAdUnit', () => {
   let vastChain;
   let vpaidChain;

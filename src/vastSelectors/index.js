@@ -273,6 +273,66 @@ export const getImpressionUri = (ad) => {
 };
 
 /**
+ * Gets array of the Viewable URI of the passed ad.
+ *
+ * @function
+ * @param {ParsedAd} ad - VAST ad object.
+ * @returns {?Array.<string>} - array of the Vast ad Viewable URI or `null` otherwise.
+ * @static
+ */
+export const getViewable = (ad) => {
+  const adTypeElement = ad && getFirstChild(ad);
+  const viewableImpression = adTypeElement && get(adTypeElement, 'ViewableImpression');
+  const viewableElements = viewableImpression && getAll(viewableImpression, 'Viewable');
+
+  if (viewableElements && viewableElements.length > 0) {
+    return viewableElements.map((element) => getText(element));
+  }
+
+  return null;
+};
+
+/**
+ * Gets array of the NotViewable URI of the passed ad.
+ *
+ * @function
+ * @param {ParsedAd} ad - VAST ad object.
+ * @returns {?Array.<string>} - array of the Vast ad NotViewable URI or `null` otherwise.
+ * @static
+ */
+export const getNotViewable = (ad) => {
+  const adTypeElement = ad && getFirstChild(ad);
+  const viewableImpression = adTypeElement && get(adTypeElement, 'ViewableImpression');
+  const notViewableElements = viewableImpression && getAll(viewableImpression, 'NotViewable');
+
+  if (notViewableElements && notViewableElements.length > 0) {
+    return notViewableElements.map((element) => getText(element));
+  }
+
+  return null;
+};
+
+/**
+ * Gets array of the ViewUndetermined URI of the passed ad.
+ *
+ * @function
+ * @param {ParsedAd} ad - VAST ad object.
+ * @returns {?Array.<string>} - array of the Vast ad ViewUndetermined URI or `null` otherwise.
+ * @static
+ */
+export const getViewUndetermined = (ad) => {
+  const adTypeElement = ad && getFirstChild(ad);
+  const viewableImpression = adTypeElement && get(adTypeElement, 'ViewableImpression');
+  const viewUndeterminedElements = viewableImpression && getAll(viewableImpression, 'ViewUndetermined');
+
+  if (viewUndeterminedElements && viewUndeterminedElements.length > 0) {
+    return viewUndeterminedElements.map((element) => getText(element));
+  }
+
+  return null;
+};
+
+/**
  * Gets the ad's MediaFiles.
  *
  * @function

@@ -19,6 +19,9 @@ import {
   getCustomClick,
   getFirstAd,
   getImpressionUri,
+  getViewable,
+  getNotViewable,
+  getViewUndetermined,
   getInteractiveCreativeFiles,
   getInteractiveFiles,
   getLinearTrackingEvents,
@@ -158,6 +161,30 @@ test('getImpressionUri must return the error uri of the inline/wrapper or null i
   expect(getImpressionUri()).toEqual(null);
   expect(getImpressionUri(null)).toEqual(null);
   expect(getImpressionUri({})).toEqual(null);
+});
+
+test('getViewable must return the viewable uri of the inline/wrapper or null if missing', () => {
+  expect(getViewable(inlineAd)).toEqual(['https://test.example.com/viewable']);
+  expect(getViewable(wrapperAd)).toEqual(null);
+  expect(getViewable()).toEqual(null);
+  expect(getViewable(null)).toEqual(null);
+  expect(getViewable({})).toEqual(null);
+});
+
+test('getNotViewable must return the not visible uri of the inline/wrapper or null if missing', () => {
+  expect(getNotViewable(inlineAd)).toEqual(['https://test.example.com/notViewable']);
+  expect(getNotViewable(wrapperAd)).toEqual(null);
+  expect(getNotViewable()).toEqual(null);
+  expect(getNotViewable(null)).toEqual(null);
+  expect(getNotViewable({})).toEqual(null);
+});
+
+test('getViewUndetermined must return the undetermined view uri of the inline/wrapper or null if missing', () => {
+  expect(getViewUndetermined(inlineAd)).toEqual(['https://test.example.com/notDetermined']);
+  expect(getViewUndetermined(wrapperAd)).toEqual(null);
+  expect(getViewUndetermined()).toEqual(null);
+  expect(getViewUndetermined(null)).toEqual(null);
+  expect(getViewUndetermined({})).toEqual(null);
 });
 
 test('getMediaFiles must return null for wrong ads', () => {

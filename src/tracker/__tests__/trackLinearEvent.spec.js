@@ -13,6 +13,9 @@ import {
   complete,
   firstQuartile,
   impression,
+  viewable,
+  notViewable,
+  viewUndetermined,
   iconClick,
   iconView,
   fullscreen,
@@ -162,6 +165,45 @@ test('trackLinearEvent must track impression linear event with the default pixel
 
   expect(tracker).toHaveBeenCalledTimes(2);
   expect(tracker).toHaveBeenCalledWith('https://test.example.com/impression', {});
+});
+
+test('trackLinearEvent must track viewable linear event with the default pixelTracker', () => {
+  const data = {};
+  const tracker = jest.fn();
+
+  trackLinearEvent(viewable, vastChain, {
+    data,
+    tracker
+  });
+
+  expect(tracker).toHaveBeenCalledTimes(1);
+  expect(tracker).toHaveBeenCalledWith('https://test.example.com/viewable', {});
+});
+
+test('trackLinearEvent must track notViewable linear event with the default pixelTracker', () => {
+  const data = {};
+  const tracker = jest.fn();
+
+  trackLinearEvent(notViewable, vastChain, {
+    data,
+    tracker
+  });
+
+  expect(tracker).toHaveBeenCalledTimes(1);
+  expect(tracker).toHaveBeenCalledWith('https://test.example.com/notViewable', {});
+});
+
+test('trackLinearEvent must track viewUndetermined linear event with the default pixelTracker', () => {
+  const data = {};
+  const tracker = jest.fn();
+
+  trackLinearEvent(viewUndetermined, vastChain, {
+    data,
+    tracker
+  });
+
+  expect(tracker).toHaveBeenCalledTimes(1);
+  expect(tracker).toHaveBeenCalledWith('https://test.example.com/notDetermined', {});
 });
 
 test('trackLinearEvent must track iconClicks', () => {

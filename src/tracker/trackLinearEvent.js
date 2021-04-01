@@ -2,6 +2,9 @@ import {
   getClickTracking,
   getCustomClick,
   getImpressionUri,
+  getViewable,
+  getNotViewable,
+  getViewUndetermined,
   getLinearTrackingEvents
 } from '../vastSelectors';
 import pixelTracker from './helpers/pixelTracker';
@@ -21,6 +24,9 @@ import {
   iconClick,
   iconView,
   impression,
+  viewable,
+  notViewable,
+  viewUndetermined,
   midpoint,
   mute,
   pause,
@@ -35,27 +41,27 @@ import {
   unmute
 } from './linearEvents';
 
-const clickTrackingSelector = (ad) => {
+const eventSelector = (...selectors) => (ad) => {
   const trackingURIs = [];
-  const clickTrackings = getClickTracking(ad);
-  const customClicks = getCustomClick(ad);
 
-  /* istanbul ignore else */
-  if (Array.isArray(clickTrackings) && clickTrackings.length > 0) {
-    trackingURIs.push(...clickTrackings.map((uri) => ({uri})));
-  }
+  if (selectors.length > 0) {
+    selectors.forEach((getElements) => {
+      const elements = getElements(ad);
 
-  /* istanbul ignore else */
-  if (Array.isArray(customClicks) && customClicks.length > 0) {
-    trackingURIs.push(...customClicks.map((uri) => ({uri})));
+      /* istanbul ignore else */
+      if (Array.isArray(elements) && elements.length > 0) {
+        trackingURIs.push(...elements.map((uri) => ({uri})));
+      }
+    });
   }
 
   return trackingURIs;
 };
 
 const linearTrackingEventSelector = (event) => (ad) => getLinearTrackingEvents(ad, event);
+
 const linearTrackers = {
-  [clickThrough]: createVastEventTracker(clickTrackingSelector),
+  [clickThrough]: createVastEventTracker(eventSelector(getClickTracking, getCustomClick)),
   [closeLinear]: createVastEventTracker(linearTrackingEventSelector(closeLinear)),
   [complete]: createVastEventTracker(linearTrackingEventSelector(complete)),
   [error]: trackError,
@@ -67,6 +73,7 @@ const linearTrackers = {
   [impression]: createVastEventTracker(getImpressionUri),
   [midpoint]: createVastEventTracker(linearTrackingEventSelector(midpoint)),
   [mute]: createVastEventTracker(linearTrackingEventSelector(mute)),
+  [notViewable]: createVastEventTracker(eventSelector(getNotViewable)),
   [pause]: createVastEventTracker(linearTrackingEventSelector(pause)),
   [playerCollapse]: createVastEventTracker(linearTrackingEventSelector(playerCollapse)),
   [playerExpand]: createVastEventTracker(linearTrackingEventSelector(playerExpand)),
@@ -76,7 +83,9 @@ const linearTrackers = {
   [skip]: createVastEventTracker(linearTrackingEventSelector(skip)),
   [start]: createVastEventTracker(linearTrackingEventSelector(start)),
   [thirdQuartile]: createVastEventTracker(linearTrackingEventSelector(thirdQuartile)),
-  [unmute]: createVastEventTracker(linearTrackingEventSelector(unmute))
+  [unmute]: createVastEventTracker(linearTrackingEventSelector(unmute)),
+  [viewable]: createVastEventTracker(eventSelector(getViewable)),
+  [viewUndetermined]: createVastEventTracker(eventSelector(getViewUndetermined))
 };
 
 /**

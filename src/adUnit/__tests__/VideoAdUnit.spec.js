@@ -8,8 +8,11 @@ import VideoAdContainer from '../../adContainer/VideoAdContainer';
 import {
   iconClick,
   iconView,
-  start
+  start,
+  viewable,
+  viewUndetermined
 } from '../../tracker/linearEvents';
+import {getViewable} from '../../vastSelectors';
 import addIcons from '../helpers/icons/addIcons';
 import retrieveIcons from '../helpers/icons/retrieveIcons';
 import {
@@ -38,12 +41,17 @@ jest.mock('../helpers/dom/elementObservers', () => ({
   onElementResize: jest.fn(),
   onElementVisibilityChange: jest.fn()
 }));
+jest.mock('../../vastSelectors', () => ({
+  ...require.requireActual('../../vastSelectors'),
+  getViewable: jest.fn()
+}));
 
 jest.mock('../helpers/dom/preventManualProgress');
 describe('VideoAdUnit', () => {
   let vpaidChain;
   let videoAdContainer;
   let stopPreventManualProgress;
+  let viewableImpression;
 
   beforeEach(() => {
     vpaidChain = [
@@ -58,6 +66,8 @@ describe('VideoAdUnit', () => {
     videoAdContainer = new VideoAdContainer(document.createElement('DIV'));
     stopPreventManualProgress = jest.fn();
     preventManualProgress.mockReturnValue(stopPreventManualProgress);
+    viewableImpression = false;
+    getViewable.mockImplementation(() => viewableImpression);
   });
 
   afterEach(() => {
@@ -470,6 +480,77 @@ describe('VideoAdUnit', () => {
 
     test('must unregister `onElementVisibilityChange` on finish', () => {
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer, {viewability: true});
+
+      adUnit.emit(start);
+      expect(onElementVisibilityChange).toHaveBeenCalledTimes(1);
+      expect(unsubscribe).toHaveBeenCalledTimes(0);
+
+      adUnit[_protected].finish();
+      expect(unsubscribe).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('viewable impression', () => {
+    let simulateVisibilityChange;
+    let unsubscribe;
+
+    beforeEach(() => {
+      viewableImpression = true;
+
+      // eslint-disable-next-line promise/prefer-await-to-callbacks
+      onElementVisibilityChange.mockImplementation((element, callback) => {
+        simulateVisibilityChange = callback;
+        unsubscribe = jest.fn();
+
+        return unsubscribe;
+      });
+    });
+
+    test('must emit viewable on visibility change if true', () => {
+      const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
+
+      jest.spyOn(adUnit, 'emit');
+      expect(onElementVisibilityChange).not.toHaveBeenCalled();
+      adUnit.emit(start);
+      expect(onElementVisibilityChange).toHaveBeenCalledTimes(1);
+
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      simulateVisibilityChange(false);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      simulateVisibilityChange(true);
+      expect(adUnit.emit).toHaveBeenCalledWith(viewable, expect.any(Object));
+    });
+
+    test('must emit viewUndetermined if visibility is not determined', () => {
+      const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
+
+      jest.spyOn(adUnit, 'emit');
+      expect(onElementVisibilityChange).not.toHaveBeenCalled();
+      adUnit.emit(start);
+      expect(onElementVisibilityChange).toHaveBeenCalledTimes(1);
+
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewUndetermined);
+      simulateVisibilityChange(undefined);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      expect(adUnit.emit).toHaveBeenCalledWith(viewUndetermined, expect.any(Object));
+    });
+
+    test('must do nothing if finished', () => {
+      const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
+
+      jest.spyOn(adUnit, 'emit');
+      adUnit.emit(start);
+      adUnit[_protected].finished = true;
+
+      simulateVisibilityChange(false);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      simulateVisibilityChange(true);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+    });
+
+    test('must unregister `onElementVisibilityChange` on finish', () => {
+      const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
 
       adUnit.emit(start);
       expect(onElementVisibilityChange).toHaveBeenCalledTimes(1);
