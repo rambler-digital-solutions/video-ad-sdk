@@ -440,12 +440,12 @@ test('getLinearTrackingEvents must return the linear tracking events', () => {
     {
       event: 'creativeView',
       offset: undefined,
-      uri: 'https://test.example.com/creativeview'
+      uri: 'https://test.example.com/creativeView'
     },
     {
       event: 'creativeView',
       offset: undefined,
-      uri: 'https://test.example.com/creativeview2'
+      uri: 'https://test.example.com/creativeView2'
     },
     {
       event: 'exitFullscreen',

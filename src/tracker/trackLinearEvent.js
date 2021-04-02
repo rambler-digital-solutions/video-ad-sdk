@@ -32,7 +32,8 @@ import {
   skip,
   start,
   thirdQuartile,
-  unmute
+  unmute,
+  creativeView
 } from './linearEvents';
 
 const clickTrackingSelector = (ad) => {
@@ -58,6 +59,7 @@ const linearTrackers = {
   [clickThrough]: createVastEventTracker(clickTrackingSelector),
   [closeLinear]: createVastEventTracker(linearTrackingEventSelector(closeLinear)),
   [complete]: createVastEventTracker(linearTrackingEventSelector(complete)),
+  [creativeView]: createVastEventTracker(linearTrackingEventSelector(creativeView)),
   [error]: trackError,
   [exitFullscreen]: createVastEventTracker(linearTrackingEventSelector(exitFullscreen)),
   [firstQuartile]: createVastEventTracker(linearTrackingEventSelector(firstQuartile)),

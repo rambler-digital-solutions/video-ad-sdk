@@ -1,20 +1,13 @@
 import {getNonLinearTrackingEvents} from '../vastSelectors';
 import createVastEventTracker from './helpers/createVastEventTracker';
 import pixelTracker from './helpers/pixelTracker';
-import {
-  acceptInvitation,
-  adCollapse,
-  close,
-  creativeView
-} from './nonLinearEvents';
+import {acceptInvitation, adCollapse, close} from './nonLinearEvents';
 
 const trackingEventSelector = (event) => (ad) => getNonLinearTrackingEvents(ad, event);
 const linearTrackers = {
   [acceptInvitation]: createVastEventTracker(trackingEventSelector(acceptInvitation)),
   [adCollapse]: createVastEventTracker(trackingEventSelector(adCollapse)),
-  [close]: createVastEventTracker(trackingEventSelector(close)),
-  [creativeView]: createVastEventTracker(trackingEventSelector(creativeView))
-
+  [close]: createVastEventTracker(trackingEventSelector(close))
 };
 
 /**

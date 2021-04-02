@@ -28,7 +28,8 @@ import {
   start,
   thirdQuartile,
   unmute,
-  error
+  error,
+  creativeView
 } from '../linearEvents';
 import pixelTracker from '../helpers/pixelTracker';
 import trackError from '../helpers/trackError';
@@ -135,7 +136,8 @@ test(`trackLinearEvent must track ${clickThrough} linear event with the default 
   pause,
   resume,
   fullscreen,
-  skip
+  skip,
+  creativeView
 ].forEach((event) => {
   test(`trackLinearEvent must track ${event} linear event with the default pixelTracker`, () => {
     const data = {};
