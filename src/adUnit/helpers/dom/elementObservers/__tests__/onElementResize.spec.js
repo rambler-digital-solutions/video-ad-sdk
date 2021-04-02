@@ -71,11 +71,13 @@ test('onElementResize must call the callback if the element resizes', () => {
   onElementResize(target, () => mock());
   expect(mock).not.toHaveBeenCalled();
 
-  const resizeObjElement = target.querySelector('object');
+  const resizeObjElement = target.querySelector('iframe');
 
-  // jsdom does not add the content window to object elements for the sack of the test we fake it
+  // jsdom does not add the content window to iframe elements for the sack of the test we fake it
   // with the normal window.
-  resizeObjElement.contentWindow = global.window;
+  Object.defineProperty(resizeObjElement, 'contentWindow', {
+    value: global.window
+  });
   resizeObjElement.onload();
 
   target.style.width = '400px';
@@ -87,11 +89,13 @@ test('onElementResize must return a disconnect fn', () => {
   const target = document.createElement('DIV');
   const mock = jest.fn();
   const disconnect = onElementResize(target, () => mock());
-  const resizeObjElement = target.querySelector('object');
+  const resizeObjElement = target.querySelector('iframe');
 
-  // jsdom does not add the content window to object elements for the sack of the test we fake it
+  // jsdom does not add the content window to iframe elements for the sack of the test we fake it
   // with the normal window.
-  resizeObjElement.contentWindow = global.window;
+  Object.defineProperty(resizeObjElement, 'contentWindow', {
+    value: global.window
+  });
   resizeObjElement.onload();
 
   expect(mock).not.toHaveBeenCalled();

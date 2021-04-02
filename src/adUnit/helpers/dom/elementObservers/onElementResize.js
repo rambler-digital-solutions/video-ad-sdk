@@ -63,10 +63,10 @@ const onMutation = (target, callback) => {
 };
 
 const createResizeObjElement = (callback) => {
-  const obj = document.createElement('object');
+  const obj = document.createElement('iframe');
 
   // eslint-disable-next-line max-len
-  obj.setAttribute('style', 'display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden; pointer-events: none; z-index: -1;');
+  obj.setAttribute('style', 'display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; border: 0; overflow: hidden; pointer-events: none; z-index: -1;');
   obj.onload = function () {
     if (this.contentWindow) {
       this.contentWindow.addEventListener('resize', callback);
