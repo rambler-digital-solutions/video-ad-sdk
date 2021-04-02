@@ -18,7 +18,7 @@ import {
   getClickTracking,
   getCustomClick,
   getFirstAd,
-  getImpressionUri,
+  getImpression,
   getInteractiveCreativeFiles,
   getInteractiveFiles,
   getLinearTrackingEvents,
@@ -152,12 +152,12 @@ test('getAdErrorURI must return the error uri of the inline/wrapper or null if m
   expect(getAdErrorURI({})).toEqual(null);
 });
 
-test('getImpressionUri must return the error uri of the inline/wrapper or null if missing', () => {
-  expect(getImpressionUri(inlineAd)).toBe('https://test.example.com/impression');
-  expect(getImpressionUri(wrapperAd)).toBe('https://test.example.com/impression');
-  expect(getImpressionUri()).toEqual(null);
-  expect(getImpressionUri(null)).toEqual(null);
-  expect(getImpressionUri({})).toEqual(null);
+test('getImpression must return the imression uri of the inline/wrapper or null if missing', () => {
+  expect(getImpression(inlineAd)).toEqual(['https://test.example.com/impression']);
+  expect(getImpression(wrapperAd)).toEqual(['https://test.example.com/impression']);
+  expect(getImpression()).toEqual(null);
+  expect(getImpression(null)).toEqual(null);
+  expect(getImpression({})).toEqual(null);
 });
 
 test('getMediaFiles must return null for wrong ads', () => {

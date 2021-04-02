@@ -1,7 +1,7 @@
 import {
   getClickTracking,
   getCustomClick,
-  getImpressionUri,
+  getImpression,
   getLinearTrackingEvents
 } from '../vastSelectors';
 import pixelTracker from './helpers/pixelTracker';
@@ -54,6 +54,18 @@ const clickTrackingSelector = (ad) => {
   return trackingURIs;
 };
 
+const impressionSelector = (ad) => {
+  const trackingURIs = [];
+  const impressions = getImpression(ad);
+
+  /* istanbul ignore else */
+  if (Array.isArray(impressions) && impressions.length > 0) {
+    trackingURIs.push(...impressions.map((uri) => ({uri})));
+  }
+
+  return trackingURIs;
+};
+
 const linearTrackingEventSelector = (event) => (ad) => getLinearTrackingEvents(ad, event);
 const linearTrackers = {
   [clickThrough]: createVastEventTracker(clickTrackingSelector),
@@ -66,7 +78,7 @@ const linearTrackers = {
   [fullscreen]: createVastEventTracker(linearTrackingEventSelector(fullscreen)),
   [iconClick]: trackIconClick,
   [iconView]: trackIconView,
-  [impression]: createVastEventTracker(getImpressionUri),
+  [impression]: createVastEventTracker(impressionSelector),
   [midpoint]: createVastEventTracker(linearTrackingEventSelector(midpoint)),
   [mute]: createVastEventTracker(linearTrackingEventSelector(mute)),
   [pause]: createVastEventTracker(linearTrackingEventSelector(pause)),
