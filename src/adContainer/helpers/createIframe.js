@@ -14,6 +14,7 @@ const createBaseIframe = () => {
   const iframe = document.createElement('IFRAME');
 
   iframe.sandbox = 'allow-forms allow-popups allow-scripts allow-same-origin';
+  iframe.loading = 'eager';
   iframe.style.margin = '0';
   iframe.style.padding = '0';
   iframe.style.border = 'none';
