@@ -115,14 +115,14 @@ describe('VideoAdContainer', () => {
     });
   });
 
-  test('destroy must remove the adContainer from the placeHolder', () => {
+  test('destroy must remove the adContainer from the placeHolder', async () => {
     const videoAdContainer = new VideoAdContainer(placeholder);
 
     expect(videoAdContainer.element).toBeInstanceOf(Element);
     expect(videoAdContainer.videoElement).toBeInstanceOf(HTMLVideoElement);
     expect(placeholder.querySelector('.mol-video-ad-container')).toBe(videoAdContainer.element);
 
-    videoAdContainer.destroy();
+    await videoAdContainer.destroy();
 
     expect(placeholder.querySelector('.mol-video-ad-container')).toBe(null);
     expect(videoAdContainer.element.parentNode).toBe(null);
