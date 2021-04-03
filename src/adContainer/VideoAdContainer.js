@@ -79,8 +79,20 @@ class VideoAdContainer {
    * Destroys the VideoAdContainer.
    */
   destroy () {
-    this.element.parentNode.removeChild(this.element);
+    // NOTE: calling destroy immediately terminates the iframe and cancels
+    //       tracking requests from vpaid script, so destroying should
+    //       immediately hides and remove the iframe from dom after timeout
+    const removePromise = new Promise((resolve) => {
+      setTimeout(() => {
+        this.element.parentNode.removeChild(this.element);
+        resolve();
+      }, 1000);
+    });
+
+    this.element.style.zIndex = -9999;
     this[hidden].destroyed = true;
+
+    return removePromise;
   }
 
   /**

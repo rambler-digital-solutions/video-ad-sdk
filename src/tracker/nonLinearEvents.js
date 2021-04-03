@@ -19,13 +19,6 @@ export const acceptInvitation = 'acceptInvitation';
 export const adCollapse = 'adCollapse';
 
 /**
- * Not to be confused with an impression, this event indicates that an individual creative portion of the ad was viewed.
- *
- * @event NonLinearEvents#creativeView
- */
-export const creativeView = 'creativeView';
-
-/**
  * Fires when the user clicked or otherwise activated a control for removing the ad.
  *
  * @event NonLinearEvents#close
@@ -35,8 +28,7 @@ export const close = 'close';
 const nonLinearEvents = {
   acceptInvitation,
   adCollapse,
-  close,
-  creativeView
+  close
 };
 
 export default nonLinearEvents;

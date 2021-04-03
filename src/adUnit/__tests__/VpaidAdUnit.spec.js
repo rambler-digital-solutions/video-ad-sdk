@@ -55,13 +55,10 @@ import linearEvents, {
   clickThrough,
   iconClick,
   closeLinear,
-  iconView
+  iconView,
+  creativeView
 } from '../../tracker/linearEvents';
-import {
-  acceptInvitation,
-  creativeView,
-  adCollapse
-} from '../../tracker/nonLinearEvents';
+import {acceptInvitation, adCollapse} from '../../tracker/nonLinearEvents';
 import addIcons from '../helpers/icons/addIcons';
 import retrieveIcons from '../helpers/icons/retrieveIcons';
 import {volumeChanged, adProgress} from '../adUnitEvents';

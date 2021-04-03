@@ -7,12 +7,7 @@ import {
   vastPodXML
 } from '../../../fixtures';
 import trackNonLinearEvent from '../trackNonLinearEvent';
-import {
-  acceptInvitation,
-  adCollapse,
-  close,
-  creativeView
-} from '../nonLinearEvents';
+import {acceptInvitation, adCollapse, close} from '../nonLinearEvents';
 import pixelTracker from '../helpers/pixelTracker';
 
 jest.mock('../helpers/pixelTracker', () => jest.fn());
@@ -69,8 +64,7 @@ describe('trackNonLinearEvent', () => {
   [
     acceptInvitation,
     adCollapse,
-    close,
-    creativeView
+    close
   ].forEach((event) => {
     test(`must track ${event} linear event with the default pixelTracker`, () => {
       const data = {};

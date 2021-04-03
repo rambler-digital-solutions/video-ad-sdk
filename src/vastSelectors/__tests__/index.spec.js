@@ -18,7 +18,7 @@ import {
   getClickTracking,
   getCustomClick,
   getFirstAd,
-  getImpressionUri,
+  getImpression,
   getViewable,
   getNotViewable,
   getViewUndetermined,
@@ -155,12 +155,12 @@ test('getAdErrorURI must return the error uri of the inline/wrapper or null if m
   expect(getAdErrorURI({})).toEqual(null);
 });
 
-test('getImpressionUri must return the error uri of the inline/wrapper or null if missing', () => {
-  expect(getImpressionUri(inlineAd)).toBe('https://test.example.com/impression');
-  expect(getImpressionUri(wrapperAd)).toBe('https://test.example.com/impression');
-  expect(getImpressionUri()).toEqual(null);
-  expect(getImpressionUri(null)).toEqual(null);
-  expect(getImpressionUri({})).toEqual(null);
+test('getImpression must return the imression uri of the inline/wrapper or null if missing', () => {
+  expect(getImpression(inlineAd)).toEqual(['https://test.example.com/impression']);
+  expect(getImpression(wrapperAd)).toEqual(['https://test.example.com/impression']);
+  expect(getImpression()).toEqual(null);
+  expect(getImpression(null)).toEqual(null);
+  expect(getImpression({})).toEqual(null);
 });
 
 test('getViewable must return the viewable uri of the inline/wrapper or null if missing', () => {
@@ -467,12 +467,12 @@ test('getLinearTrackingEvents must return the linear tracking events', () => {
     {
       event: 'creativeView',
       offset: undefined,
-      uri: 'https://test.example.com/creativeview'
+      uri: 'https://test.example.com/creativeView'
     },
     {
       event: 'creativeView',
       offset: undefined,
-      uri: 'https://test.example.com/creativeview2'
+      uri: 'https://test.example.com/creativeView2'
     },
     {
       event: 'exitFullscreen',
