@@ -59,18 +59,6 @@ const eventSelector = (...selectors) => (ad) => {
   return trackingURIs;
 };
 
-const impressionSelector = (ad) => {
-  const trackingURIs = [];
-  const impressions = getImpression(ad);
-
-  /* istanbul ignore else */
-  if (Array.isArray(impressions) && impressions.length > 0) {
-    trackingURIs.push(...impressions.map((uri) => ({uri})));
-  }
-
-  return trackingURIs;
-};
-
 const linearTrackingEventSelector = (event) => (ad) => getLinearTrackingEvents(ad, event);
 
 const linearTrackers = {
@@ -84,7 +72,7 @@ const linearTrackers = {
   [fullscreen]: createVastEventTracker(linearTrackingEventSelector(fullscreen)),
   [iconClick]: trackIconClick,
   [iconView]: trackIconView,
-  [impression]: createVastEventTracker(impressionSelector),
+  [impression]: createVastEventTracker(eventSelector(getImpression)),
   [midpoint]: createVastEventTracker(linearTrackingEventSelector(midpoint)),
   [mute]: createVastEventTracker(linearTrackingEventSelector(mute)),
   [notViewable]: createVastEventTracker(eventSelector(getNotViewable)),
