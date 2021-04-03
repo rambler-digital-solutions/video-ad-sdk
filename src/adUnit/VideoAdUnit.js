@@ -1,5 +1,6 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
 import {linearEvents} from '../tracker';
+import {getViewable} from '../vastSelectors';
 import {finish} from './adUnitEvents';
 import {
   onElementVisibilityChange,
@@ -14,6 +15,8 @@ import safeCallback from './helpers/safeCallback';
 
 const {
   start,
+  viewable,
+  viewUndetermined,
   iconClick,
   iconView
 } = linearEvents;
@@ -29,34 +32,33 @@ export const _protected = Symbol('_protected');
  * @description This class provides shared logic among all the ad units.
  */
 class VideoAdUnit extends Emitter {
- [_protected] = {
-   finish: () => {
-     this[_protected].finished = true;
-     this[_protected].onFinishCallbacks.forEach((callback) => callback());
+  [_protected] = {
+    finish: () => {
+      this[_protected].finished = true;
+      this[_protected].onFinishCallbacks.forEach((callback) => callback());
 
-     this.emit(
-       finish,
-       {
-         adUnit: this,
-         type: finish
-       });
-   },
-   finished: false,
-   onErrorCallbacks: [],
-   onFinishCallbacks: [],
-   started: false,
-   throwIfCalled: () => {
-     throw new Error('VideoAdUnit method must be implemented on child class');
-   },
-   throwIfFinished: () => {
-     if (this.isFinished()) {
-       throw new Error('VideoAdUnit is finished');
-     }
-   }
- };
+      this.emit(finish, {
+        adUnit: this,
+        type: finish
+      });
+    },
+    finished: false,
+    onErrorCallbacks: [],
+    onFinishCallbacks: [],
+    started: false,
+    throwIfCalled: () => {
+      throw new Error('VideoAdUnit method must be implemented on child class');
+    },
+    throwIfFinished: () => {
+      if (this.isFinished()) {
+        throw new Error('VideoAdUnit is finished');
+      }
+    },
+    viewable: false
+  };
 
-   /** Ad unit type */
-   type=null;
+  /** Ad unit type */
+  type=null;
 
   /** If an error occurs it will contain the reference to the error otherwise it will be bull */
   error = null;
@@ -122,6 +124,31 @@ class VideoAdUnit extends Emitter {
       onFinishCallbacks.push(removeIcons);
     }
 
+    const viewableImpression = vastChain.some(({ad}) => getViewable(ad));
+
+    if (viewableImpression) {
+      this.once(start, () => {
+        const unsubscribe = onElementVisibilityChange(this.videoAdContainer.element, (visible) => {
+          if (this.isFinished()) {
+            return;
+          }
+
+          if (visible !== false && !this[_protected].viewable) {
+            const status = visible ? viewable : viewUndetermined;
+
+            this.emit(status, {
+              adUnit: this,
+              type: status
+            });
+
+            this[_protected].viewable = status;
+          }
+        }, {viewabilityOffset: 0.5});
+
+        onFinishCallbacks.push(unsubscribe);
+      });
+    }
+
     if (viewability) {
       this.once(start, () => {
         const unsubscribe = onElementVisibilityChange(this.videoAdContainer.element, (visible) => {
@@ -129,10 +156,12 @@ class VideoAdUnit extends Emitter {
             return;
           }
 
-          if (visible) {
-            this.resume();
-          } else {
-            this.pause();
+          if (typeof visible === 'boolean') {
+            if (visible) {
+              this.resume();
+            } else {
+              this.pause();
+            }
           }
         });
 
@@ -149,6 +178,7 @@ class VideoAdUnit extends Emitter {
           viewmode: viewmode(element.clientWidth, element.clientHeight),
           width: element.clientWidth
         };
+
         const unsubscribe = onElementResize(element, () => {
           if (this.isFinished()) {
             return;

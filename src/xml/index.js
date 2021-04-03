@@ -20,7 +20,7 @@ const parser = new DOMParser();
  * @returns {Object} - Returns the parsed xml document as a js object.
  * @static
  */
-const parseXml = (xmlText) => xml2js(parser, xmlText);
+export const parseXml = (xmlText) => xml2js(parser, xmlText);
 
 export {
   get,
@@ -28,6 +28,5 @@ export {
   getFirstChild,
   getText,
   getAttributes,
-  getAttribute,
-  parseXml
+  getAttribute
 };

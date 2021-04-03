@@ -40,6 +40,27 @@ export const firstQuartile = 'firstQuartile';
 export const impression = 'impression';
 
 /**
+ * Fires when more than 50% of the creative is visible.
+ *
+ * @event LinearEvents#viewable
+ */
+export const viewable = 'viewable';
+
+/**
+ * Fires when less than 50% of the creative is visible.
+ *
+ * @event LinearEvents#notViewable
+ */
+export const notViewable = 'notViewable';
+
+/**
+ * Fires when there is no way to determine visibility of the creative.
+ *
+ * @event LinearEvents#viewUndetermined
+ */
+export const viewUndetermined = 'viewUndetermined';
+
+/**
  * Fires when the creative played continuously for at least 50% of the total duration at normal speed.
  *
  * @event LinearEvents#midpoint
@@ -193,6 +214,7 @@ const linearEvents = {
   impression,
   midpoint,
   mute,
+  notViewable,
   otherAdInteraction,
   pause,
   playerCollapse,
@@ -204,7 +226,9 @@ const linearEvents = {
   start,
   thirdQuartile,
   timeSpentViewing,
-  unmute
+  unmute,
+  viewable,
+  viewUndetermined
 };
 
 export default linearEvents;

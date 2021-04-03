@@ -1,4 +1,28 @@
 import onElementVisibilityChange from '../onElementVisibilityChange';
+import IntersectionObserver from '../helpers/IntersectionObserver';
+
+jest.mock('../helpers/IntersectionObserver', () => {
+  const observe = jest.fn();
+  const disconnect = jest.fn();
+  let mockHandler = null;
+
+  class MockIntersectionObserver {
+    constructor (handler) {
+      mockHandler = handler;
+      this.observe = observe;
+      this.disconnect = disconnect;
+    }
+  }
+
+  MockIntersectionObserver.observe = observe;
+  MockIntersectionObserver.disconnect = disconnect;
+  MockIntersectionObserver.simulateIntersection = (target, intersectionRatio) => mockHandler([{
+    intersectionRatio,
+    target
+  }]);
+
+  return MockIntersectionObserver;
+});
 
 const once = (context, eventName, listener) => {
   const handler = (...args) => {
@@ -13,10 +37,27 @@ const waitForEvent = (eventName, context = window) => new Promise((resolve) => {
   once(context, eventName, resolve);
 });
 
-let mockIsElementVisibleValue = true;
+let origHidden;
 
 jest.mock('lodash.debounce', () => (fn) => fn);
-jest.mock('../helpers/isElementVisible', () => () => mockIsElementVisibleValue);
+
+beforeEach(() => {
+  origHidden = document.hidden;
+
+  Object.defineProperty(document, 'hidden', {
+    writable: true
+  });
+});
+
+afterEach(() => {
+  Object.defineProperty(document, 'hidden', {
+    value: origHidden,
+    writable: true
+  });
+
+  IntersectionObserver.observe.mockReset();
+  IntersectionObserver.disconnect.mockReset();
+});
 
 test('onElementVisibilityChange must be a function', () => {
   expect(onElementVisibilityChange).toEqual(expect.any(Function));
@@ -30,113 +71,135 @@ test('onElementVisibilityChange mut complain if you don\'t pass a callback funct
   expect(() => onElementVisibilityChange(document.createElement('DIV'))).toThrow(TypeError);
 });
 
-test('onElementVisibilityChange must call callback if the element is visible', () => {
-  const target = global.document.createElement('DIV');
+test('onElementVisibilityChange must call callback with true if the element is visible', () => {
+  const target = document.createElement('DIV');
   const mock = jest.fn();
 
   const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
+
+  IntersectionObserver.simulateIntersection(target, 1);
 
   expect(mock).toHaveBeenCalledWith(true);
 
   disconnect();
 });
 
-[
-  {eventName: 'resize'},
-  {eventName: 'orientationchange'},
-  {eventName: 'scroll'},
-  {
-    context: document,
-    eventName: 'visibilitychange'
-  }
-].forEach(({eventName, context = window}) => {
-  test(`onElementVisibilityChange must call callback with true if the element becomes visible on ${eventName}`, async () => {
-    expect.assertions(2);
-    const target = document.createElement('DIV');
-    const mock = jest.fn();
+test('onElementVisibilityChange must call callback with true if the element becomes visible on intersection', () => {
+  const target = document.createElement('DIV');
+  const mock = jest.fn();
 
-    mockIsElementVisibleValue = false;
+  const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
 
-    const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
+  IntersectionObserver.simulateIntersection(target, 0);
 
-    expect(mock).not.toHaveBeenCalled();
+  expect(mock).not.toHaveBeenCalled();
 
-    const waitPromise = waitForEvent(eventName, context);
+  IntersectionObserver.simulateIntersection(target, 1);
 
-    mockIsElementVisibleValue = true;
+  expect(mock).toHaveBeenCalledWith(true);
 
-    context.dispatchEvent(new Event(eventName));
+  disconnect();
+});
 
-    await waitPromise;
+test('onElementVisibilityChange must call callback with false if the element becomes hidden on intersection', () => {
+  const target = document.createElement('DIV');
+  const mock = jest.fn();
 
-    expect(mock).toHaveBeenCalledWith(true);
+  const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
 
-    disconnect();
-  });
+  IntersectionObserver.simulateIntersection(target, 1);
 
-  test(`onElementVisibilityChange must call callback with false if the element becomes hidden on ${eventName}`, async () => {
-    expect.assertions(2);
-    const target = document.createElement('DIV');
-    const mock = jest.fn();
+  expect(mock).toHaveBeenCalledWith(true);
 
-    mockIsElementVisibleValue = true;
+  IntersectionObserver.simulateIntersection(target, 0);
 
-    const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
+  expect(mock).toHaveBeenCalledWith(false);
 
-    expect(mock).toHaveBeenCalledWith(true);
+  disconnect();
+});
 
-    const waitPromise = waitForEvent(eventName, context);
+test('onElementVisibilityChange must call callback with true if the element becomes visible on visibilitychange', async () => {
+  const target = document.createElement('DIV');
+  const mock = jest.fn();
 
-    mockIsElementVisibleValue = false;
+  document.hidden = true;
 
-    context.dispatchEvent(new Event(eventName));
+  const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
 
-    await waitPromise;
+  IntersectionObserver.simulateIntersection(target, 1);
 
-    expect(mock).toHaveBeenCalledWith(false);
+  expect(mock).not.toHaveBeenCalled();
 
-    disconnect();
-  });
+  const waitPromise = waitForEvent('visibilitychange', document);
+
+  document.hidden = false;
+  document.dispatchEvent(new Event('visibilitychange'));
+
+  await waitPromise;
+
+  expect(mock).toHaveBeenCalledWith(true);
+
+  disconnect();
+});
+
+test('onElementVisibilityChange must call callback with false if the element becomes hidden on visibilitychange', async () => {
+  const target = document.createElement('DIV');
+  const mock = jest.fn();
+
+  document.hidden = false;
+
+  const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
+
+  IntersectionObserver.simulateIntersection(target, 1);
+
+  expect(mock).toHaveBeenCalledWith(true);
+
+  const waitPromise = waitForEvent('visibilitychange', document);
+
+  document.hidden = true;
+  document.dispatchEvent(new Event('visibilitychange'));
+
+  await waitPromise;
+
+  expect(mock).toHaveBeenCalledWith(false);
+
+  disconnect();
 });
 
 test('onElementVisibilityChange on element removed must remove the all the listeners if there are no more elements to check', () => {
   const target = document.createElement('DIV');
   const mock = jest.fn();
 
-  mockIsElementVisibleValue = true;
-
-  window.removeEventListener = jest.fn();
   document.removeEventListener = jest.fn();
 
   const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
 
-  expect(window.removeEventListener).not.toHaveBeenCalledWith('resize', expect.any(Function));
-  expect(window.removeEventListener).not.toHaveBeenCalledWith('orientationchange', expect.any(Function));
+  expect(IntersectionObserver.disconnect).not.toHaveBeenCalled();
   expect(document.removeEventListener).not.toHaveBeenCalledWith('visibilitychange', expect.any(Function));
 
   disconnect();
 
-  expect(window.removeEventListener).toHaveBeenCalledWith('resize', expect.any(Function));
-  expect(window.removeEventListener).toHaveBeenCalledWith('orientationchange', expect.any(Function));
+  expect(IntersectionObserver.disconnect).toHaveBeenCalled();
   expect(document.removeEventListener).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
 });
 
-test('onElementVisibilityChange on element remove must not remove the scroll listener if there other checkeed elements use the same scrollableElement', () => {
+test('onElementVisibilityChange on element remove must not remove the all the listeners if there other checkeed elements use the same target', () => {
   const target = document.createElement('DIV');
   const mock = jest.fn();
 
-  mockIsElementVisibleValue = true;
-
-  window.removeEventListener = jest.fn();
+  document.removeEventListener = jest.fn();
 
   const disconnect = onElementVisibilityChange(target, (...args) => mock(...args));
   const disconnect2 = onElementVisibilityChange(target, (...args) => mock(...args));
 
-  expect(window.removeEventListener).not.toHaveBeenCalledWith('scroll', expect.any(Function));
+  expect(IntersectionObserver.disconnect).not.toHaveBeenCalled();
+  expect(document.removeEventListener).not.toHaveBeenCalledWith('visibilitychange', expect.any(Function));
 
   disconnect();
-  expect(window.removeEventListener).not.toHaveBeenCalledWith('scroll', expect.any(Function));
+  expect(IntersectionObserver.disconnect).not.toHaveBeenCalled();
+  expect(document.removeEventListener).not.toHaveBeenCalledWith('visibilitychange', expect.any(Function));
 
   disconnect2();
-  expect(window.removeEventListener).toHaveBeenCalledWith('scroll', expect.any(Function));
+  expect(IntersectionObserver.disconnect).toHaveBeenCalled();
+  expect(document.removeEventListener).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
 });
