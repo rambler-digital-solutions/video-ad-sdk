@@ -47,6 +47,15 @@
       "./node_modules/mol-commitlint-config"
     ]
   },
+  "lint-staged": {
+    "**/*.js": [
+      "prettier --write",
+      "eslint --fix --ignore-path ./.gitignore"
+    ],
+    "**/*.{md,json}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@commitlint/cli": "^7.0.0",
     "@commitlint/travis-cli": "^7.0.0",
@@ -60,6 +69,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.24.1",
+    "braintree-jsdoc-template": "^3.3.0",
     "codecov": "^3.1.0",
     "cross-env": "^5.2.0",
     "css-loader": "^1.0.1",
@@ -70,12 +80,14 @@
     "jest": "^23.4.2",
     "jest-environment-jsdom": "^23.4.0",
     "jsdoc": "^3.5.5",
+    "lint-staged": "^10.5.4",
     "lodash.debounce": "^4.0.8",
     "mini-css-extract-plugin": "^0.4.5",
     "mockdate": "^2.0.2",
     "mol-commitlint-config": "^1.1.0",
     "mol-conventional-changelog": "^1.2.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "prettier": "^2.2.1",
     "rimraf": "^2.6.2",
     "rollup": "^0.63.5",
     "rollup-plugin-babel": "^3.0.7",
@@ -89,7 +101,6 @@
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5",
-    "whatwg-fetch": "^2.0.4",
-    "braintree-jsdoc-template": "^3.3.0"
+    "whatwg-fetch": "^2.0.4"
   }
 }
