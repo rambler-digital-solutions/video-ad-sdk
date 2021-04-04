@@ -16,14 +16,11 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production rollup -c",
     "demo": "cross-env NODE_ENV=production webpack --mode=production",
-    "commitmsg": "commitlint -e $GIT_PARAMS",
     "dev": "rollup -c",
     "docs": "jsdoc -c jsdoc.json",
     "pages": "yarn build && rimraf pages && yarn demo && yarn docs",
     "lint": "eslint --ignore-path ./.gitignore './**/*.js'",
     "prebuild": "rimraf dist",
-    "precommit": "yarn lint",
-    "prepush": "yarn test",
     "start": "cross-env NODE_ENV=development webpack-dev-server --mode development",
     "test": "cross-env NODE_ENV=test jest",
     "semantic-release": "semantic-release"

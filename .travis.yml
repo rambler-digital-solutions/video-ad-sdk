@@ -17,7 +17,7 @@ jobs:
         - yarn lint
         - yarn build
     - stage: test
-      script: yarn test &&  yarn codecov
+      script: yarn test && yarn codecov
     - stage: release
       if: branch = master
       script:
