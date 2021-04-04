@@ -1,5 +1,5 @@
 /* eslint-disable no-console, import/no-unassigned-import, import/no-unresolved */
-import {runWaterfall} from '@mailonline/video-ad-sdk';
+import {runWaterfall} from '@andrepolischuk/video-ad-sdk';
 import './demo.css';
 
 document.addEventListener('DOMContentLoaded', () => {

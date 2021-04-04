@@ -88,7 +88,7 @@ const getVastVersion = (parsedVast) => {
 /**
  * @function getDetails
  *
- * @memberof module:@mailonline/video-ad-sdk
+ * @memberof module:@andrepolischuk/video-ad-sdk
  * @static
  * @description Returns a summary of the passed {@link VastChain}.
  *

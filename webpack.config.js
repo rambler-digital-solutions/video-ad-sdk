@@ -12,9 +12,9 @@ const devMode = process.env.NODE_ENV !== 'production';
 const alias = {};
 
 if (devMode) {
-  alias['@mailonline/video-ad-sdk'] = path.resolve(__dirname, 'src/index.js');
+  alias['@andrepolischuk/video-ad-sdk'] = path.resolve(__dirname, 'src/index.js');
 } else {
-  alias['@mailonline/video-ad-sdk'] = path.resolve(__dirname, 'dist/main.esm.js');
+  alias['@andrepolischuk/video-ad-sdk'] = path.resolve(__dirname, 'dist/main.esm.js');
 }
 
 module.exports = {
@@ -43,7 +43,7 @@ module.exports = {
   module: {
     rules: [
       {
-        exclude: devMode ? /node_modules\/(?!@mailonline\/).*/ : /node_modules\/.*/,
+        exclude: devMode ? /node_modules\/(?!@andrepolischuk\/).*/ : /node_modules\/.*/,
         loader: 'babel-loader',
         test: /\.js$/
       },

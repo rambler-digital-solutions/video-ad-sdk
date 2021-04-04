@@ -1,5 +1,5 @@
 /**
- * @module @mailonline/video-ad-sdk
+ * @module @andrepolischuk/video-ad-sdk
  * @description Video ad SDK to load and play HTML5 video ads.
  */
 

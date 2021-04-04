@@ -5,7 +5,7 @@ import startVideoAd from './helpers/startVideoAd';
 /**
  * Will try to start video ad in the passed {@link VastChain} and return the started VideoAdUnit.
  *
- * @memberof module:@mailonline/video-ad-sdk
+ * @memberof module:@andrepolischuk/video-ad-sdk
  * @static
  * @throws if there is an error starting the ad or it times out (by throw I mean that it will reject promise with the error).
  * @param {VastChain} vastChain - The {@link VastChain} with all the {@link VastResponse}s.

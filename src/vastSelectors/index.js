@@ -1,6 +1,6 @@
 /**
- * @memberof module:@mailonline/video-ad-sdk
- * @description Published as part of {@link module:@mailonline/video-ad-sdk}
+ * @memberof module:@andrepolischuk/video-ad-sdk
+ * @description Published as part of {@link module:@andrepolischuk/video-ad-sdk}
  * @module vastSelectors
  */
 import {

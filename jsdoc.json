@@ -19,11 +19,11 @@
     "verbose": true
   },
   "templates": {
-    "referenceTitle": "@mailonline/video-ad-sdk",
+    "referenceTitle": "@andrepolischuk/video-ad-sdk",
     "disableSort": false,
     "collapse": true,
     "resources": {
-        "repo": "https://github.com/MailOnline/mol-video-ad-sdk"
+        "repo": "https://github.com/andrepolischuk/video-ad-sdk"
     }
   }
 }
