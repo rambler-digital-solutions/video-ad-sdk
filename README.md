@@ -16,7 +16,7 @@ Currently we only have the API which you can check [here](https://andrepolischuk
 
 ## Compiling and Testing
 
-We use [nvm](https://github.com/creationix/nvm) to decide which of node to use.
+We use [nvm](https://github.com/nvm-sh/nvm) to decide which of node to use.
 
 So after you clone the repo you just need to run
 
