@@ -2,8 +2,6 @@ language: node_js
 cache:
   directories:
     - ~/.npm
-notifications:
-  email: false
 node_js:
   - 10
 branches:
@@ -22,7 +20,7 @@ jobs:
       if: branch = master
       script:
         - yarn build
-        - yarn semantic-release;
+        - yarn semantic-release
     - stage: ghpages
       if: branch = master
       script: yarn pages;
