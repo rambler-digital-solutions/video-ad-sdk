@@ -37,6 +37,9 @@
     "url": "https://github.com/andrepolischuk/video-ad-sdk.git"
   },
   "homepage": "https://github.com/andrepolischuk/video-ad-sdk#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "config": {
     "commitizen": {
       "path": "./node_modules/mol-conventional-changelog"
