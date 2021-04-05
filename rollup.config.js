@@ -1,4 +1,5 @@
 /* eslint-disable filenames/match-exported, sort-keys */
+import path from 'path';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import babel from 'rollup-plugin-babel';
@@ -19,7 +20,7 @@ const plugins = [
 ];
 
 // NOTE: don't include external dependencies into esm/cjm bundles
-const external = ['babel-runtime/regenerator', 'lodash.debounce', 'sane-domparser-error'];
+const external = (id) => !id.startsWith('.') && !path.isAbsolute(id);
 
 // NOTE: see https://github.com/rollup/rollup/issues/408 to understand why we silences `THIS_IS_UNDEFINED` warnings
 const onwarn = (warning, warn) => {
@@ -31,7 +32,7 @@ const onwarn = (warning, warn) => {
 
 const config = [
   {
-    input: 'src/index.js',
+    input: './src/index.js',
     onwarn,
     output: {
       sourcemap: true,
@@ -50,7 +51,7 @@ const config = [
     ]
   },
   {
-    input: 'src/index.js',
+    input: './src/index.js',
     onwarn,
     output: {
       sourcemap: true,
@@ -61,7 +62,7 @@ const config = [
     external
   },
   {
-    input: 'src/index.js',
+    input: './src/index.js',
     onwarn,
     output: {
       sourcemap: true,
