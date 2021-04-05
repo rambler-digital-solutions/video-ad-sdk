@@ -1,6 +1,3 @@
-/* eslint-disable filenames/match-exported, import/no-unassigned-import */
-import 'whatwg-fetch';
-
 const fetch = async (endpoint, options = {}) => {
   const defaults = {
     credentials: 'include'
