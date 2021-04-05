@@ -19,7 +19,7 @@ const plugins = [
 ];
 
 // NOTE: don't include external dependencies into esm/cjm bundles
-const external = ['babel-runtime/regenerator', 'lodash.debounce', 'sane-domparser-error', 'whatwg-fetch'];
+const external = ['babel-runtime/regenerator', 'lodash.debounce', 'sane-domparser-error'];
 
 // NOTE: see https://github.com/rollup/rollup/issues/408 to understand why we silences `THIS_IS_UNDEFINED` warnings
 const onwarn = (warning, warn) => {

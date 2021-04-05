@@ -1,13 +1,7 @@
-// eslint-disable-next-line import/no-unassigned-import
-import 'whatwg-fetch';
-
 const isValidContentType = (contentType) => {
   const normalisedCT = contentType.toLowerCase();
 
-  return [
-    'text/plain',
-    'text/html'
-  ].some((allowedType) => normalisedCT.includes(allowedType));
+  return ['text/plain', 'text/html'].some((allowedType) => normalisedCT.includes(allowedType));
 };
 
 const fetchHtml = async (endpoint) => {
