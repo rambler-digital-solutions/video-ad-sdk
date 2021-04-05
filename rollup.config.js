@@ -12,22 +12,14 @@ const production = process.env.NODE_ENV === 'production';
 const plugins = [
   sourcemaps(),
   babel({
-    exclude: [
-      '../../node_modules/**',
-      'node_modules/**'
-    ],
+    exclude: ['../../node_modules/**', 'node_modules/**'],
     plugins: ['external-helpers']
-  }),
-  resolve({
-    customResolveOptions: {
-      moduleDirectory: [
-        'node_modules',
-        '../../node_modules'
-      ]
-    }
   }),
   commonjs()
 ];
+
+// NOTE: don't include external dependencies into esm/cjm bundles
+const external = ['babel-runtime/regenerator', 'lodash.debounce', 'sane-domparser-error', 'whatwg-fetch'];
 
 // NOTE: see https://github.com/rollup/rollup/issues/408 to understand why we silences `THIS_IS_UNDEFINED` warnings
 const onwarn = (warning, warn) => {
@@ -49,6 +41,11 @@ const config = [
     },
     plugins: [
       ...plugins,
+      resolve({
+        customResolveOptions: {
+          moduleDirectory: ['node_modules', '../../node_modules']
+        }
+      }),
       production && terser()
     ]
   },
@@ -60,7 +57,8 @@ const config = [
       file: pkg.module,
       format: 'es'
     },
-    plugins
+    plugins,
+    external
   },
   {
     input: 'src/index.js',
@@ -70,7 +68,8 @@ const config = [
       file: pkg.main,
       format: 'cjs'
     },
-    plugins
+    plugins,
+    external
   }
 ];
 
