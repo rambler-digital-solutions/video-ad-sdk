@@ -13,8 +13,8 @@ const production = process.env.NODE_ENV === 'production';
 const plugins = [
   sourcemaps(),
   babel({
-    exclude: ['../../node_modules/**', 'node_modules/**'],
-    plugins: ['external-helpers']
+    runtimeHelpers: true,
+    exclude: ['../../node_modules/**', 'node_modules/**']
   }),
   commonjs()
 ];
