@@ -5,7 +5,6 @@
       {
         "debug": false,
         "modules": false,
-        "loose": true,
         "targets": {
           "browsers": [
             "> 1%",
@@ -20,7 +19,7 @@
   ],
   "plugins": [
     "@babel/plugin-transform-runtime",
-    ["@babel/plugin-proposal-class-properties", {"loose": true}],
+    "@babel/plugin-proposal-class-properties",
     "@babel/plugin-proposal-object-rest-spread"
   ],
   "env": {
@@ -31,7 +30,6 @@
           {
             "debug": false,
             "modules": "commonjs",
-            "loose": true,
             "targets": {
               "node": "current"
             }
@@ -40,7 +38,7 @@
       ],
       "plugins": [
         "@babel/plugin-transform-runtime",
-        ["@babel/plugin-proposal-class-properties", {"loose": true}],
+        "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-object-rest-spread"
       ]
     }
