@@ -2,10 +2,7 @@
 import {linearEvents} from '../tracker';
 import {getViewable} from '../vastSelectors';
 import {finish} from './adUnitEvents';
-import {
-  onElementVisibilityChange,
-  onElementResize
-} from './helpers/dom/elementObservers';
+import {onElementVisibilityChange, onElementResize} from './helpers/dom/elementObservers';
 import preventManualProgress from './helpers/dom/preventManualProgress';
 import Emitter from './helpers/Emitter';
 import retrieveIcons from './helpers/icons/retrieveIcons';
@@ -13,13 +10,7 @@ import addIcons from './helpers/icons/addIcons';
 import viewmode from './helpers/vpaid/viewmode';
 import safeCallback from './helpers/safeCallback';
 
-const {
-  start,
-  viewable,
-  viewUndetermined,
-  iconClick,
-  iconView
-} = linearEvents;
+const {start, viewable, notViewable, viewUndetermined, iconClick, iconView} = linearEvents;
 
 // eslint-disable-next-line id-match
 export const _protected = Symbol('_protected');
@@ -43,6 +34,14 @@ class VideoAdUnit extends Emitter {
       });
     },
     finished: false,
+    handleViewableImpression: (event) => {
+      this[_protected].viewable = event;
+
+      this.emit(event, {
+        adUnit: this,
+        type: event
+      });
+    },
     onErrorCallbacks: [],
     onFinishCallbacks: [],
     started: false,
@@ -58,7 +57,7 @@ class VideoAdUnit extends Emitter {
   };
 
   /** Ad unit type */
-  type=null;
+  type = null;
 
   /** If an error occurs it will contain the reference to the error otherwise it will be bull */
   error = null;
@@ -82,9 +81,7 @@ class VideoAdUnit extends Emitter {
   constructor (vastChain, videoAdContainer, {viewability = false, responsive = false, logger = console} = {}) {
     super(logger);
 
-    const {
-      onFinishCallbacks
-    } = this[_protected];
+    const {onFinishCallbacks, handleViewableImpression} = this[_protected];
 
     /** Reference to the {@link VastChain} used to load the ad. */
     this.vastChain = vastChain;
@@ -98,22 +95,20 @@ class VideoAdUnit extends Emitter {
     onFinishCallbacks.push(preventManualProgress(this.videoAdContainer.videoElement));
 
     if (this.icons) {
-      const {
-        drawIcons,
-        hasPendingIconRedraws,
-        removeIcons
-      } = addIcons(this.icons, {
+      const {drawIcons, hasPendingIconRedraws, removeIcons} = addIcons(this.icons, {
         logger,
-        onIconClick: (icon) => this.emit(iconClick, {
-          adUnit: this,
-          data: icon,
-          type: iconClick
-        }),
-        onIconView: (icon) => this.emit(iconView, {
-          adUnit: this,
-          data: icon,
-          type: iconView
-        }),
+        onIconClick: (icon) =>
+          this.emit(iconClick, {
+            adUnit: this,
+            data: icon,
+            type: iconClick
+          }),
+        onIconView: (icon) =>
+          this.emit(iconView, {
+            adUnit: this,
+            data: icon,
+            type: iconView
+          }),
         videoAdContainer
       });
 
@@ -128,24 +123,38 @@ class VideoAdUnit extends Emitter {
 
     if (viewableImpression) {
       this.once(start, () => {
-        const unsubscribe = onElementVisibilityChange(this.videoAdContainer.element, (visible) => {
-          if (this.isFinished()) {
-            return;
+        let timeoutId;
+
+        const unsubscribe = onElementVisibilityChange(
+          this.videoAdContainer.element,
+          (visible) => {
+            if (this.isFinished() || this[_protected].viewable) {
+              return;
+            }
+
+            if (typeof visible !== 'boolean') {
+              handleViewableImpression(viewUndetermined);
+
+              return;
+            }
+
+            if (visible) {
+              timeoutId = setTimeout(handleViewableImpression, 2000, viewable);
+            } else {
+              clearTimeout(timeoutId);
+            }
+          },
+          {viewabilityOffset: 0.5}
+        );
+
+        onFinishCallbacks.push(() => {
+          unsubscribe();
+          clearTimeout(timeoutId);
+
+          if (!this[_protected].viewable) {
+            handleViewableImpression(notViewable);
           }
-
-          if (visible !== false && !this[_protected].viewable) {
-            const status = visible ? viewable : viewUndetermined;
-
-            this.emit(status, {
-              adUnit: this,
-              type: status
-            });
-
-            this[_protected].viewable = status;
-          }
-        }, {viewabilityOffset: 0.5});
-
-        onFinishCallbacks.push(unsubscribe);
+        });
       });
     }
 

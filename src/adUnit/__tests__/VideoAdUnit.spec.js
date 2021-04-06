@@ -1,7 +1,7 @@
 /* eslint-disable no-loop-func, max-nested-callbacks */
 import {vpaidInlineAd, vpaidInlineParsedXML, vastVpaidInlineXML} from '../../../fixtures';
 import VideoAdContainer from '../../adContainer/VideoAdContainer';
-import {iconClick, iconView, start, viewable, viewUndetermined} from '../../tracker/linearEvents';
+import {iconClick, iconView, notViewable, start, viewable, viewUndetermined} from '../../tracker/linearEvents';
 import {getViewable} from '../../vastSelectors';
 import addIcons from '../helpers/icons/addIcons';
 import retrieveIcons from '../helpers/icons/retrieveIcons';
@@ -510,7 +510,7 @@ describe('VideoAdUnit', () => {
       });
     });
 
-    test('must emit viewable on visibility change if true', () => {
+    test('must emit viewable when the ad unit meets criteria for a viewable impression', async () => {
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
 
       jest.spyOn(adUnit, 'emit');
@@ -519,13 +519,26 @@ describe('VideoAdUnit', () => {
       expect(onElementVisibilityChange).toHaveBeenCalledTimes(1);
 
       expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(notViewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewUndetermined);
+
       simulateVisibilityChange(false);
       expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(notViewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewUndetermined);
+
+      const eventPromise = new Promise((resolve) => adUnit.on(viewable, resolve));
+
       simulateVisibilityChange(true);
+
+      await eventPromise;
+
       expect(adUnit.emit).toHaveBeenCalledWith(viewable, expect.any(Object));
+      expect(adUnit.emit).not.toHaveBeenCalledWith(notViewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewUndetermined);
     });
 
-    test('must emit viewUndetermined if visibility is not determined', () => {
+    test('must emit viewUndetermined if cannot be determined whether the ad unit meets criteria for a viewable impression', () => {
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
 
       jest.spyOn(adUnit, 'emit');
@@ -534,10 +547,31 @@ describe('VideoAdUnit', () => {
       expect(onElementVisibilityChange).toHaveBeenCalledTimes(1);
 
       expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(notViewable);
       expect(adUnit.emit).not.toHaveBeenCalledWith(viewUndetermined);
+
       simulateVisibilityChange(undefined);
       expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(notViewable);
       expect(adUnit.emit).toHaveBeenCalledWith(viewUndetermined, expect.any(Object));
+    });
+
+    test('must emit notViewable on finish if ad unit never meets criteria for a viewable impression', () => {
+      const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
+
+      jest.spyOn(adUnit, 'emit');
+      expect(onElementVisibilityChange).not.toHaveBeenCalled();
+      adUnit.emit(start);
+      expect(onElementVisibilityChange).toHaveBeenCalledTimes(1);
+
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(notViewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewUndetermined);
+
+      adUnit[_protected].finish();
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewable);
+      expect(adUnit.emit).not.toHaveBeenCalledWith(viewUndetermined);
+      expect(adUnit.emit).toHaveBeenCalledWith(notViewable, expect.any(Object));
     });
 
     test('must do nothing if finished', () => {
