@@ -18,8 +18,5 @@ module.exports = {
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testRegex: '__tests__/.*\\.spec\\.(jsx?|tsx?)$',
   testURL: 'http://localhost',
-  transform: {
-    '.+\\.jsx?$': 'babel-jest'
-  },
   transformIgnorePatterns: ['node_modules']
 };

@@ -1,7 +1,7 @@
 {
   "presets": [
     [
-      "env",
+      "@babel/preset-env",
       {
         "debug": false,
         "modules": false,
@@ -13,49 +13,33 @@
             "ie > 9",
             "not ie < 10"
           ]
-        },
-        "useBuiltIns": true
+        }
       }
-    ],
-    "stage-3"
+    ]
   ],
   "plugins": [
-    [
-      "transform-runtime",
-      {
-        "helpers": false,
-        "polyfill": false,
-        "regenerator": true
-      }
-    ],
-    "transform-class-properties"
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread"
   ],
   "env": {
     "test": {
       "presets": [
         [
-          "env",
+          "@babel/preset-env",
           {
             "debug": false,
             "modules": "commonjs",
             "targets": {
               "node": "current"
-            },
-            "useBuiltIns": true
+            }
           }
-        ],
-        "stage-3"
+        ]
       ],
       "plugins": [
-        [
-          "transform-runtime",
-          {
-            "helpers": false,
-            "polyfill": false,
-            "regenerator": true
-          }
-        ],
-        "transform-class-properties"
+        "@babel/plugin-transform-runtime",
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-object-rest-spread"
       ]
     }
   }

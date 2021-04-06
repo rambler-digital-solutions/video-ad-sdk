@@ -27,7 +27,7 @@ jest.mock('../helpers/dom/elementObservers', () => ({
   onElementVisibilityChange: jest.fn()
 }));
 jest.mock('../../vastSelectors', () => ({
-  ...require.requireActual('../../vastSelectors'),
+  ...jest.requireActual('../../vastSelectors'),
   getViewable: jest.fn()
 }));
 
