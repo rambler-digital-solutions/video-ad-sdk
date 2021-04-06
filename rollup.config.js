@@ -1,9 +1,10 @@
 /* eslint-disable filenames/match-exported, sort-keys */
 import path from 'path';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import babel from 'rollup-plugin-babel';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import babel from '@rollup/plugin-babel';
 import {terser} from 'rollup-plugin-terser';
+import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import pkg from './package.json';
 
@@ -13,10 +14,11 @@ const production = process.env.NODE_ENV === 'production';
 const plugins = [
   sourcemaps(),
   babel({
-    runtimeHelpers: true,
+    babelHelpers: 'runtime',
     exclude: ['../../node_modules/**', 'node_modules/**']
   }),
-  commonjs()
+  commonjs(),
+  sizeSnapshot()
 ];
 
 // NOTE: don't include external dependencies into esm/cjm bundles
@@ -37,18 +39,10 @@ const config = [
     output: {
       sourcemap: true,
       name: pkg.name,
-      file: pkg.browser,
+      file: pkg.unpkg,
       format: 'umd'
     },
-    plugins: [
-      ...plugins,
-      resolve({
-        customResolveOptions: {
-          moduleDirectory: ['node_modules', '../../node_modules']
-        }
-      }),
-      production && terser()
-    ]
+    plugins: [resolve(), ...plugins, production && terser()]
   },
   {
     input: './src/index.js',

@@ -1,24 +1,11 @@
 /* eslint-disable no-loop-func, max-nested-callbacks */
-import {
-  vpaidInlineAd,
-  vpaidInlineParsedXML,
-  vastVpaidInlineXML
-} from '../../../fixtures';
+import {vpaidInlineAd, vpaidInlineParsedXML, vastVpaidInlineXML} from '../../../fixtures';
 import VideoAdContainer from '../../adContainer/VideoAdContainer';
-import {
-  iconClick,
-  iconView,
-  start,
-  viewable,
-  viewUndetermined
-} from '../../tracker/linearEvents';
+import {iconClick, iconView, start, viewable, viewUndetermined} from '../../tracker/linearEvents';
 import {getViewable} from '../../vastSelectors';
 import addIcons from '../helpers/icons/addIcons';
 import retrieveIcons from '../helpers/icons/retrieveIcons';
-import {
-  onElementResize,
-  onElementVisibilityChange
-} from '../helpers/dom/elementObservers';
+import {onElementResize, onElementVisibilityChange} from '../helpers/dom/elementObservers';
 import VideoAdUnit, {_protected} from '../VideoAdUnit';
 import {finish} from '../adUnitEvents';
 import preventManualProgress from '../helpers/dom/preventManualProgress';
@@ -28,13 +15,11 @@ const mockRemoveIcons = jest.fn();
 const mockHasPendingRedraws = jest.fn(() => false);
 
 jest.mock('../helpers/icons/addIcons.js', () =>
-  jest.fn(
-    () => ({
-      drawIcons: mockDrawIcons,
-      hasPendingIconRedraws: mockHasPendingRedraws,
-      removeIcons: mockRemoveIcons
-    })
-  )
+  jest.fn(() => ({
+    drawIcons: mockDrawIcons,
+    hasPendingIconRedraws: mockHasPendingRedraws,
+    removeIcons: mockRemoveIcons
+  }))
 );
 jest.mock('../helpers/icons/retrieveIcons.js');
 jest.mock('../helpers/dom/elementObservers', () => ({
@@ -42,7 +27,7 @@ jest.mock('../helpers/dom/elementObservers', () => ({
   onElementVisibilityChange: jest.fn()
 }));
 jest.mock('../../vastSelectors', () => ({
-  ...require.requireActual('../../vastSelectors'),
+  ...jest.requireActual('../../vastSelectors'),
   getViewable: jest.fn()
 }));
 
@@ -104,12 +89,14 @@ describe('VideoAdUnit', () => {
 
   describe('icons', () => {
     test('must be added to the class instance', () => {
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
@@ -125,12 +112,14 @@ describe('VideoAdUnit', () => {
     });
 
     test('must remove the icons on ad finish', () => {
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
@@ -143,12 +132,14 @@ describe('VideoAdUnit', () => {
     test(`must emit '${iconClick}' event on click`, async () => {
       addIcons.mockClear();
 
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
@@ -167,21 +158,25 @@ describe('VideoAdUnit', () => {
 
       const passedArgs = await promise;
 
-      expect(passedArgs).toEqual([{
-        adUnit,
-        data: icons[0],
-        type: iconClick
-      }]);
+      expect(passedArgs).toEqual([
+        {
+          adUnit,
+          data: icons[0],
+          type: iconClick
+        }
+      ]);
     });
 
     test(`must emit '${iconView}' event on view`, async () => {
       addIcons.mockClear();
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
@@ -200,26 +195,18 @@ describe('VideoAdUnit', () => {
 
       const passedArgs = await promise;
 
-      expect(passedArgs).toEqual([{
-        adUnit,
-        data: icons[0],
-        type: iconView
-      }]);
+      expect(passedArgs).toEqual([
+        {
+          adUnit,
+          data: icons[0],
+          type: iconView
+        }
+      ]);
     });
   });
 
   describe('method', () => {
-    [
-      'start',
-      'resume',
-      'pause',
-      'paused',
-      'duration',
-      'currentTime',
-      'setVolume',
-      'getVolume',
-      'cancel'
-    ].forEach((method) => {
+    ['start', 'resume', 'pause', 'paused', 'duration', 'currentTime', 'setVolume', 'getVolume', 'cancel'].forEach((method) => {
       test(`${method} must throw if called`, () => {
         const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
 
@@ -319,12 +306,14 @@ describe('VideoAdUnit', () => {
     });
 
     test('must redraw the icons', async () => {
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
