@@ -134,21 +134,28 @@ describe('runWaterfall', () => {
 
       requestAd.mockReturnValue(Promise.resolve(vpaidChain));
 
-      await runWaterfall(adTag, placeholder, {
-        ...options,
-        onError,
-        vpaidEnabled: false
+      await new Promise((resolve) => {
+        runWaterfall(adTag, placeholder, {
+          ...options,
+          onError,
+          onRunFinish: resolve,
+          vpaidEnabled: false
+        });
       });
-      expect(onError).toHaveBeenCalledTimes(1);
+
+      expect(onError).toHaveBeenCalledTimes(2);
 
       const error = onError.mock.calls[0][0];
 
       expect(error.code).toBe(200);
       expect(error.message).toBe('VPAID ads are not supported by the current player');
-      expect(trackError).toHaveBeenCalledWith(vpaidChain, expect.objectContaining({
-        errorCode: 200,
-        tracker: options.tracker
-      }));
+      expect(trackError).toHaveBeenCalledWith(
+        vpaidChain,
+        expect.objectContaining({
+          errorCode: 200,
+          tracker: options.tracker
+        })
+      );
     });
 
     test('must call onError if Vast response is undefined', async () => {
@@ -156,9 +163,12 @@ describe('runWaterfall', () => {
 
       requestAd.mockReturnValue(Promise.resolve());
 
-      await runWaterfall(adTag, placeholder, {
-        ...options,
-        onError
+      await new Promise((resolve) => {
+        runWaterfall(adTag, placeholder, {
+          ...options,
+          onError,
+          onRunFinish: resolve
+        });
       });
 
       expect(onError).toHaveBeenCalledTimes(1);
@@ -170,35 +180,48 @@ describe('runWaterfall', () => {
 
       requestAd.mockReturnValue(Promise.resolve([]));
 
-      await runWaterfall(adTag, placeholder, {
-        ...options,
-        onError
+      await new Promise((resolve) => {
+        runWaterfall(adTag, placeholder, {
+          ...options,
+          onError,
+          onRunFinish: resolve
+        });
       });
-      expect(onError).toHaveBeenCalledTimes(1);
+
+      expect(onError).toHaveBeenCalledTimes(2);
       expect(onError.mock.calls[0][0].message).toBe('Invalid VastChain');
     });
 
     test('must throw if the vastChain has an error and track the error', async () => {
       const onError = jest.fn();
       const vastChainError = new Error('boom');
-      const vastChainWithError = [{
-        ...vastAdChain[0],
-        error: vastChainError,
-        errorCode: 900
-      }];
+      const vastChainWithError = [
+        {
+          ...vastAdChain[0],
+          error: vastChainError,
+          errorCode: 900
+        }
+      ];
 
       requestAd.mockReturnValue(Promise.resolve(vastChainWithError));
 
-      await runWaterfall(adTag, placeholder, {
-        ...options,
-        onError
+      await new Promise((resolve) => {
+        runWaterfall(adTag, placeholder, {
+          ...options,
+          onError,
+          onRunFinish: resolve
+        });
       });
-      expect(onError).toHaveBeenCalledTimes(1);
+
+      expect(onError).toHaveBeenCalledTimes(2);
       expect(onError.mock.calls[0][0]).toBe(vastChainError);
-      expect(trackError).toHaveBeenCalledWith(vastChainWithError, expect.objectContaining({
-        errorCode: 900,
-        tracker: options.tracker
-      }));
+      expect(trackError).toHaveBeenCalledWith(
+        vastChainWithError,
+        expect.objectContaining({
+          errorCode: 900,
+          tracker: options.tracker
+        })
+      );
     });
 
     test('must throw if options.hooks.validateVastResponse fails', async () => {
@@ -209,22 +232,28 @@ describe('runWaterfall', () => {
 
       requestAd.mockReturnValue(Promise.resolve(vastAdChain));
 
-      await runWaterfall(adTag, placeholder, {
-        ...options,
-        hooks: {
-          validateVastResponse: () => {
-            throw vastChainError;
-          }
-        },
-        onError
+      await new Promise((resolve) => {
+        runWaterfall(adTag, placeholder, {
+          ...options,
+          hooks: {
+            validateVastResponse: () => {
+              throw vastChainError;
+            }
+          },
+          onError,
+          onRunFinish: resolve
+        });
       });
 
-      expect(onError).toHaveBeenCalledTimes(1);
+      expect(onError).toHaveBeenCalledTimes(2);
       expect(onError.mock.calls[0][0]).toBe(vastChainError);
-      expect(trackError).toHaveBeenCalledWith(vastAdChain, expect.objectContaining({
-        errorCode: 900,
-        tracker: options.tracker
-      }));
+      expect(trackError).toHaveBeenCalledWith(
+        vastAdChain,
+        expect.objectContaining({
+          errorCode: 900,
+          tracker: options.tracker
+        })
+      );
     });
 
     test('must be possible to transform the vast response before calling run', async () => {
@@ -435,16 +464,23 @@ describe('runWaterfall', () => {
       await deferred.promise;
 
       expect(requestAd).toHaveBeenCalledTimes(1);
-      expect(requestAd).toHaveBeenCalledWith(adTag, expect.objectContaining({
-        ...opts,
-        timeout: 1000
-      }));
+      expect(requestAd).toHaveBeenCalledWith(
+        adTag,
+        expect.objectContaining({
+          ...opts,
+          timeout: 1000
+        })
+      );
 
       expect(run).toHaveBeenCalledTimes(1);
-      expect(run).toHaveBeenCalledWith(vastAdChain, placeholder, expect.objectContaining({
-        ...opts,
-        timeout: 900
-      }));
+      expect(run).toHaveBeenCalledWith(
+        vastAdChain,
+        placeholder,
+        expect.objectContaining({
+          ...opts,
+          timeout: 900
+        })
+      );
     });
 
     test('must update the timeout with each loop', async () => {
@@ -479,25 +515,42 @@ describe('runWaterfall', () => {
       expect(requestNextAd).toHaveBeenCalledTimes(2);
       expect(run).toHaveBeenCalledTimes(2);
 
-      expect(requestAd).toHaveBeenCalledWith(adTag, expect.objectContaining({
-        timeout: 1000
-      }));
+      expect(requestAd).toHaveBeenCalledWith(
+        adTag,
+        expect.objectContaining({
+          timeout: 1000
+        })
+      );
 
-      expect(run).toHaveBeenCalledWith(vastAdChain, placeholder, expect.objectContaining({
-        timeout: 900
-      }));
+      expect(run).toHaveBeenCalledWith(
+        vastAdChain,
+        placeholder,
+        expect.objectContaining({
+          timeout: 900
+        })
+      );
 
-      expect(requestNextAd).toHaveBeenCalledWith(vastAdChain, expect.objectContaining({
-        timeout: 800
-      }));
+      expect(requestNextAd).toHaveBeenCalledWith(
+        vastAdChain,
+        expect.objectContaining({
+          timeout: 800
+        })
+      );
 
-      expect(run).toHaveBeenCalledWith(vastAdChain, placeholder, expect.objectContaining({
-        timeout: 700
-      }));
+      expect(run).toHaveBeenCalledWith(
+        vastAdChain,
+        placeholder,
+        expect.objectContaining({
+          timeout: 700
+        })
+      );
 
-      expect(requestNextAd).toHaveBeenCalledWith(vastAdChain, expect.objectContaining({
-        timeout: 600
-      }));
+      expect(requestNextAd).toHaveBeenCalledWith(
+        vastAdChain,
+        expect.objectContaining({
+          timeout: 600
+        })
+      );
     });
 
     it('must finish the ad run if it times out fetching an ad', async () => {
@@ -521,10 +574,13 @@ describe('runWaterfall', () => {
       await deferred.promise;
 
       expect(requestAd).toHaveBeenCalledTimes(1);
-      expect(requestAd).toHaveBeenCalledWith(adTag, expect.objectContaining({
-        ...opts,
-        timeout: 1000
-      }));
+      expect(requestAd).toHaveBeenCalledWith(
+        adTag,
+        expect.objectContaining({
+          ...opts,
+          timeout: 1000
+        })
+      );
 
       expect(run).toHaveBeenCalledTimes(0);
       expect(onAdStart).toHaveBeenCalledTimes(0);
@@ -557,10 +613,13 @@ describe('runWaterfall', () => {
       await deferred.promise;
 
       expect(requestAd).toHaveBeenCalledTimes(1);
-      expect(requestAd).toHaveBeenCalledWith(adTag, expect.objectContaining({
-        ...opts,
-        timeout: 1000
-      }));
+      expect(requestAd).toHaveBeenCalledWith(
+        adTag,
+        expect.objectContaining({
+          ...opts,
+          timeout: 1000
+        })
+      );
 
       expect(run).toHaveBeenCalledTimes(1);
       expect(onAdStart).toHaveBeenCalledTimes(0);

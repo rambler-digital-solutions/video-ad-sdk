@@ -9,23 +9,13 @@ const {name: pkgName} = require('./package.json');
 
 // eslint-disable-next-line no-process-env
 const devMode = process.env.NODE_ENV !== 'production';
-const alias = {};
-
-if (devMode) {
-  alias['@andrepolischuk/video-ad-sdk'] = path.resolve(__dirname, 'src/index.js');
-} else {
-  alias['@andrepolischuk/video-ad-sdk'] = path.resolve(__dirname, 'dist/main.esm.js');
-}
 
 module.exports = {
   entry: {demo: './demo/index'},
   devtool: 'source-map',
   devServer: {
     publicPath: '/',
-    contentBase: [
-      path.join(__dirname, 'node_modules'),
-      path.join(__dirname, 'ghPage')
-    ],
+    contentBase: [path.join(__dirname, 'node_modules'), path.join(__dirname, 'ghPage')],
     compress: true,
     https: true,
     port: 9000,
@@ -49,10 +39,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader'
-        ]
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       }
     ]
   },
@@ -89,6 +76,8 @@ module.exports = {
   resolve: {
     extensions: ['.js'],
     modules: ['node_modules'],
-    alias
+    alias: {
+      '@andrepolischuk/video-ad-sdk': devMode ? path.resolve(__dirname, 'src/index.js') : path.resolve(__dirname, 'dist/main.esm.js')
+    }
   }
 };

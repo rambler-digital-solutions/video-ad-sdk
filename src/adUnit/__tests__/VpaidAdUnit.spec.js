@@ -1,9 +1,5 @@
 /* eslint-disable no-loop-func, max-nested-callbacks */
-import {
-  vpaidInlineAd,
-  vpaidInlineParsedXML,
-  vastVpaidInlineXML
-} from '../../../fixtures';
+import {vpaidInlineAd, vpaidInlineParsedXML, vastVpaidInlineXML} from '../../../fixtures';
 import VideoAdContainer from '../../adContainer/VideoAdContainer';
 import loadCreative from '../helpers/vpaid/loadCreative';
 import handshake from '../helpers/vpaid/handshake';
@@ -74,13 +70,11 @@ const mockRemoveIcons = jest.fn();
 const mockHasPendingRedraws = jest.fn(() => false);
 
 jest.mock('../helpers/icons/addIcons.js', () =>
-  jest.fn(
-    () => ({
-      drawIcons: mockDrawIcons,
-      hasPendingIconRedraws: mockHasPendingRedraws,
-      removeIcons: mockRemoveIcons
-    })
-  )
+  jest.fn(() => ({
+    drawIcons: mockDrawIcons,
+    hasPendingIconRedraws: mockHasPendingRedraws,
+    removeIcons: mockRemoveIcons
+  }))
 );
 jest.mock('../helpers/icons/retrieveIcons.js', () => jest.fn());
 
@@ -89,7 +83,7 @@ describe('VpaidAdUnit', () => {
   let videoAdContainer;
 
   beforeEach(() => {
-    callAndWait.mockImplementation(require.requireActual('../helpers/vpaid/callAndWait').default);
+    callAndWait.mockImplementation(jest.requireActual('../helpers/vpaid/callAndWait').default);
     vpaidChain = [
       {
         ad: vpaidInlineAd,
@@ -259,12 +253,14 @@ describe('VpaidAdUnit', () => {
           addIcons.mockClear();
           retrieveIcons.mockClear();
 
-          const icons = [{
-            height: 20,
-            width: 20,
-            xPosition: 'left',
-            yPosition: 'top'
-          }];
+          const icons = [
+            {
+              height: 20,
+              width: 20,
+              xPosition: 'left',
+              yPosition: 'top'
+            }
+          ];
 
           retrieveIcons.mockReturnValue(icons);
           mockCreativeAd[getAdIcons].mockReturnValue(true);
@@ -322,12 +318,14 @@ describe('VpaidAdUnit', () => {
     });
 
     test('must remove the icons on ad finish', async () => {
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       mockCreativeAd[getAdIcons].mockReturnValue(true);
@@ -341,12 +339,14 @@ describe('VpaidAdUnit', () => {
     });
 
     test('must redraw the icons on adUnit resize', async () => {
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       mockCreativeAd[getAdIcons].mockReturnValue(true);
@@ -364,12 +364,14 @@ describe('VpaidAdUnit', () => {
     test(`must emit '${iconClick}' event on click`, async () => {
       addIcons.mockClear();
 
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       mockCreativeAd[getAdIcons].mockReturnValue(true);
@@ -391,21 +393,25 @@ describe('VpaidAdUnit', () => {
 
       const passedArgs = await promise;
 
-      expect(passedArgs).toEqual([{
-        adUnit,
-        data: icons[0],
-        type: iconClick
-      }]);
+      expect(passedArgs).toEqual([
+        {
+          adUnit,
+          data: icons[0],
+          type: iconClick
+        }
+      ]);
     });
 
     test(`must emit '${iconView}' event on view`, async () => {
       addIcons.mockClear();
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       mockCreativeAd[getAdIcons].mockReturnValue(true);
@@ -426,20 +432,24 @@ describe('VpaidAdUnit', () => {
 
       const passedArgs = await promise;
 
-      expect(passedArgs).toEqual([{
-        adUnit,
-        data: icons[0],
-        type: iconView
-      }]);
+      expect(passedArgs).toEqual([
+        {
+          adUnit,
+          data: icons[0],
+          type: iconView
+        }
+      ]);
     });
 
     test('must periodically redraw the icons while it has pendingIconRedraws', async () => {
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       mockCreativeAd[getAdIcons].mockReturnValue(true);
@@ -456,12 +466,14 @@ describe('VpaidAdUnit', () => {
     });
 
     test('must avoid redraw the icons if the adUnit is finished', async () => {
-      const icons = [{
-        height: 20,
-        width: 20,
-        xPosition: 'left',
-        yPosition: 'top'
-      }];
+      const icons = [
+        {
+          height: 20,
+          width: 20,
+          xPosition: 'left',
+          yPosition: 'top'
+        }
+      ];
 
       retrieveIcons.mockReturnValue(icons);
       mockCreativeAd[getAdIcons].mockReturnValue(true);
@@ -709,12 +721,15 @@ describe('VpaidAdUnit', () => {
         adUnit.creativeAd.emit(adError);
 
         expect(callback).toHaveBeenCalledTimes(1);
-        expect(callback).toHaveBeenCalledWith(expect.objectContaining({
-          message: 'VPAID general error'
-        }), {
-          adUnit,
-          vastChain: adUnit.vastChain
-        });
+        expect(callback).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'VPAID general error'
+          }),
+          {
+            adUnit,
+            vastChain: adUnit.vastChain
+          }
+        );
       });
     });
   });
@@ -832,7 +847,6 @@ describe('VpaidAdUnit', () => {
         },
         vastEvt: clickThrough,
         vpaidEvt: adClickThru
-
       }
     ].forEach(({vpaidEvt, vastEvt, payload}) => {
       describe(vpaidEvt, () => {
