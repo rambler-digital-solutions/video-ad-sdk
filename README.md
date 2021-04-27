@@ -14,7 +14,7 @@ yarn install video-ad-sdk
 
 ## Demo
 
-Demo [here!](https://rambler-digital-solutions.github.io/video-ad-sdk/demo/).
+Demo [here](https://rambler-digital-solutions.github.io/video-ad-sdk/demo/)!
 
 ## Documentation
 
