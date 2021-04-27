@@ -6,7 +6,7 @@
     "vast",
     "vpaid",
     "ads",
-    "video"
+    "video-ads"
   ],
   "author": "MailOnline <fe@mailonline.co.uk>",
   "main": "dist/main.cjs.js",
