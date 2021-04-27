@@ -1,7 +1,4 @@
-import {
-  getVASTAdTagURI,
-  isWrapper
-} from '../vastSelectors';
+import {getVASTAdTagURI, isWrapper} from '../vastSelectors';
 import requestAd from './requestAd';
 import getNextAd from './helpers/getNextAd';
 import {markAdAsRequested} from './helpers/adUtils';
@@ -20,7 +17,7 @@ const validateChain = (VastChain) => {
 /**
  * @function requestNextAd
  *
- * @memberof module:@andrepolischuk/video-ad-sdk
+ * @memberof module:video-ad-sdk
  * @async
  * @static
  * @description Requests the next ad in the VAST Chain.
@@ -32,7 +29,7 @@ const validateChain = (VastChain) => {
  * @param {boolean} [options.AllowMultipleAds] - Boolean to indicate whether adPods are allowed or not.
  *  Defaults to `true`.
  * @param {tracker} [options.track] - optional function to track whatever errors occur during the loading.
- *  Defaults to `@andrepolischuk/video-ad-tracker` track method.
+ *  Defaults to `video-ad-tracker` track method.
  * @param {boolean} [options.useAdBuffet] - Specifies whether to use buffet ads from an ad pod if possible.
  *    If no buffet ad is available it will return the next ad in ad pod sequence.
  *    Set it to true if an ad from an adPod failed and you want to replace it with an ad from the ad buffet.

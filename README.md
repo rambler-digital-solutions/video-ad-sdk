@@ -1,6 +1,6 @@
 # Video Ad SDK
 
-[![Build Status](https://api.travis-ci.com/andrepolischuk/video-ad-sdk.svg?branch=master)](https://travis-ci.com/andrepolischuk/video-ad-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/andrepolischuk/video-ad-sdk/blob/master/LICENSE) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) [![codecov](https://codecov.io/gh/andrepolischuk/video-ad-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/andrepolischuk/video-ad-sdk) [![Known Vulnerabilities](https://snyk.io/test/github/andrepolischuk/video-ad-sdk/badge.svg?targetFile=package.json)](https://snyk.io/test/github/andrepolischuk/video-ad-sdk?targetFile=package.json)
+[![Build Status](https://api.travis-ci.com/rambler-digital-solutions/video-ad-sdk.svg?branch=master)](https://travis-ci.com/rambler-digital-solutions/video-ad-sdk) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/rambler-digital-solutions/video-ad-sdk/blob/master/LICENSE) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) [![codecov](https://codecov.io/gh/rambler-digital-solutions/video-ad-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/rambler-digital-solutions/video-ad-sdk) [![Known Vulnerabilities](https://snyk.io/test/github/rambler-digital-solutions/video-ad-sdk/badge.svg?targetFile=package.json)](https://snyk.io/test/github/rambler-digital-solutions/video-ad-sdk?targetFile=package.json)
 
 This is a fork of [MailOnline/mol-video-ad-sdk](https://github.com/MailOnline/mol-video-ad-sdk), made to move its development forward. The main repository has been inactive since February 2019.
 
@@ -9,16 +9,16 @@ To run video ads in the browser there are many alternatives. The most famous one
 ## Install
 
 ```
-yarn install @andrepolischuk/video-ad-sdk
+yarn install video-ad-sdk
 ```
 
 ## Demo
 
-Demo [here!](https://andrepolischuk.github.io/video-ad-sdk/demo/index.html).
+Demo [here!](https://rambler-digital-solutions.github.io/video-ad-sdk/demo/).
 
 ## Documentation
 
-Currently we only have the API which you can check [here](https://andrepolischuk.github.io/video-ad-sdk/docs/index.html).
+Currently we only have the API which you can check [here](https://rambler-digital-solutions.github.io/video-ad-sdk/docs/).
 
 ## Compiling and Testing
 

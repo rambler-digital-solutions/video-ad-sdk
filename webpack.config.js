@@ -33,7 +33,7 @@ module.exports = {
   module: {
     rules: [
       {
-        exclude: devMode ? /node_modules\/(?!@andrepolischuk\/).*/ : /node_modules\/.*/,
+        exclude: devMode ? /node_modules\/(?!video-ad-sdk).*/ : /node_modules\/.*/,
         loader: 'babel-loader',
         test: /\.js$/
       },
@@ -77,7 +77,7 @@ module.exports = {
     extensions: ['.js'],
     modules: ['node_modules'],
     alias: {
-      '@andrepolischuk/video-ad-sdk': devMode ? path.resolve(__dirname, 'src/index.js') : path.resolve(__dirname, 'dist/main.esm.js')
+      'video-ad-sdk': devMode ? path.resolve(__dirname, 'src/index.js') : path.resolve(__dirname, 'dist/main.esm.js')
     }
   }
 };

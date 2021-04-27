@@ -1,12 +1,5 @@
 import {parseXml} from '../xml';
-import {
-  getWrapperOptions,
-  getFirstAd,
-  getVASTAdTagURI,
-  hasAdPod,
-  isInline,
-  isWrapper
-} from '../vastSelectors';
+import {getWrapperOptions, getFirstAd, getVASTAdTagURI, hasAdPod, isInline, isWrapper} from '../vastSelectors';
 import fetch from './helpers/fetch';
 import {markAdAsRequested} from './helpers/adUtils';
 
@@ -96,7 +89,7 @@ const getOptions = (vastChain, options) => {
 /**
  * @function requestAd
  *
- * @memberof module:@andrepolischuk/video-ad-sdk
+ * @memberof module:video-ad-sdk
  * @async
  * @static
  * @description Request the ad using the passed ad tag and returns an array with the [VAST responses]{@link VastResponse} needed to get an inline ad.

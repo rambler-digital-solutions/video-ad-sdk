@@ -1,5 +1,5 @@
 /* eslint-disable no-console, import/no-unassigned-import, import/no-unresolved */
-import {runWaterfall} from '@andrepolischuk/video-ad-sdk';
+import {runWaterfall} from 'video-ad-sdk';
 import './demo.css';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,18 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('### onAdReady', adUnit);
     const evtHandler = (evt) => console.log(`### ${evt.type}`, evt.adUnit);
 
-    [
-      'pause',
-      'resume',
-      'finish',
-      'impression',
-      'start',
-      'skip',
-      'firstQuartile',
-      'midpoint',
-      'thirdQuartile',
-      'complete'
-    ].forEach((evtType) => {
+    ['pause', 'resume', 'finish', 'impression', 'start', 'skip', 'firstQuartile', 'midpoint', 'thirdQuartile', 'complete'].forEach((evtType) => {
       adUnit.on(evtType, evtHandler);
     });
   };

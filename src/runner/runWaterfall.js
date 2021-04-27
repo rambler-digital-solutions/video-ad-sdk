@@ -52,11 +52,7 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
   let runEpoch;
   let adUnit;
   const opts = {...options};
-  const {
-    onAdStart,
-    onError,
-    onRunFinish
-  } = opts;
+  const {onAdStart, onError, onRunFinish} = opts;
 
   try {
     if (typeof opts.timeout === 'number') {
@@ -115,12 +111,7 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
       }
 
       if (!runEpoch || opts.timeout > 0) {
-        waterfall(
-          () => requestNextAd(vastChain, opts),
-          placeholder,
-          {...opts},
-          isCanceled
-        );
+        waterfall(() => requestNextAd(vastChain, opts), placeholder, {...opts}, isCanceled);
 
         return;
       }
@@ -133,7 +124,7 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
 /**
  * Will try to start one of the ads returned by the `adTag`. It will keep trying until it times out or it runs out of ads.
  *
- * @memberof module:@andrepolischuk/video-ad-sdk
+ * @memberof module:video-ad-sdk
  * @static
  * @alias runWaterfall
  * @param {string} adTag - The VAST ad tag request url.
@@ -189,12 +180,7 @@ const runWaterfall = (adTag, placeholder, options) => {
     options.videoElement.load();
   }
 
-  waterfall(
-    () => requestAd(adTag, opts),
-    placeholder,
-    opts,
-    isCanceled
-  );
+  waterfall(() => requestAd(adTag, opts), placeholder, opts, isCanceled);
 
   return () => {
     canceled = true;

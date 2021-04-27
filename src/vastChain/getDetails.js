@@ -1,18 +1,6 @@
-import {
-  get,
-  getFirstChild,
-  getText,
-  getAttribute
-} from '../xml';
+import {get, getFirstChild, getText, getAttribute} from '../xml';
 import getLinearCreative from '../vastSelectors/helpers/getLinearCreative';
-import {
-  isInline,
-  getClickThrough,
-  getCreativeData,
-  isWrapper,
-  getMediaFiles,
-  getInteractiveFiles
-} from '../vastSelectors';
+import {isInline, getClickThrough, getCreativeData, isWrapper, getMediaFiles, getInteractiveFiles} from '../vastSelectors';
 import parseTime from '../vastSelectors/helpers/parseTime';
 
 const getAdSystem = (ad) => {
@@ -88,7 +76,7 @@ const getVastVersion = (parsedVast) => {
 /**
  * @function getDetails
  *
- * @memberof module:@andrepolischuk/video-ad-sdk
+ * @memberof module:video-ad-sdk
  * @static
  * @description Returns a summary of the passed {@link VastChain}.
  *
@@ -102,15 +90,8 @@ const getDetails = (vastChain) => {
   const creatives = vastChain.map(({ad}) => getLinearCreative(ad)).filter((creative) => Boolean(creative));
   const creativeIds = creatives.map((creative) => getAttribute(creative, 'id'));
   const creativeAdIds = creatives.map((creative) => getAttribute(creative, 'adId'));
-  const {
-    pricing,
-    pricingCurrency,
-    pricingModel
-  } = getPricing(vastChain);
-  const {
-    category,
-    categoryAuthority
-  } = getCategory(vastChain[0].ad);
+  const {pricing, pricingCurrency, pricingModel} = getPricing(vastChain);
+  const {category, categoryAuthority} = getCategory(vastChain[0].ad);
   const adTypeElement = getFirstChild(vastChain[0].ad);
   const creativeElement = getLinearCreative(vastChain[0].ad);
   const linearElement = creativeElement && get(creativeElement, 'Linear');
@@ -140,25 +121,13 @@ const getDetails = (vastChain) => {
   let skipOffsetInMs;
 
   if (isInline(vastChain[0].ad)) {
-    [
-      adId,
-      ...adWrapperIds
-    ] = adIds;
+    [adId, ...adWrapperIds] = adIds;
 
-    [
-      adSystem,
-      ...adWrapperSystems
-    ] = adSystems;
+    [adSystem, ...adWrapperSystems] = adSystems;
 
-    [
-      creativeId,
-      ...adWrapperCreativeIds
-    ] = creativeIds;
+    [creativeId, ...adWrapperCreativeIds] = creativeIds;
 
-    [
-      creativeAdId,
-      ...adWrapperCreativeAdIds
-    ] = creativeAdIds;
+    [creativeAdId, ...adWrapperCreativeAdIds] = creativeAdIds;
 
     clickThroughUrl = getClickThrough(vastChain[0].ad);
     creativeData = getCreativeData(vastChain[0].XML);

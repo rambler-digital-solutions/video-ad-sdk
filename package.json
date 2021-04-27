@@ -1,5 +1,5 @@
 {
-  "name": "@andrepolischuk/video-ad-sdk",
+  "name": "video-ad-sdk",
   "version": "0.0.0-development",
   "description": "VAST/VPAID SDK that allows video ads to be played on top of any player",
   "keywords": [
@@ -30,13 +30,13 @@
     "dist"
   ],
   "bugs": {
-    "url": "https://github.com/andrepolischuk/video-ad-sdk/issues"
+    "url": "https://github.com/rambler-digital-solutions/video-ad-sdk/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/andrepolischuk/video-ad-sdk.git"
+    "url": "https://github.com/rambler-digital-solutions/video-ad-sdk.git"
   },
-  "homepage": "https://github.com/andrepolischuk/video-ad-sdk#readme",
+  "homepage": "https://github.com/rambler-digital-solutions/video-ad-sdk#readme",
   "publishConfig": {
     "access": "public"
   },

@@ -1,16 +1,9 @@
 /**
- * @memberof module:@andrepolischuk/video-ad-sdk
- * @description Published as part of {@link module:@andrepolischuk/video-ad-sdk}
+ * @memberof module:video-ad-sdk
+ * @description Published as part of {@link module:video-ad-sdk}
  * @module vastSelectors
  */
-import {
-  get,
-  getAll,
-  getFirstChild,
-  getText,
-  getAttributes,
-  getAttribute
-} from '../xml';
+import {get, getAll, getFirstChild, getText, getAttributes, getAttribute} from '../xml';
 import parseOffset from './helpers/parseOffset';
 import getLinearCreative from './helpers/getLinearCreative';
 import getLinearTrackingEvents from './getLinearTrackingEvents';
@@ -147,8 +140,7 @@ export const getFirstAd = (parsedVAST) => {
 
   if (Array.isArray(ads) && ads.length > 0) {
     if (hasAdPod(parsedVAST)) {
-      return ads.filter(isPodAd)
-        .sort(compareBySequence)[0];
+      return ads.filter(isPodAd).sort(compareBySequence)[0];
     }
 
     return ads[0];
@@ -205,11 +197,7 @@ export const getVASTAdTagURI = (ad) => {
  * @static
  */
 export const getWrapperOptions = (ad) => {
-  const {
-    allowMultipleAds,
-    fallbackOnNoAd,
-    followAdditionalWrappers
-  } = getAttributes(get(ad, 'Wrapper'));
+  const {allowMultipleAds, fallbackOnNoAd, followAdditionalWrappers} = getAttributes(get(ad, 'Wrapper'));
 
   const opts = {};
 
@@ -350,20 +338,9 @@ export const getMediaFiles = (ad) => {
     if (mediaFileElements && mediaFileElements.length > 0) {
       return mediaFileElements.map((mediaFileElement) => {
         const src = getText(mediaFileElement);
-        const {
-          apiFramework,
-          bitrate,
-          codec,
-          delivery,
-          height,
-          id,
-          maintainAspectRatio,
-          maxBitrate,
-          minBitrate,
-          scalable,
-          type,
-          width
-        } = getAttributes(mediaFileElement);
+        const {apiFramework, bitrate, codec, delivery, height, id, maintainAspectRatio, maxBitrate, minBitrate, scalable, type, width} = getAttributes(
+          mediaFileElement
+        );
 
         return {
           apiFramework,
@@ -406,10 +383,7 @@ export const getInteractiveCreativeFiles = (ad) => {
 
     if (interactiveElements && interactiveElements.length > 0) {
       return interactiveElements.map((interactiveElement) => {
-        const {
-          apiFramework,
-          type
-        } = getAttributes(interactiveElement);
+        const {apiFramework, type} = getAttributes(interactiveElement);
         const src = getText(interactiveElement);
 
         return {
@@ -558,16 +532,20 @@ const getAdParametersContent = (xml) => {
   const paramsRegex = /<AdParameters[\s\w="]*>([\s\S]*)<\/AdParameters>/gm;
   const result = paramsRegex.exec(xml);
 
-  return result && result[1].replace(/[\n\s]*<!\[CDATA\[[\n\s]*/, '')
-    .replace(/[\n\s]*\]\]>[\n\s]*$/, '')
+  return (
+    result &&
+    result[1]
+      .replace(/[\n\s]*<!\[CDATA\[[\n\s]*/, '')
+      .replace(/[\n\s]*\]\]>[\n\s]*$/, '')
 
-    // unescape nested CDATA
-    .replace(/\]\]\]\]><!\[CDATA\[>/, ']]>')
-    .trim();
+      // unescape nested CDATA
+      .replace(/\]\]\]\]><!\[CDATA\[>/, ']]>')
+      .trim()
+  );
 };
 
 const getXmlEncodedValue = (xml) => {
-  const xmlEncodedRegex = /<AdParameters[\s]*xmlEncoded="(.*?)">/gmi;
+  const xmlEncodedRegex = /<AdParameters[\s]*xmlEncoded="(.*?)">/gim;
   const result = xmlEncodedRegex.exec(xml);
 
   return Boolean(result) && result[1] === 'true';
