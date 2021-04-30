@@ -1,13 +1,12 @@
 {
-  "extends": [
-    "mailonline",
-    "mailonline/jest"
-  ],
-  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
   "rules": {
-    "jsdoc/require-description-complete-sentence": "off",
-    "max-len": ["warn", {  "code": 160, "ignoreComments": true }],
-    "id-match": "off",
-    "jsdoc/check-tag-names": "off"
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-unused-vars": ["error", {"argsIgnorePattern": "^_"}],
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {"allowExpressions": true}
+    ]
   }
 }

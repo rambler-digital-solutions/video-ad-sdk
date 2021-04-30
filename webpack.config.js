@@ -34,8 +34,8 @@ module.exports = {
     rules: [
       {
         exclude: devMode ? /node_modules\/(?!video-ad-sdk).*/ : /node_modules\/.*/,
-        loader: 'babel-loader',
-        test: /\.js$/
+        loader: 'ts-loader',
+        test: /\.ts/
       },
       {
         test: /\.css$/,
