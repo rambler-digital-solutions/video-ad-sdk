@@ -14,6 +14,7 @@ import {
   resumeAd,
   adPaused,
   pauseAd,
+  skipAd,
   resizeAd,
   adSizeChange,
   adVideoComplete,
@@ -519,6 +520,10 @@ describe('VpaidAdUnit', () => {
         mockCreativeAd.emit(adPaused);
       });
 
+      mockCreativeAd.skipAd.mockImplementationOnce(() => {
+        mockCreativeAd.emit(adSkipped);
+      });
+
       mockCreativeAd.resizeAd.mockImplementationOnce(() => {
         mockCreativeAd.emit(adSizeChange);
       });
@@ -542,6 +547,15 @@ describe('VpaidAdUnit', () => {
         await adUnit.pause();
 
         expect(adUnit.creativeAd[pauseAd]).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('skip', () => {
+      test('must call skipAd', async () => {
+        await adUnit.start();
+        adUnit.skip();
+
+        expect(adUnit.creativeAd[skipAd]).toHaveBeenCalledTimes(1);
       });
     });
 

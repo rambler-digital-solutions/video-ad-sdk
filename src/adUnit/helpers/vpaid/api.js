@@ -6,6 +6,7 @@ export const stopAd = 'stopAd';
 export const pauseAd = 'pauseAd';
 export const resumeAd = 'resumeAd';
 export const expandAd = 'expandAd';
+export const skipAd = 'skipAd';
 export const collapseAd = 'collapseAd';
 export const getAdLinear = 'getAdLinear';
 export const getAdWidth = 'getAdWidth';
@@ -74,8 +75,6 @@ export const EVENTS = [
   adError
 ];
 
-// NOTE: `skipAd` is not supported on VPAID 1.0 and since it is a convenient method that has proven problematic we have decided not to support custom skip control for vpaid creatives
-// otherwise we risk showing the button twice if the creative is badly written and tell the sdk to show a custom skip control while showing its own control.
 export const METHODS = [
   handshakeVersion,
   initAd,
@@ -85,7 +84,10 @@ export const METHODS = [
   pauseAd,
   resumeAd,
   expandAd,
-  collapseAd
+  collapseAd,
+
+  // VPAID 2.0 new methods
+  skipAd
 ];
 
 export const GETTERS = [
@@ -103,7 +105,4 @@ export const GETTERS = [
   getAdIcons
 ];
 
-export const SETTERS = [
-  setAdVolume
-];
-
+export const SETTERS = [setAdVolume];
