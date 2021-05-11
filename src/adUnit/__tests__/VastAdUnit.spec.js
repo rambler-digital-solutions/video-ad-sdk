@@ -1,12 +1,5 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
-import {
-  vastWrapperXML,
-  vastInlineXML,
-  wrapperParsedXML,
-  inlineParsedXML,
-  wrapperAd,
-  inlineAd
-} from '../../../fixtures';
+import {vastWrapperXML, vastInlineXML, wrapperParsedXML, inlineParsedXML, wrapperAd, inlineAd} from '../../../fixtures';
 import createVideoAdContainer from '../../adContainer/createVideoAdContainer';
 import {linearEvents} from '../../tracker';
 import VastAdUnit from '../VastAdUnit';
@@ -16,12 +9,7 @@ import metricHandlers from '../helpers/metrics/handlers';
 import addIcons from '../helpers/icons/addIcons';
 import retrieveIcons from '../helpers/icons/retrieveIcons';
 
-const {
-  iconClick,
-  iconView,
-  skip,
-  error: errorEvt
-} = linearEvents;
+const {iconClick, iconView, skip, error: errorEvt} = linearEvents;
 const mockStopMetricHandler = jest.fn();
 
 jest.mock('../helpers/media/canPlay');
@@ -43,13 +31,11 @@ const mockDrawIcons = jest.fn();
 const mockRemoveIcons = jest.fn();
 
 jest.mock('../helpers/icons/addIcons.js', () =>
-  jest.fn(
-    () => ({
-      drawIcons: mockDrawIcons,
-      hasPendingIconRedraws: () => false,
-      removeIcons: mockRemoveIcons
-    })
-  )
+  jest.fn(() => ({
+    drawIcons: mockDrawIcons,
+    hasPendingIconRedraws: () => false,
+    removeIcons: mockRemoveIcons
+  }))
 );
 jest.mock('../helpers/icons/retrieveIcons.js', () => jest.fn());
 
@@ -117,14 +103,11 @@ describe('VastAdUnit', () => {
 
     metricHandlers.forEach((handler) => {
       expect(handler).toHaveBeenCalledTimes(1);
-      expect(handler).toHaveBeenCalledWith(
-        videoAdContainer,
-        expect.any(Function),
-        {
-          clickThroughUrl: 'https://test.example.com/clickthrough',
-          progressEvents: [{offset: 5000,
-            uri: 'https://test.example.com/progress'
-          },
+      expect(handler).toHaveBeenCalledWith(videoAdContainer, expect.any(Function), {
+        clickThroughUrl: 'https://test.example.com/clickthrough',
+        progressEvents: [
+          {offset: 5000,
+            uri: 'https://test.example.com/progress'},
           {
             offset: '15%',
             uri: 'https://test.example.com/progress2'
@@ -137,11 +120,9 @@ describe('VastAdUnit', () => {
             offset: '15%',
             uri: 'https://test.example.com/progress2'
           }
-
-          ],
-          skipoffset: 5000
-        }
-      );
+        ],
+        skipoffset: 5000
+      });
     });
   });
 
@@ -157,27 +138,25 @@ describe('VastAdUnit', () => {
 
     metricHandlers.forEach((handler) => {
       expect(handler).toHaveBeenCalledTimes(1);
-      expect(handler).toHaveBeenCalledWith(
-        videoAdContainer,
-        expect.any(Function),
-        {
-          clickThroughUrl: 'https://test.example.com/clickthrough',
-          createSkipOffset,
-          progressEvents: expect.any(Array),
-          skipoffset: 5000
-        }
-      );
+      expect(handler).toHaveBeenCalledWith(videoAdContainer, expect.any(Function), {
+        clickThroughUrl: 'https://test.example.com/clickthrough',
+        createSkipOffset,
+        progressEvents: expect.any(Array),
+        skipoffset: 5000
+      });
     });
   });
 
   test('must add the icons of the vastChain', async () => {
     canPlay.mockReturnValue(true);
-    const icons = [{
-      height: 20,
-      width: 20,
-      xPosition: 'left',
-      yPosition: 'top'
-    }];
+    const icons = [
+      {
+        height: 20,
+        width: 20,
+        xPosition: 'left',
+        yPosition: 'top'
+      }
+    ];
     let adUnit = new VastAdUnit(vastChain, videoAdContainer);
 
     await adUnit.start();
@@ -204,12 +183,14 @@ describe('VastAdUnit', () => {
 
   test('passed iconView must emit iconView passing the event, this and the viewed icon', async () => {
     canPlay.mockReturnValue(true);
-    const icons = [{
-      height: 20,
-      width: 20,
-      xPosition: 'left',
-      yPosition: 'top'
-    }];
+    const icons = [
+      {
+        height: 20,
+        width: 20,
+        xPosition: 'left',
+        yPosition: 'top'
+      }
+    ];
 
     retrieveIcons.mockImplementation(() => icons);
 
@@ -231,21 +212,25 @@ describe('VastAdUnit', () => {
 
     const passedArgs = await promise;
 
-    expect(passedArgs).toEqual([{
-      adUnit,
-      data: icons[0],
-      type: iconView
-    }]);
+    expect(passedArgs).toEqual([
+      {
+        adUnit,
+        data: icons[0],
+        type: iconView
+      }
+    ]);
   });
 
   test('passed iconClick must emit iconClick passing the event, this and the viewed icon', async () => {
     canPlay.mockReturnValue(true);
-    const icons = [{
-      height: 20,
-      width: 20,
-      xPosition: 'left',
-      yPosition: 'top'
-    }];
+    const icons = [
+      {
+        height: 20,
+        width: 20,
+        xPosition: 'left',
+        yPosition: 'top'
+      }
+    ];
 
     retrieveIcons.mockImplementation(() => icons);
 
@@ -267,17 +252,18 @@ describe('VastAdUnit', () => {
 
     const passedArgs = await promise;
 
-    expect(passedArgs).toEqual([{
-      adUnit,
-      data: icons[0],
-      type: iconClick
-    }]);
+    expect(passedArgs).toEqual([
+      {
+        adUnit,
+        data: icons[0],
+        type: iconClick
+      }
+    ]);
   });
 
   test('start emit an error if there is no suitable mediaFile to play', async () => {
     canPlay.mockReturnValue(false);
-    const adUnit = new VastAdUnit(vastChain, videoAdContainer, {logger: {error: () => {}}
-    });
+    const adUnit = new VastAdUnit(vastChain, videoAdContainer, {logger: {error: () => {}}});
     const errorHandler = jest.fn();
     const onErrorCallback = jest.fn();
     const errorPromise = new Promise((resolve) => {
@@ -524,10 +510,12 @@ describe('VastAdUnit', () => {
 
     const passedArgs = await promise;
 
-    expect(passedArgs).toEqual([{
-      adUnit,
-      type: 'custom'
-    }]);
+    expect(passedArgs).toEqual([
+      {
+        adUnit,
+        type: 'custom'
+      }
+    ]);
   });
 
   test('must cancel on `skip` event', async () => {
@@ -550,10 +538,42 @@ describe('VastAdUnit', () => {
 
     const passedArgs = await promise;
 
-    expect(passedArgs).toEqual([{
-      adUnit,
-      type: skip
-    }]);
+    expect(passedArgs).toEqual([
+      {
+        adUnit,
+        type: skip
+      }
+    ]);
+
+    expect(adUnit.isFinished()).toBe(true);
+  });
+
+  test('skip must cancel the ad', async () => {
+    canPlay.mockReturnValue(true);
+    const adUnit = new VastAdUnit(vastChain, videoAdContainer);
+
+    const promise = new Promise((resolve) => {
+      adUnit.on(skip, (...args) => {
+        resolve(args);
+      });
+    });
+
+    await adUnit.start();
+
+    Object.defineProperty(videoAdContainer.videoElement, 'currentTime', {
+      value: 10
+    });
+
+    adUnit.skip();
+
+    const passedArgs = await promise;
+
+    expect(passedArgs).toEqual([
+      {
+        adUnit,
+        type: skip
+      }
+    ]);
 
     expect(adUnit.isFinished()).toBe(true);
   });
@@ -571,12 +591,14 @@ describe('VastAdUnit', () => {
   test('cancel must remove the icons of the vastChain', async () => {
     canPlay.mockReturnValue(true);
 
-    retrieveIcons.mockImplementation(() => [{
-      height: 20,
-      width: 20,
-      xPosition: 'left',
-      yPosition: 'top'
-    }]);
+    retrieveIcons.mockImplementation(() => [
+      {
+        height: 20,
+        width: 20,
+        xPosition: 'left',
+        yPosition: 'top'
+      }
+    ]);
 
     const adUnit = new VastAdUnit(vastChain, videoAdContainer);
 
@@ -646,12 +668,14 @@ describe('VastAdUnit', () => {
   test('must redraw the icons', async () => {
     canPlay.mockReturnValue(true);
 
-    const icons = [{
-      height: 20,
-      width: 20,
-      xPosition: 'left',
-      yPosition: 'top'
-    }];
+    const icons = [
+      {
+        height: 20,
+        width: 20,
+        xPosition: 'left',
+        yPosition: 'top'
+      }
+    ];
 
     retrieveIcons.mockImplementation(() => icons);
 

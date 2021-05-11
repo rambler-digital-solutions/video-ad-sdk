@@ -206,7 +206,7 @@ describe('VideoAdUnit', () => {
   });
 
   describe('method', () => {
-    ['start', 'resume', 'pause', 'paused', 'duration', 'currentTime', 'setVolume', 'getVolume', 'cancel'].forEach((method) => {
+    ['start', 'resume', 'pause', 'skip', 'paused', 'duration', 'currentTime', 'setVolume', 'getVolume', 'cancel'].forEach((method) => {
       test(`${method} must throw if called`, () => {
         const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer);
 

@@ -238,6 +238,16 @@ class VideoAdUnit extends Emitter {
   }
 
   /**
+   * Skips the ad unit.
+   *
+   * @throws if ad unit is not started.
+   * @throws if ad unit is finished.
+   */
+  skip () {
+    this[_protected].throwIfCalled();
+  }
+
+  /**
    * Sets the volume of the ad unit.
    *
    * @throws if ad unit is not started.

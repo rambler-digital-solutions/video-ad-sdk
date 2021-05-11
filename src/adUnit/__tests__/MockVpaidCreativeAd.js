@@ -5,6 +5,7 @@ import {
   stopAd,
   resumeAd,
   pauseAd,
+  skipAd,
   setAdVolume,
   getAdVolume,
   resizeAd,
@@ -26,6 +27,7 @@ class MockVpaidCreativeAd extends Emitter {
     this[stopAd] = jest.fn();
     this[resumeAd] = jest.fn();
     this[pauseAd] = jest.fn();
+    this[skipAd] = jest.fn();
     this[getAdIcons] = jest.fn();
     this[getAdDuration] = jest.fn();
     this[getAdRemainingTime] = jest.fn();

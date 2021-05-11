@@ -14,6 +14,7 @@ import {
   stopAd,
   resumeAd,
   pauseAd,
+  skipAd,
   setAdVolume,
   getAdVolume,
   getAdDuration,
@@ -116,10 +117,12 @@ class VpaidAdUnit extends VideoAdUnit {
         this.error = vpaidGeneralError(payload);
         this.errorCode = this.error.code;
 
-        this[_protected].onErrorCallbacks.forEach((callback) => callback(this.error, {
-          adUnit: this,
-          vastChain: this.vastChain
-        }));
+        this[_protected].onErrorCallbacks.forEach((callback) =>
+          callback(this.error, {
+            adUnit: this,
+            vastChain: this.vastChain
+          })
+        );
 
         this[_protected].finish();
 
@@ -278,7 +281,7 @@ class VpaidAdUnit extends VideoAdUnit {
   };
 
   /** Ad unit type. Will be `VPAID` for VpaidAdUnit */
-  type='VPAID';
+  type = 'VPAID';
 
   /** Reference to the Vpaid Creative ad unit. Will be null before the ad unit starts. */
   creativeAd = null;
@@ -394,6 +397,16 @@ class VpaidAdUnit extends VideoAdUnit {
    */
   pause () {
     this.creativeAd[pauseAd]();
+  }
+
+  /**
+   * Skip the ad unit.
+   *
+   * @throws if ad unit is not started.
+   * @throws if ad unit is finished.
+   */
+  skip () {
+    this.creativeAd[skipAd]();
   }
 
   /**

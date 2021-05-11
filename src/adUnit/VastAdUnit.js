@@ -1,16 +1,13 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
 import {linearEvents} from '../tracker';
+import {getSkipOffset} from '../vastSelectors';
 import findBestMedia from './helpers/media/findBestMedia';
 import once from './helpers/dom/once';
 import setupMetricHandlers from './helpers/metrics/setupMetricHandlers';
 import updateMedia from './helpers/media/updateMedia';
 import VideoAdUnit, {_protected} from './VideoAdUnit';
 
-const {
-  complete,
-  error: errorEvt,
-  skip
-} = linearEvents;
+const {complete, error: errorEvt, skip} = linearEvents;
 
 // eslint-disable-next-line id-match
 const _private = Symbol('_private');
@@ -33,10 +30,12 @@ class VastAdUnit extends VideoAdUnit {
       case errorEvt: {
         this.error = data;
         this.errorCode = this.error && this.error.code ? this.error.code : 405;
-        this[_protected].onErrorCallbacks.forEach((callback) => callback(this.error, {
-          adUnit: this,
-          vastChain: this.vastChain
-        }));
+        this[_protected].onErrorCallbacks.forEach((callback) =>
+          callback(this.error, {
+            adUnit: this,
+            vastChain: this.vastChain
+          })
+        );
         this[_protected].finish();
         break;
       }
@@ -56,7 +55,7 @@ class VastAdUnit extends VideoAdUnit {
   assetUri = null;
 
   /** Ad unit type. Will be `VAST` for VastAdUnit */
-  type='VAST';
+  type = 'VAST';
 
   /**
    * Creates a {VastAdUnit}.
@@ -81,11 +80,14 @@ class VastAdUnit extends VideoAdUnit {
 
     this.hooks = options.hooks || {};
 
-    const removeMetricHandlers = setupMetricHandlers({
-      hooks: this.hooks,
-      vastChain: this.vastChain,
-      videoAdContainer: this.videoAdContainer
-    }, handleMetric);
+    const removeMetricHandlers = setupMetricHandlers(
+      {
+        hooks: this.hooks,
+        vastChain: this.vastChain,
+        videoAdContainer: this.videoAdContainer
+      },
+      handleMetric
+    );
 
     onFinishCallbacks.push(removeMetricHandlers);
   }
@@ -155,6 +157,22 @@ class VastAdUnit extends VideoAdUnit {
    */
   pause () {
     this.videoAdContainer.videoElement.pause();
+  }
+
+  /**
+   * Skips the ad unit.
+   *
+   * @throws if ad unit is not started.
+   * @throws if ad unit is finished.
+   */
+  skip () {
+    const inlineAd = this.vastChain[0].ad;
+    const skipoffset = getSkipOffset(inlineAd);
+    const currentTimeMs = this.currentTime() * 1000;
+
+    if (Boolean(skipoffset) && currentTimeMs >= skipoffset) {
+      this[_private].handleMetric(skip);
+    }
   }
 
   /**
