@@ -341,6 +341,25 @@ describe('VastAdUnit', () => {
     expect(adUnit.assetUri).toBe('https://test.example.com/test1920x1080.mp4');
   });
 
+  test('start must select the custom media to play', async () => {
+    canPlay.mockReturnValue(true);
+    Object.defineProperty(videoAdContainer.element, 'getBoundingClientRect', {
+      value: () => ({
+        height: 504,
+        width: 896
+      }),
+      writable: true
+    });
+    const getMediaFile = (mediaFiles) => mediaFiles.find((mediaFile) => mediaFile.height === '1080');
+    const adUnit = new VastAdUnit(vastChain, videoAdContainer, {
+      hooks: {getMediaFile}
+    });
+
+    await adUnit.start();
+
+    expect(adUnit.assetUri).toBe('https://test.example.com/test1920x1080.mp4');
+  });
+
   test('start must play the selected mediaFile', async () => {
     canPlay.mockReturnValue(true);
     Object.defineProperty(videoAdContainer.videoElement, 'play', {
