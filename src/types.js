@@ -10,6 +10,7 @@
  * @property {Error} error - Error instance with a human readable description of the error or undefined if there is no error.
  * @property {string} requestTag - Ad tag that was used to get this `VastResponse`.
  * @property {string} XML - RAW XML as it came from the server.
+ * @property {Response} response - RAW response as it came from the fetch call.
  */
 
 /**
@@ -203,7 +204,7 @@
  * @type Object
  * @property {string} [AdParameters] - the AdParameters of the linear Ad as they come in the VAST XML.
  * @property {boolean} [xmlEncoded] - true if the AdParameters are xml encoded and false otherwise
-*/
+ */
 
 /**
  * {@link VastChain} details object. You can think of it as a summary of the VAST Chain. Useful for debugging purposes and tracking.

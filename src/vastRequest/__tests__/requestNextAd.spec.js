@@ -109,7 +109,8 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
     text: () => vastInlineXML
   };
 
-  global.fetch = jest.fn()
+  global.fetch = jest
+    .fn()
     .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
     .mockImplementationOnce(() => Promise.resolve(inlineResponse))
     .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
@@ -127,6 +128,7 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
       errorCode: null,
       parsedXML: inlineParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
+      response: inlineResponse,
       XML: vastInlineXML
     },
     {
@@ -134,6 +136,7 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
       errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
+      response: wrapperResponse,
       XML: vastWrapperXML
     },
     {
@@ -153,6 +156,7 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
       errorCode: null,
       parsedXML: inlineParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
+      response: inlineResponse,
       XML: vastInlineXML
     },
     {
@@ -160,6 +164,7 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
       errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
+      response: wrapperResponse,
       XML: vastWrapperXML
     },
     {
@@ -210,4 +215,3 @@ test('requestNextAd must throw an error if there are no more ads to play in the 
   unmarkAdAsRequested(inlineAd);
   unmarkAdAsRequested(wrapperAd);
 });
-

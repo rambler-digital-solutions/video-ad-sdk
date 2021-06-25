@@ -13,13 +13,17 @@ const validateChain = (vastChain, {wrapperLimit = 5}) => {
 };
 
 const fetchAdXML = async (adTag, options) => {
+  let response;
+
   try {
-    const response = await fetch(adTag, options);
+    response = await fetch(adTag, options);
     const XML = await response.text();
 
-    return XML;
+    return {response,
+      XML};
   } catch (error) {
     error.code = 502;
+    error.response = error.response || response;
 
     throw error;
   }
@@ -139,7 +143,10 @@ const requestAd = async (adTag, options, vastChain = []) => {
       ]);
     }
 
-    VASTAdResponse.XML = await fetchPromise;
+    const {response, XML} = await fetchPromise;
+
+    VASTAdResponse.response = response;
+    VASTAdResponse.XML = XML;
     VASTAdResponse.parsedXML = parseVastXml(VASTAdResponse.XML);
     VASTAdResponse.ad = getAd(VASTAdResponse.parsedXML);
 
@@ -169,6 +176,7 @@ const requestAd = async (adTag, options, vastChain = []) => {
 
     VASTAdResponse.errorCode = error.code;
     VASTAdResponse.error = error;
+    VASTAdResponse.response = VASTAdResponse.response || error.response;
 
     return [VASTAdResponse, ...vastChain];
   }

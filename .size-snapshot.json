@@ -1,13 +1,13 @@
 {
   "main.umd.js": {
-    "bundled": 282335,
-    "minified": 87278,
-    "gzipped": 23016
+    "bundled": 284254,
+    "minified": 87752,
+    "gzipped": 23123
   },
   "main.esm.js": {
-    "bundled": 224781,
-    "minified": 94253,
-    "gzipped": 21633,
+    "bundled": 226596,
+    "minified": 94813,
+    "gzipped": 21764,
     "treeshaked": {
       "rollup": {
         "code": 9891,
@@ -19,8 +19,8 @@
     }
   },
   "main.cjs.js": {
-    "bundled": 230732,
-    "minified": 99154,
-    "gzipped": 21988
+    "bundled": 232547,
+    "minified": 99714,
+    "gzipped": 22115
   }
 }

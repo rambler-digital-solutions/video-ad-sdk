@@ -1,9 +1,6 @@
 /* eslint-disable id-match */
 import {parseXml} from '../../xml';
-import {
-  getAds,
-  getFirstAd
-} from '../../vastSelectors';
+import {getAds, getFirstAd} from '../../vastSelectors';
 import {
   noAdParsedXML,
   vastNoAdXML,
@@ -88,6 +85,7 @@ describe('requestAd', () => {
       errorCode: 502,
       parsedXML: null,
       requestTag: 'http://adtag.test.example.com',
+      response,
       XML: null
     });
   });
@@ -108,6 +106,7 @@ describe('requestAd', () => {
       errorCode: 100,
       parsedXML: null,
       requestTag: 'http://adtag.test.example.com',
+      response,
       XML: 'not xml'
     });
   });
@@ -128,6 +127,7 @@ describe('requestAd', () => {
       errorCode: 303,
       parsedXML: noAdParsedXML,
       requestTag: 'http://adtag.test.example.com',
+      response,
       XML: vastNoAdXML
     });
   });
@@ -143,7 +143,8 @@ describe('requestAd', () => {
       text: () => vastInlineXML
     };
 
-    global.fetch = jest.fn()
+    global.fetch = jest
+      .fn()
       .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
       .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
       .mockImplementationOnce(() => Promise.resolve(inlineResponse));
@@ -159,6 +160,7 @@ describe('requestAd', () => {
         errorCode: null,
         parsedXML: inlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
+        response: inlineResponse,
         XML: vastInlineXML
       },
       {
@@ -166,6 +168,7 @@ describe('requestAd', () => {
         errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
+        response: wrapperResponse,
         XML: vastWrapperXML
       },
       {
@@ -173,6 +176,7 @@ describe('requestAd', () => {
         errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'http://adtag.test.example.com',
+        response: wrapperResponse,
         XML: vastWrapperXML
       }
     ]);
@@ -187,8 +191,7 @@ describe('requestAd', () => {
       text: () => vastInvalidXML
     };
 
-    global.fetch = jest.fn()
-      .mockImplementationOnce(() => Promise.resolve(invalidVastResponse));
+    global.fetch = jest.fn().mockImplementationOnce(() => Promise.resolve(invalidVastResponse));
 
     const vastChain = await requestAd('http://adtag.test.example.com', {});
     const ad = getAds(vastInvalidParsedXML)[0];
@@ -202,6 +205,7 @@ describe('requestAd', () => {
         errorCode: 101,
         parsedXML: vastInvalidParsedXML,
         requestTag: 'http://adtag.test.example.com',
+        response: invalidVastResponse,
         XML: vastInvalidXML
       }
     ]);
@@ -230,8 +234,7 @@ describe('requestAd', () => {
       text: () => vastPodXML
     };
 
-    global.fetch = jest.fn()
-      .mockImplementationOnce(() => Promise.resolve(podResponse));
+    global.fetch = jest.fn().mockImplementationOnce(() => Promise.resolve(podResponse));
 
     const vastChain = await requestAd('https://test.example.com/vastadtaguri', {allowMultipleAds: false}, startChain);
     const firstPodAd = getFirstAd(podParsedXML);
@@ -245,6 +248,7 @@ describe('requestAd', () => {
         errorCode: 203,
         parsedXML: podParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
+        response: podResponse,
         XML: vastPodXML
       },
       {
@@ -278,7 +282,8 @@ describe('requestAd', () => {
       text: () => vastPodXML
     };
 
-    global.fetch = jest.fn()
+    global.fetch = jest
+      .fn()
       .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
       .mockImplementationOnce(() => Promise.resolve(podResponse));
 
@@ -295,6 +300,7 @@ describe('requestAd', () => {
         errorCode: 203,
         parsedXML: podParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
+        response: podResponse,
         XML: vastPodXML
       },
       {
@@ -302,6 +308,7 @@ describe('requestAd', () => {
         errorCode: null,
         parsedXML: parsedWrapperXML,
         requestTag: 'http://adtag.test.example.com',
+        response: wrapperResponse,
         XML: newWrapperXML
       }
     ]);
@@ -321,7 +328,8 @@ describe('requestAd', () => {
       text: () => vastWrapperXML
     };
 
-    global.fetch = jest.fn()
+    global.fetch = jest
+      .fn()
       .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
       .mockImplementationOnce(() => Promise.resolve(anotherWrapperResponse));
 
@@ -337,6 +345,7 @@ describe('requestAd', () => {
         errorCode: 200,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
+        response: anotherWrapperResponse,
         XML: vastWrapperXML
       },
       {
@@ -344,6 +353,7 @@ describe('requestAd', () => {
         errorCode: null,
         parsedXML: parsedWrapperXML,
         requestTag: 'http://adtag.test.example.com',
+        response: wrapperResponse,
         XML: newWrapperXML
       }
     ]);
@@ -373,7 +383,8 @@ describe('requestAd', () => {
         text: () => vastInlineXML
       };
 
-      global.fetch = jest.fn()
+      global.fetch = jest
+        .fn()
         .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
         .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
         .mockImplementationOnce(() => Promise.resolve(inlineResponse));
@@ -394,6 +405,7 @@ describe('requestAd', () => {
           errorCode: null,
           parsedXML: inlineParsedXML,
           requestTag: 'https://test.example.com/vastadtaguri',
+          response: inlineResponse,
           XML: vastInlineXML
         },
         {
@@ -401,6 +413,7 @@ describe('requestAd', () => {
           errorCode: null,
           parsedXML: wrapperParsedXML,
           requestTag: 'https://test.example.com/vastadtaguri',
+          response: wrapperResponse,
           XML: vastWrapperXML
         },
         {
@@ -408,6 +421,7 @@ describe('requestAd', () => {
           errorCode: null,
           parsedXML: wrapperParsedXML,
           requestTag: 'http://adtag.test.example.com',
+          response: wrapperResponse,
           XML: vastWrapperXML
         }
       ]);
@@ -423,8 +437,7 @@ describe('requestAd', () => {
 
     test('must set errorCode 301 if the request timed out', async () => {
       setTimeout.mockClear();
-      global.fetch = jest.fn()
-        .mockImplementationOnce(() => new Promise(() => {}));
+      global.fetch = jest.fn().mockImplementationOnce(() => new Promise(() => {}));
 
       Date.now.mockReturnValueOnce(1000);
       Date.now.mockReturnValueOnce(1100);
