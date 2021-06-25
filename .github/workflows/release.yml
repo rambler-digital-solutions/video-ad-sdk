@@ -20,6 +20,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '10.x'
+      - run: yarn
+      - run: yarn pages
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
