@@ -1,0 +1,27 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - v*
+
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  lint:
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '10.x'
+      - run: yarn
+      - run: commitlint-travis
+      - run: yarn lint
+      - run: yarn build
+      - run: yarn test && yarn codecov
