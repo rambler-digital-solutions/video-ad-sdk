@@ -41,7 +41,7 @@ const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
 test('getVastErrorURI must return the error uri of the VAST element', () => {
   expect(getVastErrorURI(inlineParsedXML)).toEqual(null);
-  expect(getVastErrorURI(noAdParsedXML)).toEqual('https://test.example.com/error/[ERRORCODE]');
+  expect(getVastErrorURI(noAdParsedXML)).toEqual(['https://test.example.com/error/[ERRORCODE]', 'https://test.example.com/error2/[ERRORCODE]']);
   expect(getVastErrorURI(null)).toEqual(null);
   expect(getVastErrorURI({})).toEqual(null);
 });
@@ -148,8 +148,8 @@ test('getWrapperOptions must return the options of the ad or {} otherwise', () =
 });
 
 test('getAdErrorURI must return the error uri of the inline/wrapper or null if missing', () => {
-  expect(getAdErrorURI(inlineAd)).toBe('https://test.example.com/error');
-  expect(getAdErrorURI(wrapperAd)).toBe('https://test.example.com/error/[ERRORCODE]');
+  expect(getAdErrorURI(inlineAd)).toEqual(['https://test.example.com/error']);
+  expect(getAdErrorURI(wrapperAd)).toEqual(['https://test.example.com/error/[ERRORCODE]']);
   expect(getAdErrorURI()).toEqual(null);
   expect(getAdErrorURI(null)).toEqual(null);
   expect(getAdErrorURI({})).toEqual(null);
@@ -221,11 +221,13 @@ test('getMediaFiles must add the apiFramework if present', () => {
 
   expect(mediaFiles).toBeInstanceOf(Array);
   expect(mediaFiles.length).toBe(2);
-  expect(mediaFiles[0]).toEqual(expect.objectContaining({
-    apiFramework: 'VPAID',
-    src: 'https://test.example.com/html5.js',
-    type: 'text/javascript'
-  }));
+  expect(mediaFiles[0]).toEqual(
+    expect.objectContaining({
+      apiFramework: 'VPAID',
+      src: 'https://test.example.com/html5.js',
+      type: 'text/javascript'
+    })
+  );
 });
 
 test('getInteractiveCreativeFiles must return null for wrong ads', () => {

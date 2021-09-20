@@ -57,17 +57,17 @@ export const getAds = (parsedVAST) => {
  *
  * @function
  * @param {ParsedVast} parsedVAST - Parsed VAST xml.
- * @returns {?VAST-macro} - Vast Error URI or `null` otherwise.
+ * @returns {?Array.<VAST-macro>} - array of the Vast Error URI or `null` otherwise.
  * @static
  */
 export const getVastErrorURI = (parsedVAST) => {
   const vastElement = parsedVAST && get(parsedVAST, 'VAST');
 
   if (vastElement) {
-    const error = get(vastElement, 'Error');
+    const errors = getAll(vastElement, 'Error');
 
-    if (error) {
-      return getText(error);
+    if (errors && errors.length > 0) {
+      return errors.map((error) => getText(error));
     }
   }
 
@@ -221,17 +221,17 @@ export const getWrapperOptions = (ad) => {
  *
  * @function
  * @param {ParsedAd} ad - VAST ad object.
- * @returns {?string} - Vast ad Error URI or `null` otherwise.
+ * @returns {?Array.<string>} - array of the Vast ad Error URI or `null` otherwise.
  * @static
  */
 export const getAdErrorURI = (ad) => {
   const adTypeElement = ad && getFirstChild(ad);
 
   if (adTypeElement) {
-    const error = get(adTypeElement, 'Error');
+    const errors = getAll(adTypeElement, 'Error');
 
-    if (error) {
-      return getText(error);
+    if (errors && errors.length > 0) {
+      return errors.map((error) => getText(error));
     }
   }
 

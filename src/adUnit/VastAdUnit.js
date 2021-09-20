@@ -47,6 +47,7 @@ class VastAdUnit extends VideoAdUnit {
 
       this.emit(event, {
         adUnit: this,
+        data,
         type: event
       });
     }
