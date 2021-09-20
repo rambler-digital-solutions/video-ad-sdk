@@ -126,13 +126,15 @@ export const _protected = Symbol('_protected');
 class VideoAdUnit extends Emitter {
   [_protected] = {
     finish: () => {
-      this[_protected].finished = true;
-      this[_protected].onFinishCallbacks.forEach((callback) => callback());
+      if (!this.isFinished()) {
+        this[_protected].finished = true;
+        this[_protected].onFinishCallbacks.forEach((callback) => callback());
 
-      this.emit(finish, {
-        adUnit: this,
-        type: finish
-      });
+        this.emit(finish, {
+          adUnit: this,
+          type: finish
+        });
+      }
     },
     finished: false,
     handleViewableImpression: (event) => {
