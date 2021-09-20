@@ -660,6 +660,7 @@ describe('VpaidAdUnit', () => {
         expect(callback).not.toHaveBeenCalled();
 
         adUnit.creativeAd.emit(adVideoComplete);
+        adUnit.creativeAd.emit(adStopped);
 
         expect(callback).toHaveBeenCalledTimes(1);
       });
