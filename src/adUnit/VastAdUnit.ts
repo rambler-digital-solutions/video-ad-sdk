@@ -47,6 +47,7 @@ class VastAdUnit extends VideoAdUnit {
 
       this.emit(event, {
         adUnit: this,
+        data,
         type: event
       });
     }
@@ -67,6 +68,7 @@ class VastAdUnit extends VideoAdUnit {
    * Defaults to `window.console`
    * @param {Object} [options.hooks] - Optional map with hooks to configure the behaviour of the ad.
    * @param {Function} [options.hooks.createSkipControl] - If provided it will be called to generate the skip control. Must return a clickable [HTMLElement](https://developer.mozilla.org/es/docs/Web/API/HTMLElement) that is detached from the DOM.
+   * @param {Function} [options.hooks.getMediaFile] - If provided it will be called to get a {@link MediaFile} by size of the current video element.
    * @param {boolean} [options.viewability] - if true it will pause the ad whenever is not visible for the viewer.
    * Defaults to `false`
    * @param {boolean} [options.responsive] - if true it will resize the ad unit whenever the ad container changes sizes.
@@ -107,7 +109,7 @@ class VastAdUnit extends VideoAdUnit {
 
     const inlineAd = this.vastChain[0].ad;
     const {videoElement, element} = this.videoAdContainer;
-    const media = findBestMedia(inlineAd, videoElement, element);
+    const media = findBestMedia(inlineAd, videoElement, element, this.hooks);
 
     if (Boolean(media)) {
       if (this.icons) {
@@ -259,7 +261,7 @@ class VastAdUnit extends VideoAdUnit {
     if (this.isStarted() && !this.isFinished()) {
       const inlineAd = this.vastChain[0].ad;
       const {videoElement, element} = this.videoAdContainer;
-      const media = findBestMedia(inlineAd, videoElement, element);
+      const media = findBestMedia(inlineAd, videoElement, element, this.hooks);
 
       if (Boolean(media) && videoElement.src !== media.src) {
         updateMedia(videoElement, media);

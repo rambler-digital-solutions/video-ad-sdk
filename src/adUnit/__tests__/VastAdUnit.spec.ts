@@ -18,7 +18,7 @@ jest.mock('../helpers/metrics/handlers/index', () => [
   jest.fn(({videoElement}, callback) => {
     videoElement.addEventListener('ended', () => callback('complete'));
     videoElement.addEventListener('error', () => callback('error', videoElement.error));
-    videoElement.addEventListener('progress', ({detail}) => callback('progress', detail));
+    videoElement.addEventListener('timeupdate', (event) => callback('progress', event.data));
     videoElement.addEventListener('custom', (event) => callback('custom', event.data));
     videoElement.addEventListener('skip', () => callback('skip'));
 
@@ -286,6 +286,7 @@ describe('VastAdUnit', () => {
     expect(errorHandler).toHaveBeenCalledTimes(1);
     expect(errorHandler).toHaveBeenCalledWith({
       adUnit,
+      data: adUnit.error,
       type: errorEvt
     });
     expect(onErrorCallback).toHaveBeenCalledTimes(1);
@@ -335,6 +336,25 @@ describe('VastAdUnit', () => {
       width: 2000
     });
     adUnit = new VastAdUnit(vastChain, videoAdContainer);
+
+    await adUnit.start();
+
+    expect(adUnit.assetUri).toBe('https://test.example.com/test1920x1080.mp4');
+  });
+
+  test('start must select the custom media to play', async () => {
+    canPlay.mockReturnValue(true);
+    Object.defineProperty(videoAdContainer.element, 'getBoundingClientRect', {
+      value: () => ({
+        height: 504,
+        width: 896
+      }),
+      writable: true
+    });
+    const getMediaFile = (mediaFiles) => mediaFiles.find((mediaFile) => mediaFile.height === '1080');
+    const adUnit = new VastAdUnit(vastChain, videoAdContainer, {
+      hooks: {getMediaFile}
+    });
 
     await adUnit.start();
 
@@ -490,6 +510,39 @@ describe('VastAdUnit', () => {
     expect(adUnit.isFinished()).toBe(true);
   });
 
+  test('must emit progress event', async () => {
+    canPlay.mockReturnValue(true);
+    const adUnit = new VastAdUnit(vastChain, videoAdContainer);
+
+    const promise = new Promise((resolve) => {
+      adUnit.on('progress', (...args) => {
+        resolve(args);
+      });
+    });
+
+    await adUnit.start();
+
+    const data = {
+      contentplayhead: '00:00:05.000'
+    };
+    const event = new CustomEvent('timeupdate');
+
+    event.data = data;
+    videoAdContainer.videoElement.dispatchEvent(event);
+
+    const passedArgs = await promise;
+
+    expect(passedArgs).toEqual([
+      {
+        adUnit,
+        data: {
+          contentplayhead: '00:00:05.000'
+        },
+        type: 'progress'
+      }
+    ]);
+  });
+
   test('must emit whatever metric event happens', async () => {
     canPlay.mockReturnValue(true);
     const adUnit = new VastAdUnit(vastChain, videoAdContainer);
@@ -513,6 +566,7 @@ describe('VastAdUnit', () => {
     expect(passedArgs).toEqual([
       {
         adUnit,
+        data: {},
         type: 'custom'
       }
     ]);

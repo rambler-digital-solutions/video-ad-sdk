@@ -66,7 +66,6 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^7.0.0",
-    "@commitlint/travis-cli": "^7.0.0",
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-typescript": "^8.2.1",
