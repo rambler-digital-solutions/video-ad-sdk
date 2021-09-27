@@ -1,18 +1,21 @@
-import {VastIcon} from '../../../vastSelectors'
+import {VastIcon} from '../../../types';
 
 interface IFrameResourceOptions {
-  document: Document
-  data: VastIcon
+  document: Document;
+  data: VastIcon;
 }
 
-const createIframeResource = (src: string, {document, data}: IFrameResourceOptions): HTMLIFrameElement => {
-  const {
-    height,
-    width
-  } = data;
+const createIframeResource = (
+  src: string,
+  {document, data}: IFrameResourceOptions
+): HTMLIFrameElement => {
+  const {height, width} = data;
   const iframeElement = document.createElement('iframe');
 
-  iframeElement.setAttribute('sandbox', 'allow-forms allow-popups allow-scripts');
+  iframeElement.setAttribute(
+    'sandbox',
+    'allow-forms allow-popups allow-scripts'
+  );
   iframeElement.setAttribute('loading', 'eager');
 
   if (width) {
@@ -31,4 +34,3 @@ const createIframeResource = (src: string, {document, data}: IFrameResourceOptio
 };
 
 export default createIframeResource;
-

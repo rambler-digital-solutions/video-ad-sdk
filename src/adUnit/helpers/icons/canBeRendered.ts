@@ -1,45 +1,69 @@
-/* eslint-disable no-shadow */
-const calculateArea = ({height, width}) => height * width;
+import {VastIcon} from '../../../types';
+import {RenderIconOptions} from './renderIcon';
 
-export const hasSpace = (newIcon, config) => {
-  const {
-    drawnIcons,
-    placeholder
-  } = config;
+const calculateArea = ({height, width}: VastIcon): number => height * width;
+
+export type CanBeRenderedOptions = Pick<
+  RenderIconOptions,
+  'drawnIcons' | 'placeholder'
+>;
+
+export const hasSpace = (
+  newIcon: VastIcon,
+  config: CanBeRenderedOptions
+): boolean => {
+  const {drawnIcons, placeholder} = config;
   const placeholderArea = calculateArea(placeholder.getBoundingClientRect());
   const iconArea = calculateArea(newIcon);
-  const usedIconsArea = drawnIcons.reduce((accumulator, icon) => accumulator + calculateArea(icon), 0);
+  const usedIconsArea = drawnIcons.reduce<number>(
+    (accumulator, icon) => accumulator + calculateArea(icon),
+    0
+  );
 
   return iconArea + usedIconsArea <= placeholderArea * 0.35;
 };
 
-export const withinBoundaries = (newIcon, {placeholder}) => {
+export const withinBoundaries = (
+  newIcon: VastIcon,
+  {placeholder}: CanBeRenderedOptions
+): boolean => {
   const phRect = placeholder.getBoundingClientRect();
 
-  return newIcon.left >= 0 &&
+  return (
+    newIcon.left >= 0 &&
     newIcon.left + newIcon.width <= phRect.width &&
     newIcon.top >= 0 &&
-    newIcon.top + newIcon.height <= phRect.height;
+    newIcon.top + newIcon.height <= phRect.height
+  );
 };
 
-const right = ({left, width}) => left + width;
-const left = ({left}) => left;
-const top = ({top}) => top;
-const bottom = ({top, height}) => top + height;
-const overlap = (newIcon, drawnIcon) => {
-  if (left(newIcon) > right(drawnIcon) ||
+const right = ({left, width}: VastIcon): number => left + width;
+const left = ({left}: VastIcon): number => left;
+const top = ({top}: VastIcon): number => top;
+const bottom = ({top, height}: VastIcon): number => top + height;
+
+const overlap = (newIcon: VastIcon, drawnIcon: VastIcon): boolean => {
+  if (
+    left(newIcon) > right(drawnIcon) ||
     right(newIcon) < left(drawnIcon) ||
     bottom(newIcon) < top(drawnIcon) ||
-    top(newIcon) > bottom(drawnIcon)) {
+    top(newIcon) > bottom(drawnIcon)
+  ) {
     return false;
   }
 
   return true;
 };
 
-export const withoutOverlaps = (newIcon, {drawnIcons}) => !drawnIcons.some((drawnIcon) => overlap(newIcon, drawnIcon));
+export const withoutOverlaps = (
+  newIcon: VastIcon,
+  {drawnIcons}: CanBeRenderedOptions
+): boolean => !drawnIcons.some((drawnIcon) => overlap(newIcon, drawnIcon));
 
-const canBeRendered = (newIcon, config) => {
+const canBeRendered = (
+  newIcon: VastIcon,
+  config: CanBeRenderedOptions
+): boolean => {
   const thereIsSpace = hasSpace(newIcon, config);
   const isWithinTheContentArea = withinBoundaries(newIcon, config);
   const doesNotOverlap = withoutOverlaps(newIcon, config);

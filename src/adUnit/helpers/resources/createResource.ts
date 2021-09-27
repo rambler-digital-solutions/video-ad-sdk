@@ -1,14 +1,18 @@
-import {VastIcon} from '../../../vastSelectors'
+import {VastIcon} from '../../../types';
 import createHtmlResource from './createHtmlResource';
 import createIframeResource from './createIframeResource';
 import createStaticResource from './createStaticResource';
 
-const createResource = (document: Document, data: VastIcon): HTMLDivElement | HTMLIFrameElement | HTMLImageElement => {
-  const {
-    staticResource,
-    htmlResource,
-    iFrameResource
-  } = data;
+export type ResourceElement =
+  | HTMLDivElement
+  | HTMLIFrameElement
+  | HTMLImageElement;
+
+const createResource = (
+  document: Document,
+  data: VastIcon
+): ResourceElement => {
+  const {staticResource, htmlResource, iFrameResource} = data;
 
   if (staticResource) {
     return createStaticResource(staticResource, {

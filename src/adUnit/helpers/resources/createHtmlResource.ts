@@ -1,16 +1,16 @@
-import {VastIcon} from '../../../vastSelectors'
+import {VastIcon} from '../../../types';
 import fetchHtml from '../fetch/fetchHtml';
 
 interface HtmlResourceOptions {
-  document: Document
-  data: VastIcon
+  document: Document;
+  data: VastIcon;
 }
 
-const createHtmlResource = (src: string, {document, data}: HtmlResourceOptions): HTMLDivElement => {
-  const {
-    height,
-    width
-  } = data;
+const createHtmlResource = (
+  src: string,
+  {document, data}: HtmlResourceOptions
+): HTMLDivElement => {
+  const {height, width} = data;
   const divElement = document.createElement('div');
 
   if (width) {

@@ -1,8 +1,8 @@
-import {getVASTAdTagURI, isWrapper, VastChain} from '../vastSelectors';
+import {getVASTAdTagURI, isWrapper} from '../vastSelectors';
+import {RequestNextAdOptions, VastChain} from '../types';
 import requestAd from './requestAd';
 import getNextAd from './helpers/getNextAd';
 import {markAdAsRequested} from './helpers/adUtils';
-import {RequestNextAdOptions} from './types';
 
 const validateChain = (vastChain: VastChain): void => {
   if (!Array.isArray(vastChain)) {

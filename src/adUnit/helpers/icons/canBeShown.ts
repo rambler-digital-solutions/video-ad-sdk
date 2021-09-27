@@ -1,4 +1,9 @@
-const canBeShown = (icon, videoElement) => {
+import {VastIcon} from '../../../types';
+
+const canBeShown = (
+  icon: VastIcon,
+  videoElement: HTMLVideoElement
+): boolean => {
   const currentTimeInMs = videoElement.currentTime * 1000;
   const videoDurationInMs = videoElement.duration * 1000;
   const offset = icon.offset || 0;

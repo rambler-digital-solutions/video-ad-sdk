@@ -1,4 +1,4 @@
-import {ParsedAd} from '../../vastSelectors'
+import {ParsedAd} from '../../types'
 
 const requested = Symbol('requested');
 

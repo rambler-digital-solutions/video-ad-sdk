@@ -1,8 +1,13 @@
-import {getIcons, VastIcon, VastChain, VastAd} from '../../../vastSelectors';
+import {getIcons} from '../../../vastSelectors';
+import {VastIcon, VastChain, ParsedAd} from '../../../types';
 import getResource from '../resources/getResource';
 
 const UNKNOWN = 'UNKNOWN';
-const uniqBy = (array: VastIcon[], uniqValue: (item: VastIcon) => string): VastIcon[] => {
+
+const uniqBy = (
+  array: VastIcon[],
+  uniqValue: (item: VastIcon) => string
+): VastIcon[] => {
   const seen: Record<string, boolean> = {};
 
   return array.filter((item) => {
@@ -18,19 +23,21 @@ const uniqBy = (array: VastIcon[], uniqValue: (item: VastIcon) => string): VastI
   });
 };
 
-const uniqByResource = (icons: VastIcon[]): VastIcon[] => uniqBy(icons, getResource);
+const uniqByResource = (icons: VastIcon[]): VastIcon[] =>
+  uniqBy(icons, getResource);
 
-const groupIconsByProgram = (icons: VastIcon[]): Record<string, VastIcon[]> => icons.reduce((accumulator: Record<string, VastIcon[]>, icon) => {
-  const program = icon.program ?? UNKNOWN
+const groupIconsByProgram = (icons: VastIcon[]): Record<string, VastIcon[]> =>
+  icons.reduce((accumulator: Record<string, VastIcon[]>, icon) => {
+    const program = icon.program ?? UNKNOWN;
 
-  if (!accumulator[program]) {
-    accumulator[program] = [];
-  }
+    if (!accumulator[program]) {
+      accumulator[program] = [];
+    }
 
-  accumulator[program].push(icon);
+    accumulator[program].push(icon);
 
-  return accumulator;
-}, {});
+    return accumulator;
+  }, {});
 
 const sortIconByBestPxratio = (icons: VastIcon[]): VastIcon[] => {
   const devicePixelRatio = window.devicePixelRatio || 0;
@@ -59,25 +66,19 @@ const chooseIcons = (icons: VastIcon[]): VastIcon[] => {
 
   return programs.reduce<VastIcon[]>((accumulator, program) => {
     if (program === UNKNOWN) {
-      return [
-        ...accumulator,
-        ...byProgram[UNKNOWN]
-      ];
+      return [...accumulator, ...byProgram[UNKNOWN]];
     }
 
-    return [
-      ...accumulator,
-      chooseByPxRatio(byProgram[program])
-    ];
+    return [...accumulator, chooseByPxRatio(byProgram[program])];
   }, []);
 };
 
 const retrieveIcons = (vastChain: VastChain): VastIcon[] | null => {
   const ads = vastChain.map(({ad}) => ad).filter(Boolean);
-  const icons = ads.reduce<VastIcon[]>((accumulator, ad: VastAd) => [
-    ...accumulator,
-    ...getIcons(ad) || []
-  ], []);
+  const icons = ads.reduce<VastIcon[]>(
+    (accumulator, ad: ParsedAd) => [...accumulator, ...(getIcons(ad) || [])],
+    []
+  );
 
   if (icons.length > 0) {
     const uniqIcons = uniqByResource(icons);

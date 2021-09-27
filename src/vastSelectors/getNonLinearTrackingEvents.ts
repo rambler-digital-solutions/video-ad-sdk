@@ -1,6 +1,6 @@
 import {get, getAll, getText, getAttributes} from '../xml';
+import {ParsedAd, VastTrackingEvent} from '../types'
 import getLinearCreative from './helpers/getLinearCreative';
-import {ParsedAd, VastTrackingEvent} from './types'
 
 /**
  * Gets the Non Linear tracking events from the Vast Ad

@@ -1,5 +1,11 @@
 class FetchError extends Error {
   response?: Response;
+
+  public constructor(message: string) {
+    super(message)
+    this.name = 'FetchError'
+    Object.setPrototypeOf(this, FetchError.prototype)
+  }
 }
 
 const fetch = async (

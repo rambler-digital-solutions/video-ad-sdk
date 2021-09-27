@@ -1,15 +1,15 @@
-import {VastIcon} from '../../../vastSelectors'
+import {VastIcon} from '../../../types';
 
 interface StaticResourceOptions {
-  document: Document
-  data: VastIcon
+  document: Document;
+  data: VastIcon;
 }
 
-const createStaticResource = (src: string, {document, data}: StaticResourceOptions): HTMLImageElement => {
-  const {
-    height,
-    width
-  } = data;
+const createStaticResource = (
+  src: string,
+  {document, data}: StaticResourceOptions
+): HTMLImageElement => {
+  const {height, width} = data;
   const image = document.createElement('img');
 
   if (width) {

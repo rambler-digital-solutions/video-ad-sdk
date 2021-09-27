@@ -1,13 +1,24 @@
-import loadResource from '../resources/loadResource';
+import {VastIcon} from '../../../types';
+import loadResource, {LoadResourceOptions} from '../resources/loadResource';
 import updateIcon from './updateIcon';
 import canBeRendered from './canBeRendered';
 
-const noop = (): void => {};
-const wrapWithClickThrough = (iconElement, icon, {onIconClick = noop} = {}) => {
-  const anchor = document.createElement('A');
+export interface RenderIconOptions extends LoadResourceOptions {
+  drawnIcons: VastIcon[];
+  onIconClick?(icon: VastIcon): void;
+}
 
-  if (icon.iconClickthrough) {
-    anchor.href = icon.iconClickthrough;
+const noop = (): void => undefined;
+
+const wrapWithClickThrough = (
+  iconElement: HTMLElement,
+  icon: VastIcon,
+  {onIconClick = noop}: Pick<RenderIconOptions, 'onIconClick'> = {}
+): HTMLAnchorElement => {
+  const anchor = document.createElement('a');
+
+  if (icon.iconClickThrough) {
+    anchor.href = icon.iconClickThrough;
     anchor.target = '_blank';
   }
 
@@ -29,32 +40,44 @@ const wrapWithClickThrough = (iconElement, icon, {onIconClick = noop} = {}) => {
   return anchor;
 };
 
-const createIcon = async (icon, config) => {
+const createIcon = async (
+  icon: VastIcon,
+  options: RenderIconOptions
+): Promise<HTMLAnchorElement> => {
   if (!icon.element) {
-    const iconResource = await loadResource(icon, config);
+    const iconResource = await loadResource(icon, options);
 
-    iconResource.width = '100%';
-    iconResource.height = '100%';
+    if (
+      iconResource instanceof HTMLIFrameElement ||
+      iconResource instanceof HTMLImageElement
+    ) {
+      iconResource.width = '100%';
+      iconResource.height = '100%';
+    }
+
     iconResource.style.height = '100%';
     iconResource.style.width = '100%';
 
-    icon.element = wrapWithClickThrough(iconResource, icon, config);
+    icon.element = wrapWithClickThrough(iconResource, icon, options);
   }
 
   return icon.element;
 };
 
-const updateIconElement = (iconElement, icon) => {
-  const {
-    height,
-    width,
-    left,
-    top,
-    yPosition
-  } = icon;
+const updateIconElement = (
+  iconElement: HTMLElement,
+  icon: VastIcon
+): HTMLElement => {
+  const {height, width, left, top, yPosition} = icon;
 
-  iconElement.height = height;
-  iconElement.width = width;
+  if (
+    iconElement instanceof HTMLIFrameElement ||
+    iconElement instanceof HTMLImageElement
+  ) {
+    iconElement.height = height;
+    iconElement.width = width;
+  }
+
   iconElement.style.position = 'absolute';
   iconElement.style.left = `${left}px`;
 
@@ -65,26 +88,30 @@ const updateIconElement = (iconElement, icon) => {
   } else {
     iconElement.style.top = `${top}px`;
   }
+
   iconElement.style.height = `${height}px`;
   iconElement.style.width = `${width}px`;
 
   return iconElement;
 };
 
-const renderIcon = async (icon, config) => {
+const renderIcon = async (
+  icon: VastIcon,
+  config: RenderIconOptions
+): Promise<VastIcon> => {
   const {placeholder} = config;
   const iconElement = await createIcon(icon, config);
   const updatedIcon = updateIcon(icon, iconElement, config);
 
   if (canBeRendered(updatedIcon, config)) {
-    if (!iconElement.parentNode || icon.updated) {
+    if (!iconElement.parentNode || updatedIcon.updated) {
       placeholder.appendChild(updateIconElement(iconElement, updatedIcon));
     }
   } else {
     if (iconElement.parentNode) {
       iconElement.parentNode.removeChild(iconElement);
     }
-    throw new Error('Icon can\'t be rendered');
+    throw new Error("Icon can't be rendered");
   }
 
   return updatedIcon;

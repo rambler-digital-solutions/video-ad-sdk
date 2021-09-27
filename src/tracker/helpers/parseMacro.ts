@@ -1,5 +1,4 @@
-import {VastMacro} from '../../vastSelectors';
-import {MacroData} from '../types';
+import {VastMacro, MacroData} from '../../types';
 
 const toUpperKeys = (map: MacroData): MacroData => {
   const upperKeysMap: MacroData = {};

@@ -1,11 +1,25 @@
-import {VastIcon} from '../../../vastSelectors'
+import {VastIcon as BaseIcon} from '../../../types';
 
-const isCustomXposition = (xPosition: string | number): boolean => !['left', 'right'].includes(String(xPosition).toLowerCase());
+interface VastIcon extends BaseIcon {
+  updated?: boolean;
+}
 
-const isCustomYPosition = (yPosition: string | number): boolean => !['top', 'bottom'].includes(String(yPosition).toLowerCase());
+const isCustomXposition = (xPosition: string | number): boolean =>
+  !['left', 'right'].includes(String(xPosition).toLowerCase());
 
-const calculateIconLeft = (dynamicPos: string | number, iconWidth: number, drawnIcons: VastIcon[], phWidth: number): number => {
-  const drawnIconsWidth = drawnIcons.reduce((accumulator, icon) => accumulator + icon.width + 1, 0);
+const isCustomYPosition = (yPosition: string | number): boolean =>
+  !['top', 'bottom'].includes(String(yPosition).toLowerCase());
+
+const calculateIconLeft = (
+  dynamicPos: string | number,
+  iconWidth: number,
+  drawnIcons: VastIcon[],
+  phWidth: number
+): number => {
+  const drawnIconsWidth = drawnIcons.reduce(
+    (accumulator, icon) => accumulator + icon.width + 1,
+    0
+  );
 
   if (dynamicPos === 'left') {
     return drawnIconsWidth;
@@ -14,7 +28,11 @@ const calculateIconLeft = (dynamicPos: string | number, iconWidth: number, drawn
   return phWidth - drawnIconsWidth - iconWidth;
 };
 
-const calculateIconTop = (dynamicPos: string | number, iconHeight: number, phHeight: number): number => {
+const calculateIconTop = (
+  dynamicPos: string | number,
+  iconHeight: number,
+  phHeight: number
+): number => {
   if (dynamicPos === 'top') {
     return 0;
   }
@@ -23,11 +41,15 @@ const calculateIconTop = (dynamicPos: string | number, iconHeight: number, phHei
 };
 
 interface UpdateIconOptions {
-  drawnIcons: VastIcon[]
-  placeholder: HTMLElement
+  drawnIcons: VastIcon[];
+  placeholder: HTMLElement;
 }
 
-const updateIcon = (icon: VastIcon, iconElement: HTMLElement, {drawnIcons, placeholder}: UpdateIconOptions): VastIcon => {
+const updateIcon = (
+  icon: VastIcon,
+  iconElement: HTMLElement,
+  {drawnIcons, placeholder}: UpdateIconOptions
+): VastIcon => {
   const oldSignature = icon.signature;
   const rect = iconElement.getBoundingClientRect();
   const phRect = placeholder.getBoundingClientRect();
@@ -41,7 +63,9 @@ const updateIcon = (icon: VastIcon, iconElement: HTMLElement, {drawnIcons, place
   if (isCustomXposition(xPosition)) {
     left = xPosition;
   } else {
-    const icons = drawnIcons.filter((dIcon) => dIcon.xPosition === xPosition && dIcon.yPosition === yPosition);
+    const icons = drawnIcons.filter(
+      (dIcon) => dIcon.xPosition === xPosition && dIcon.yPosition === yPosition
+    );
 
     left = calculateIconLeft(xPosition, width, icons, phRect.width);
   }
@@ -53,7 +77,7 @@ const updateIcon = (icon: VastIcon, iconElement: HTMLElement, {drawnIcons, place
 
   const signature = `${left}-${top}_${width}x${height}`;
 
-  return Object.assign(icon, {
+  return Object.assign<VastIcon, VastIcon>(icon, {
     height,
     left,
     signature,

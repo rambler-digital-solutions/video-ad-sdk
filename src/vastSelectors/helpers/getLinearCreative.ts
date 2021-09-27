@@ -1,10 +1,5 @@
-import {
-  get,
-  getAll,
-  getFirstChild,
-  ParsedXML
-} from '../../xml';
-import {ParsedAd} from '../types'
+import {get, getAll, getFirstChild} from '../../xml';
+import {ParsedAd, ParsedXML} from '../../types'
 
 const getLinearCreative = (ad: ParsedAd) => {
   const adTypeElement = getFirstChild(ad);

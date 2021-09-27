@@ -1,20 +1,23 @@
-import {parseXml, ParsedXML} from '../xml';
+import {parseXml} from '../xml';
 import {
   getWrapperOptions,
   getFirstAd,
   getVASTAdTagURI,
   hasAdPod,
   isInline,
-  isWrapper,
+  isWrapper
+} from '../vastSelectors';
+import {
   VastChain,
   VastResponse,
   WrapperOptions,
-  ParsedAd
-} from '../vastSelectors';
+  ParsedAd,
+  ParsedXML,
+  RequestAdOptions
+} from '../types'
 import fetch from './helpers/fetch';
 import VastError from './helpers/vastError';
 import {markAdAsRequested} from './helpers/adUtils';
-import {RequestAdOptions} from './types';
 
 const validateChain = (
   vastChain: VastChain,
@@ -32,13 +35,16 @@ const fetchAdXML = async (
   adTag: string,
   options: RequestInit
 ): Promise<string> => {
+  let response;
+
   try {
-    const response = await fetch(adTag, options);
+    response = await fetch(adTag, options);
     const XML = await response.text();
 
-    return XML;
+    return {response, XML};
   } catch (error) {
     error.code = 502;
+    error.response ??= response;
 
     throw error;
   }
@@ -163,7 +169,10 @@ const requestAd = async (
       ]);
     }
 
-    vastAdResponse.XML = await fetchPromise;
+    const {response, XML} = await fetchPromise;
+
+    vastAdResponse.response = response;
+    vastAdResponse.XML = XML;
     vastAdResponse.parsedXML = parseVastXml(vastAdResponse.XML);
     vastAdResponse.ad = getAd(vastAdResponse.parsedXML);
 
@@ -193,6 +202,7 @@ const requestAd = async (
 
     vastAdResponse.errorCode = error.code;
     vastAdResponse.error = error;
+    vastAdResponse.response ??= error.response;
 
     return [vastAdResponse, ...vastChain];
   }

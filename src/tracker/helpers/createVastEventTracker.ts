@@ -1,5 +1,4 @@
-import {ParsedAd, VastChain, VastTrackingEvent} from '../../vastSelectors';
-import {VastEventTrackerOptions} from '../types';
+import {ParsedAd, VastChain, VastTrackingEvent, VastEventTrackerOptions} from '../../types';
 import pixelTracker from './pixelTracker';
 
 type TrackingEventSelector = (

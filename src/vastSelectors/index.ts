@@ -4,8 +4,7 @@ import {
   getFirstChild,
   getText,
   getAttributes,
-  getAttribute,
-  ParsedXML
+  getAttribute
 } from '../xml';
 import parseOffset from './helpers/parseOffset';
 import getLinearCreative from './helpers/getLinearCreative';
@@ -15,17 +14,15 @@ import getIcons from './getIcons';
 import {
   ParsedVast,
   ParsedAd,
-  VastResponse,
+  ParsedXML,
   VastChain,
   VastMacro,
   WrapperOptions,
   MediaFile,
   InteractiveFile,
   ParsedOffset,
-  CreativeData,
-  VastTrackingEvent,
-  VastIcon
-} from './types';
+  CreativeData
+} from '../types';
 
 const getBooleanValue = (val: unknown): boolean => {
   if (typeof val === 'string') {
@@ -71,18 +68,20 @@ export const getAds = (parsedVast: ParsedVast | null): ParsedAd[] => {
  * Gets the Error URI of the passed parsed VAST xml.
  *
  * @param parsedVast Parsed VAST xml.
- * @returns Vast Error URI or `null` otherwise.
+ * @returns array of the Vast Error URI or `null` otherwise.
  */
 export const getVastErrorURI = (
   parsedVast: ParsedVast | null
-): VastMacro | null => {
+): VastMacro[] | null => {
   const vastElement = parsedVast && get(parsedVast, 'VAST');
 
   if (vastElement) {
-    const error = get(vastElement, 'Error');
+    const errors = getAll(vastElement, 'Error');
 
-    if (error) {
-      return getText(error);
+    if (errors && errors.length > 0) {
+      return errors
+        .map((error) => getText(error) ?? '')
+        .filter(Boolean);
     }
   }
 
@@ -226,16 +225,18 @@ export const getWrapperOptions = (ad: ParsedAd): WrapperOptions => {
  * Gets the Error URI of the passed ad.
  *
  * @param ad VAST ad object.
- * @returns Vast ad Error URI or `null` otherwise.
+ * @returns array of the Vast ad Error URI or `null` otherwise.
  */
-export const getAdErrorURI = (ad: ParsedAd): string | null => {
+export const getAdErrorURI = (ad: ParsedAd): string[] | null => {
   const adTypeElement = ad && getFirstChild(ad);
 
   if (adTypeElement) {
-    const error = get(adTypeElement, 'Error');
+    const errors = getAll(adTypeElement, 'Error');
 
-    if (error) {
-      return getText(error);
+    if (errors && errors.length > 0) {
+      return errors
+        .map((error) => getText(error) ?? '')
+        .filter(Boolean);
     }
   }
 
@@ -589,15 +590,5 @@ export const getCreativeData = (xml: string): CreativeData => {
 export {
   getIcons,
   getLinearTrackingEvents,
-  getNonLinearTrackingEvents,
-  ParsedVast,
-  ParsedAd,
-  VastResponse,
-  VastChain,
-  VastMacro,
-  WrapperOptions,
-  VastTrackingEvent,
-  VastIcon,
-  MediaFile,
-  InteractiveFile
+  getNonLinearTrackingEvents
 };

@@ -1,5 +1,4 @@
-import {VastChain} from '../../vastSelectors';
-import {VastEventTrackerOptions} from '../types';
+import {VastChain, VastEventTrackerOptions} from '../../types';
 import pixelTracker from './pixelTracker';
 
 const trackIconClick = (

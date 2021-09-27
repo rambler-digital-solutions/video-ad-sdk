@@ -7,7 +7,6 @@ import {
   getAttributes,
   getAttribute
 } from './helpers/xmlSelectors';
-import {Attributes, NodeType, ParsedXML} from './types';
 
 const parser = new DOMParser();
 
@@ -26,8 +25,5 @@ export {
   getFirstChild,
   getText,
   getAttributes,
-  getAttribute,
-  Attributes,
-  NodeType,
-  ParsedXML
+  getAttribute
 };

@@ -6,10 +6,13 @@ import {
   getNotViewable,
   getViewUndetermined,
   getLinearTrackingEvents,
+} from '../vastSelectors';
+import {
   ParsedAd,
   VastChain,
-  VastTrackingEvent
-} from '../vastSelectors';
+  VastTrackingEvent,
+  VastEventTrackerOptions
+} from '../types';
 import pixelTracker from './helpers/pixelTracker';
 import trackError from './helpers/trackError';
 import trackIconView from './helpers/trackIconView';
@@ -44,7 +47,6 @@ import {
   unmute,
   creativeView
 } from './linearEvents';
-import {VastEventTrackerOptions} from './types';
 
 type TrackingEventSelector = (ad: ParsedAd) => string[] | null;
 

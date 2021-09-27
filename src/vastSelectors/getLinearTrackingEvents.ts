@@ -1,13 +1,7 @@
-import {
-  get,
-  getAll,
-  getText,
-  getAttributes,
-  ParsedXML
-} from '../xml';
+import {get, getAll, getText, getAttributes} from '../xml';
+import {ParsedAd, VastTrackingEvent} from '../types'
 import parseOffset from './helpers/parseOffset';
 import getLinearCreative from './helpers/getLinearCreative';
-import {ParsedAd, VastTrackingEvent} from './types'
 
 /**
  * Gets the Linear tracking events from the Vast Ad

@@ -1,5 +1,5 @@
-import {getAdErrorURI, getVastErrorURI, VastChain} from '../../vastSelectors';
-import {VastEventTrackerOptions} from '../types';
+import {getAdErrorURI, getVastErrorURI} from '../../vastSelectors';
+import {VastEventTrackerOptions, VastChain} from '../../types';
 import pixelTracker from './pixelTracker';
 
 /**
@@ -13,10 +13,10 @@ const trackError = (
   {errorCode, tracker = pixelTracker}: VastEventTrackerOptions
 ): void => {
   vastChain.forEach(({ad, parsedXML}) => {
-    const errorURI = (ad && getAdErrorURI(ad)) || getVastErrorURI(parsedXML);
+    const errorURIs = (ad && getAdErrorURI(ad)) || getVastErrorURI(parsedXML);
 
-    if (errorURI) {
-      tracker(errorURI, {errorCode});
+    if (errorURIs) {
+      errorURIs.map((uri) => uri && tracker(uri, {errorCode}));
     }
   });
 };

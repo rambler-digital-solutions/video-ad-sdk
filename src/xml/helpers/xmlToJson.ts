@@ -1,4 +1,4 @@
-import {Attributes, NodeType, ParsedXML} from '../types'
+import {NodeType, ParsedXML} from '../../types'
 
 const nodeType = (node: Node): NodeType => {
   if (node.nodeType === 1) {

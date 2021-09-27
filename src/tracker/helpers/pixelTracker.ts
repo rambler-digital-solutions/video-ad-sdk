@@ -1,4 +1,4 @@
-import {PixelTracker} from '../types';
+import {PixelTracker} from '../../types';
 import parseMacro from './parseMacro';
 
 /**

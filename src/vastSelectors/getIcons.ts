@@ -1,7 +1,7 @@
-import {get, getAll, getText, getAttributes, ParsedXML} from '../xml';
+import {get, getAll, getText, getAttributes} from '../xml';
+import {ParsedAd, ParsedXML, VastIcon} from '../types';
 import getLinearCreative from './helpers/getLinearCreative';
 import parseTime from './helpers/parseTime';
-import {ParsedAd, VastIcon} from './types';
 
 const formatSize = (size: string | number): number => {
   const match = `${size}`.match(/\d+/g);
