@@ -1,17 +1,18 @@
-import {ParsedAd} from '../../types'
+import {ParsedAd} from '../../types';
 
 const requested = Symbol('requested');
 
 interface RequestableParsedAd extends ParsedAd {
-  [requested]?: boolean
+  [requested]?: boolean;
 }
 
-export const markAdAsRequested = (ad: RequestableParsedAd) => {
+export const markAdAsRequested = (ad: RequestableParsedAd): void => {
   ad[requested] = true;
 };
 
-export const unmarkAdAsRequested = (ad: RequestableParsedAd) => {
+export const unmarkAdAsRequested = (ad: RequestableParsedAd): void => {
   delete ad[requested];
 };
 
-export const hasAdBeenRequested = (ad: RequestableParsedAd) => Boolean(ad[requested]);
+export const hasAdBeenRequested = (ad: RequestableParsedAd): boolean =>
+  Boolean(ad[requested]);

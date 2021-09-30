@@ -23,6 +23,7 @@
     "prebuild": "rimraf dist",
     "start": "cross-env NODE_ENV=development webpack-dev-server --mode development",
     "test": "cross-env NODE_ENV=test jest",
+    "typecheck": "tsc --noEmit",
     "semantic-release": "semantic-release"
   },
   "files": [

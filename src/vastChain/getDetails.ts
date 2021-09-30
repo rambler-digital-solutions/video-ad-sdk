@@ -1,9 +1,17 @@
 import {get, getFirstChild, getText, getAttribute} from '../xml';
+import {ParsedXML, ParsedAd, VastChain, VastChainDetails} from '../types';
 import getLinearCreative from '../vastSelectors/helpers/getLinearCreative';
-import {isInline, getClickThrough, getCreativeData, isWrapper, getMediaFiles, getInteractiveFiles} from '../vastSelectors';
+import {
+  isInline,
+  getClickThrough,
+  getCreativeData,
+  isWrapper,
+  getMediaFiles,
+  getInteractiveFiles
+} from '../vastSelectors';
 import parseTime from '../vastSelectors/helpers/parseTime';
 
-const getAdSystem = (ad) => {
+const getAdSystem = (ad: ParsedAd): string | null => {
   const adTypeElement = getFirstChild(ad);
   const element = adTypeElement && get(adTypeElement, 'AdSystem');
 
@@ -11,28 +19,37 @@ const getAdSystem = (ad) => {
     return getText(element);
   }
 
-  return undefined;
+  return null;
 };
 
-const getSubElementValue = (parentElement, tagName) => {
+const getSubElementValue = (
+  parentElement: ParsedXML,
+  tagName: string
+): string | null => {
   const element = parentElement && get(parentElement, tagName);
 
   if (element) {
     return getText(element);
   }
 
-  return undefined;
+  return null;
 };
 
-const getPricingElement = (ad) => {
+const getPricingElement = (ad: ParsedAd): ParsedXML | null => {
   const adTypeElement = getFirstChild(ad);
 
   return adTypeElement && get(adTypeElement, 'Pricing');
 };
 
-const getPricing = (vastChain) => {
+interface Pricing {
+  pricing?: string | null;
+  pricingCurrency?: string | null;
+  pricingModel?: string | null;
+}
+
+const getPricing = (vastChain: VastChain): Pricing => {
   const {ad} = vastChain[0];
-  const pricingElement = getPricingElement(ad);
+  const pricingElement = ad && getPricingElement(ad);
 
   if (pricingElement) {
     return {
@@ -49,7 +66,12 @@ const getPricing = (vastChain) => {
   return {};
 };
 
-const getCategory = (ad) => {
+interface Category {
+  category?: string | null;
+  categoryAuthority?: string | null;
+}
+
+const getCategory = (ad: ParsedAd): Category => {
   const inLineElement = get(ad, 'InLine');
   const categoryElement = inLineElement && get(inLineElement, 'Category');
 
@@ -63,7 +85,7 @@ const getCategory = (ad) => {
   return {};
 };
 
-const getVastVersion = (parsedVast) => {
+const getVastVersion = (parsedVast: ParsedXML): string | null => {
   const vastElement = parsedVast && get(parsedVast, 'VAST');
 
   if (vastElement) {
@@ -74,77 +96,87 @@ const getVastVersion = (parsedVast) => {
 };
 
 /**
- * @function getDetails
+ * Returns a summary of the passed {@link VastChain}.
  *
- * @memberof module:video-ad-sdk
- * @static
- * @description Returns a summary of the passed {@link VastChain}.
- *
- * @param {VastChain} vastChain - the {@link VastChain} from which we want the details.
- *
- * @returns {VastChainDetails} - Returns a {@link VastChainDetails} object from the passed {@link VastChain}.
+ * @param vastChain the {@link VastChain} from which we want the details.
+ * @returns Returns a {@link VastChainDetails} object from the passed {@link VastChain}.
  */
-const getDetails = (vastChain) => {
-  const adIds = vastChain.map(({ad}) => getAttribute(ad, 'id'));
-  const adSystems = vastChain.map(({ad}) => getAdSystem(ad));
-  const creatives = vastChain.map(({ad}) => getLinearCreative(ad)).filter((creative) => Boolean(creative));
-  const creativeIds = creatives.map((creative) => getAttribute(creative, 'id'));
-  const creativeAdIds = creatives.map((creative) => getAttribute(creative, 'adId'));
+const getDetails = (vastChain: VastChain): VastChainDetails => {
+  const adIds = vastChain
+    .map(({ad}) => ad && getAttribute(ad, 'id'))
+    .filter(Boolean);
+  const adSystems = vastChain
+    .map(({ad}) => ad && getAdSystem(ad))
+    .filter(Boolean);
+  const creatives = vastChain
+    .map(({ad}) => ad && getLinearCreative(ad))
+    .filter(Boolean);
+  const creativeIds = creatives
+    .map((creative) => creative && getAttribute(creative, 'id'))
+    .filter(Boolean);
+  const creativeAdIds = creatives
+    .map((creative) => creative && getAttribute(creative, 'adId'))
+    .filter(Boolean);
+  const {ad, parsedXML, XML} = vastChain[0];
   const {pricing, pricingCurrency, pricingModel} = getPricing(vastChain);
-  const {category, categoryAuthority} = getCategory(vastChain[0].ad);
-  const adTypeElement = getFirstChild(vastChain[0].ad);
-  const creativeElement = getLinearCreative(vastChain[0].ad);
+  const {category, categoryAuthority} = ad ? getCategory(ad) : ({} as Category);
+  const adTypeElement = ad && getFirstChild(ad);
+  const creativeElement = ad && getLinearCreative(ad);
   const linearElement = creativeElement && get(creativeElement, 'Linear');
-  const adServingId = getSubElementValue(adTypeElement, 'AdServingId');
-  const vastVersion = getVastVersion(vastChain[0].parsedXML);
-  const advertiser = getSubElementValue(adTypeElement, 'Advertiser');
-  const adTitle = getSubElementValue(adTypeElement, 'AdTitle');
-  const description = getSubElementValue(adTypeElement, 'Description');
-  const duration = getSubElementValue(linearElement, 'Duration');
-  const durationInMs = duration && parseTime(duration);
+  const adServingId =
+    adTypeElement && getSubElementValue(adTypeElement, 'AdServingId');
+  const vastVersion = parsedXML && getVastVersion(parsedXML);
+  const advertiser =
+    adTypeElement && getSubElementValue(adTypeElement, 'Advertiser');
+  const adTitle = adTypeElement && getSubElementValue(adTypeElement, 'AdTitle');
+  const description =
+    adTypeElement && getSubElementValue(adTypeElement, 'Description');
+  const duration =
+    linearElement && getSubElementValue(linearElement, 'Duration');
+  const durationInMs = duration ? parseTime(duration) : null;
   let adId;
-  let adWrapperIds = [];
+  let adWrapperIds;
   let adSystem;
-  let adWrapperSystems = [];
+  let adWrapperSystems;
   let creativeId;
-  let adWrapperCreativeIds = [];
+  let adWrapperCreativeIds;
   let creativeAdId;
-  let adWrapperCreativeAdIds = [];
+  let adWrapperCreativeAdIds;
   let clickThroughUrl;
   let creativeData;
   let universalAdId;
   let universalAdIdRegistry;
-  let mediaFiles = [];
+  let mediaFiles;
   let vpaid;
   let skippable;
   let skipOffset;
   let skipOffsetInMs;
 
-  if (isInline(vastChain[0].ad)) {
+  if (isInline(ad)) {
     [adId, ...adWrapperIds] = adIds;
-
     [adSystem, ...adWrapperSystems] = adSystems;
-
     [creativeId, ...adWrapperCreativeIds] = creativeIds;
-
     [creativeAdId, ...adWrapperCreativeAdIds] = creativeAdIds;
 
-    clickThroughUrl = getClickThrough(vastChain[0].ad);
-    creativeData = getCreativeData(vastChain[0].XML);
-    const universalIdElement = get(creativeElement, 'UniversalAdId');
+    clickThroughUrl = ad && getClickThrough(ad);
+    creativeData = XML ? getCreativeData(XML) : null;
+    const universalIdElement =
+      creativeElement && get(creativeElement, 'UniversalAdId');
 
-    universalAdId = getText(universalIdElement);
-    universalAdIdRegistry = getAttribute(universalIdElement, 'idRegistry');
-    mediaFiles = getMediaFiles(vastChain[0].ad);
-    vpaid = Boolean(getInteractiveFiles(vastChain[0].ad));
-    skipOffset = getAttribute(linearElement, 'skipoffset');
-    skipOffsetInMs = parseTime(skipOffset);
+    universalAdId = universalIdElement && getText(universalIdElement);
+    universalAdIdRegistry =
+      universalIdElement && getAttribute(universalIdElement, 'idRegistry');
+    mediaFiles = (ad && getMediaFiles(ad)) || [];
+    vpaid = Boolean(ad && getInteractiveFiles(ad));
+    skipOffset = linearElement && getAttribute(linearElement, 'skipoffset');
+    skipOffsetInMs = skipOffset ? parseTime(skipOffset) : null;
     skippable = Boolean(skipOffset);
   } else if (isWrapper(vastChain[0].ad)) {
     adWrapperIds = adIds;
     adWrapperSystems = adSystems;
     adWrapperCreativeIds = creativeIds;
     adWrapperCreativeAdIds = creativeAdIds;
+    mediaFiles = [];
   }
 
   return {

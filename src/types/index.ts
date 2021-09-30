@@ -53,6 +53,10 @@ export interface VastResponse {
    * RAW XML as it came from the server.
    */
   XML: string | null;
+  /**
+   * RAW response object.
+   */
+  response?: Response;
 }
 
 /**
@@ -327,23 +331,23 @@ export interface VastChainDetails {
   /**
    * the ad Id. See VAST spec for more info
    */
-  adId?: string;
+  adId?: string | null;
   /**
    * the adServingId See VAST spec for more info
    */
-  adServingId?: string;
+  adServingId?: string | null;
   /**
    * the ad system. See VAST spec for more info
    */
-  adSystem?: string;
+  adSystem?: string | null;
   /**
    * ad title.
    */
-  adTitle?: string;
+  adTitle?: string | null;
   /**
    * ad advertiser's name.
    */
-  advertiser?: string;
+  advertiser?: string | null;
   /**
    * creative ad ids of the wrapper.
    */
@@ -355,47 +359,47 @@ export interface VastChainDetails {
   /**
    * ad ids of the wrappers.
    */
-  adWrapperIds?: string;
+  adWrapperIds?: string[];
   /**
    * ad systems of the wrappers.
    */
-  adWrapperSystems?: string;
+  adWrapperSystems?: string[];
   /**
    * ad category.
    */
-  category?: string;
+  category?: string | null;
   /**
    * ad category authority.
    */
-  categoryAuthority?: string;
+  categoryAuthority?: string | null;
   /**
    * the inline ad clickThroughUr.
    */
-  clickThroughUrl?: string;
+  clickThroughUrl?: string | null;
   /**
    * [creativeAdId] - the ad id of the linear creative.
    */
-  creativeAdId?: string;
+  creativeAdId?: string | null;
   /**
    * Object with the {@link creativeData} of the Ad.
    */
-  creativeData?: string;
+  creativeData?: CreativeData | null;
   /**
    * the id of the linear creative.
    */
-  creativeId?: string;
+  creativeId?: string | null;
   /**
    * ad description.
    */
-  description?: string;
+  description?: string | null;
   /**
    * the linear duration as it comes int the VAST XML
    */
-  duration?: string;
+  duration?: string | null;
   /**
    * the linear duration in milliseconds
    */
-  durationInMs?: number;
+  durationInMs?: number | null;
   /**
    * The linear ads {@link MediaFile}s
    */
@@ -403,23 +407,23 @@ export interface VastChainDetails {
   /**
    * the pricing of the ad if available
    */
-  pricing?: string;
+  pricing?: string | null;
   /**
    * the currency of the pricing if available.
    */
-  pricingCurrency?: string;
+  pricingCurrency?: string | null;
   /**
    * the pricing model if available.
    */
-  pricingModel?: string;
+  pricingModel?: string | null;
   /**
    * the linear skip offset as it comes int the VAST XML
    */
-  skipOffset?: string;
+  skipOffset?: string | null;
   /**
    * the linear skip offset in milliseconds
    */
-  skipOffsetInMs?: number;
+  skipOffsetInMs?: number | null;
   /**
    * true if the ad is skippable and false otherwise.
    */
@@ -427,15 +431,15 @@ export interface VastChainDetails {
   /**
    * Universal Ad Id of the ad.
    */
-  universalAdId?: string;
+  universalAdId?: string | null;
   /**
    * registry of the Universal Ad Id of the ad.
    */
-  universalAdIdRegistry?: string;
+  universalAdIdRegistry?: string | null;
   /**
    * VAST version of the last {@link VastResponse}. If no version is found it will contain `unknown`.
    */
-  vastVersion?: string;
+  vastVersion?: string | null;
   /**
    * if the VastChain has a linear ad, it will be true if it contains a VPAID creative and false otherwise.
    */
@@ -483,7 +487,7 @@ export interface VastEventTrackerOptions {
 /**
  * Options Map
  */
-export interface RequestAdOptions {
+export interface RequestAdOptions extends RequestInit {
   /**
    * Sets the maximum number of wrappers allowed in the {@link VastChain}.
    * Defaults to `5`.

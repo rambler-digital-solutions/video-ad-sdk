@@ -14,7 +14,7 @@ import {
   ParsedAd,
   ParsedXML,
   RequestAdOptions
-} from '../types'
+} from '../types';
 import fetch from './helpers/fetch';
 import VastError from './helpers/vastError';
 import {markAdAsRequested} from './helpers/adUtils';
@@ -31,10 +31,15 @@ const validateChain = (
   }
 };
 
+interface FetchAdResponse {
+  response: Response;
+  XML: string;
+}
+
 const fetchAdXML = async (
   adTag: string,
   options: RequestInit
-): Promise<string> => {
+): Promise<FetchAdResponse> => {
   let response;
 
   try {
@@ -156,9 +161,9 @@ const requestAd = async (
     if (typeof resultOptions.timeout === 'number') {
       timeout = resultOptions.timeout;
       epoch = Date.now();
-      fetchPromise = Promise.race<string>([
+      fetchPromise = Promise.race<FetchAdResponse>([
         fetchPromise,
-        new Promise<string>((_resolve, reject) => {
+        new Promise<never>((_resolve, reject) => {
           setTimeout(() => {
             const error = new VastError('RequestAd timeout');
 
