@@ -1,5 +1,6 @@
+import {VpaidCreativeAdUnit} from '../../../types'
 import {METHODS} from './api';
 
-const isValidVpaidCreative = (creative) => METHODS.every((method) => typeof creative[method] === 'function');
+const isValidVpaidCreative = (creativeAd: VpaidCreativeAdUnit): boolean => METHODS.every((method) => typeof creativeAd[method] === 'function');
 
 export default isValidVpaidCreative;

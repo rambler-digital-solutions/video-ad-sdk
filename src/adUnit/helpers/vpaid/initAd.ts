@@ -1,8 +1,10 @@
+import VideoAdContainer from '../../../adContainer/VideoAdContainer'
 import {getCreativeData} from '../../../vastSelectors';
+import {VpaidCreativeAdUnit, VastChain} from '../../../types'
 import viewmode from './viewmode';
 
-const createSlot = (placeholder, width, height) => {
-  const slot = document.createElement('DIV');
+const createSlot = (placeholder: HTMLElement, width: number, height: number): HTMLDivElement => {
+  const slot = document.createElement('div');
 
   Object.assign(slot.style, {
     border: '0px',
@@ -20,17 +22,19 @@ const createSlot = (placeholder, width, height) => {
 
   return slot;
 };
-const initAd = (creativeAd, videoAdContainer, vastChain) => {
+
+const initAd = (creativeAd: VpaidCreativeAdUnit, videoAdContainer: VideoAdContainer, vastChain: VastChain): void => {
   const placeholder = videoAdContainer.element;
   const {width, height} = placeholder.getBoundingClientRect();
   const mode = viewmode(width, height);
   const desiredBitrate = -1;
+  const creativeData = vastChain[0].XML ? getCreativeData(vastChain[0].XML) : undefined;
+
   const environmentVars = {
     slot: createSlot(placeholder, width, height),
     videoSlot: videoAdContainer.videoElement,
     videoSlotCanAutoPlay: videoAdContainer.isOriginalVideoElement
   };
-  const creativeData = getCreativeData(vastChain[0].XML);
 
   creativeAd.initAd(width, height, mode, desiredBitrate, creativeData, environmentVars);
 };

@@ -1,11 +1,8 @@
-const safeCallback = (callback, logger) => (...args) => {
+const safeCallback = (callback: (...args: any) => void, logger?: Console) => (...args: any[]): void => {
   try {
-    // eslint-disable-next-line callback-return, promise/prefer-await-to-callbacks
     callback(...args);
   } catch (error) {
-    if (logger) {
-      logger.error(error);
-    }
+    logger?.error(error);
   }
 };
 

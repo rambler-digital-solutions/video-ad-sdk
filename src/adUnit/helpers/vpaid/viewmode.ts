@@ -1,4 +1,4 @@
-const viewmode = (width, height) => {
+const viewmode = (width: number, height: number): string => {
   const screen = window.screen;
   const isFullscreen = width + 100 > screen.width && height + 100 > screen.height;
 

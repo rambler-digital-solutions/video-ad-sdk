@@ -1,3 +1,5 @@
+import {VpaidCreativeAdUnit} from '../../../types'
+
 export const handshakeVersion = 'handshakeVersion';
 export const initAd = 'initAd';
 export const resizeAd = 'resizeAd';
@@ -75,7 +77,7 @@ export const EVENTS = [
   adError
 ];
 
-export const METHODS = [
+export const METHODS: (keyof VpaidCreativeAdUnit)[] = [
   handshakeVersion,
   initAd,
   resizeAd,
@@ -90,7 +92,7 @@ export const METHODS = [
   skipAd
 ];
 
-export const GETTERS = [
+export const GETTERS: (keyof VpaidCreativeAdUnit)[] = [
   getAdLinear,
   getAdExpanded,
   getAdRemainingTime,
@@ -105,4 +107,4 @@ export const GETTERS = [
   getAdIcons
 ];
 
-export const SETTERS = [setAdVolume];
+export const SETTERS: (keyof VpaidCreativeAdUnit)[] = [setAdVolume];

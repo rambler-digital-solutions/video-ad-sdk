@@ -2,7 +2,7 @@ export interface LoadScriptOptions {
   /**
    * Type of the script. Defaults to 'text/javascript'.
    */
-  type?: string;
+  type?: string | null;
   /**
    * If "true" the "async" attribute is added to the new script. Defaults to false.
    */

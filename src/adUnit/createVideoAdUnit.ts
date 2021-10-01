@@ -4,14 +4,17 @@ import {
   trackLinearEvent,
   trackNonLinearEvent
 } from '../tracker';
+import {VastChain, VastEventTrackerOptions} from '../types'
+import VideoAdContainer from '../adContainer/VideoAdContainer'
 import VastAdUnit from './VastAdUnit';
 import VpaidAdUnit from './VpaidAdUnit';
 
-const createVideoAdUnit = (vastChain, videoAdContainer, options) => {
-  const {
-    tracker,
-    type
-  } = options;
+interface VideoAdUnitOptions extends VastEventTrackerOptions {
+  type: string
+}
+
+const createVideoAdUnit = (vastChain: VastChain, videoAdContainer: VideoAdContainer, options: VideoAdUnitOptions): VastAdUnit | VpaidAdUnit => {
+  const {tracker, type} = options;
   const adUnit = type === 'VPAID' ? new VpaidAdUnit(vastChain, videoAdContainer, options) : new VastAdUnit(vastChain, videoAdContainer, options);
 
   Object.values(linearEvents).forEach((linearEvent) =>

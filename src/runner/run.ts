@@ -4,12 +4,10 @@ import startVideoAd from './helpers/startVideoAd';
 
 /**
  * Will try to start video ad in the passed {@link VastChain} and return the started VideoAdUnit.
+ * If there is an error starting the ad or it times out (by throw I mean that it will reject promise with the error).
  *
- * @memberof module:video-ad-sdk
- * @static
- * @throws if there is an error starting the ad or it times out (by throw I mean that it will reject promise with the error).
- * @param {VastChain} vastChain - The {@link VastChain} with all the {@link VastResponse}s.
- * @param {HTMLElement} placeholder - placeholder element that will contain the video ad.
+ * @param vastChain The {@link VastChain} with all the {@link VastResponse}s.
+ * @param placeholder placeholder element that will contain the video ad.
  * @param {Object} [options] - Options Map. The allowed properties are:
  * @param {runWaterfall~onAdReady} options.onAdReady - will be called once the ad is ready with the ad unit.
  * @param {HTMLVideoElement} [options.videoElement] - optional videoElement that will be used to play the ad.
@@ -26,7 +24,7 @@ import startVideoAd from './helpers/startVideoAd';
  * @param {Function} [options.hooks.getMediaFile] - If provided it will be called to get a {@link MediaFile} by size of the current video element.
  * @returns {Promise.<VastAdUnit|VpaidAdUnit>} - The video ad unit.
  */
-const run = async (vastChain, placeholder, options) => {
+const run = async (vastChain: VastChain, placeholder: HTMLElement, options: RunOptions) => {
   let videoAdContainer;
 
   try {

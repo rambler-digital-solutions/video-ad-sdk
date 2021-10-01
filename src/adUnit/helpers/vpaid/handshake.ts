@@ -1,3 +1,4 @@
+import {VpaidCreativeAdUnit} from '../../../types'
 import {handshakeVersion} from './api';
 
 const major = (version: string): number => {
@@ -16,8 +17,8 @@ const isSupported = (supportedVersion: string, creativeVersion: string): boolean
   return creativeMajorNum <= major(supportedVersion);
 };
 
-const handshake = (creative, supportedVersion: string): string => {
-  const creativeVersion = creative[handshakeVersion](supportedVersion);
+const handshake = (creativeAd: VpaidCreativeAdUnit, supportedVersion: string): string => {
+  const creativeVersion = creativeAd[handshakeVersion](supportedVersion);
 
   if (!isSupported(supportedVersion, creativeVersion)) {
     throw new Error(`Creative Version '${creativeVersion}' not supported`);

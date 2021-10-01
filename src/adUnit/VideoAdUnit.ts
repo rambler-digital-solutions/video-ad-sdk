@@ -1,29 +1,64 @@
-/* eslint-disable promise/prefer-await-to-callbacks */
 import {linearEvents} from '../tracker';
 import {getViewable} from '../vastSelectors';
+import {VastChain, VastIcon} from '../types'
+import VideoAdContainer from '../adContainer/VideoAdContainer'
 import {finish} from './adUnitEvents';
 import {onElementVisibilityChange, onElementResize} from './helpers/dom/elementObservers';
 import preventManualProgress from './helpers/dom/preventManualProgress';
-import Emitter from './helpers/Emitter';
+import Emitter, {Listener} from './helpers/Emitter';
 import retrieveIcons from './helpers/icons/retrieveIcons';
-import addIcons from './helpers/icons/addIcons';
+import addIcons, {AddedIcons} from './helpers/icons/addIcons';
 import viewmode from './helpers/vpaid/viewmode';
 import safeCallback from './helpers/safeCallback';
+import AdUnitError from './helpers/adUnitError'
 
 const {start, viewable, notViewable, viewUndetermined, iconClick, iconView} = linearEvents;
 
 // eslint-disable-next-line id-match
 export const _protected = Symbol('_protected');
 
+interface Size {
+  width: number
+  height: number
+  viewmode: string
+}
+
+interface Protected extends Partial<AddedIcons> {
+  started: boolean
+  viewable: boolean
+  finished: boolean
+  size?: Size
+  finish(): void
+  handleViewableImpression(event: string): void
+  onErrorCallbacks: Listener[]
+  onFinishCallbacks: Listener[]
+  throwIfCalled(): void
+  throwIfFinished(): void
+}
+
+export interface VideoAdUnitOptions {
+  /**
+   * Optional logger instance. Must comply to the [Console interface]{@link https://developer.mozilla.org/es/docs/Web/API/Console}.
+   * Defaults to `window.console`
+   */
+  logger?: Console
+  /**
+   * if true it will pause the ad whenever is not visible for the viewer.
+   * Defaults to `false`
+   */
+  viewability?: boolean
+  /**
+   * if true it will resize the ad unit whenever the ad container changes sizes
+   * Defaults to `false`
+   */
+  responsive?: boolean
+}
+
 /**
- * @class
- * @extends Emitter
- * @alias VideoAdUnit
- * @implements LinearEvents
- * @description This class provides shared logic among all the ad units.
+ * This class provides shared logic among all the ad units.
  */
 class VideoAdUnit extends Emitter {
-  [_protected] = {
+  protected [_protected]: Protected = {
     finish: () => {
       if (!this.isFinished()) {
         this[_protected].finished = true;
@@ -37,7 +72,7 @@ class VideoAdUnit extends Emitter {
     },
     finished: false,
     handleViewableImpression: (event) => {
-      this[_protected].viewable = event;
+      this[_protected].viewable = Boolean(event);
 
       this.emit(event, {
         adUnit: this,
@@ -59,28 +94,27 @@ class VideoAdUnit extends Emitter {
   };
 
   /** Ad unit type */
-  type = null;
+  public type: string | null = null;
 
   /** If an error occurs it will contain the reference to the error otherwise it will be bull */
-  error = null;
+  public error: AdUnitError | null = null;
 
   /** If an error occurs it will contain the Vast Error code of the error */
-  errorCode = null;
+  public errorCode: number | null = null;
+
+  public vastChain: VastChain
+  public videoAdContainer: VideoAdContainer
+
+  protected icons: VastIcon[] | null
 
   /**
    * Creates a {@link VideoAdUnit}.
    *
-   * @param {VastChain} vastChain - The {@link VastChain} with all the {@link VastResponse}
-   * @param {VideoAdContainer} videoAdContainer - container instance to place the ad
-   * @param {Object} [options] - Options Map. The allowed properties are:
-   * @param {Console} [options.logger] - Optional logger instance. Must comply to the [Console interface]{@link https://developer.mozilla.org/es/docs/Web/API/Console}.
-   * Defaults to `window.console`
-   * @param {boolean} [options.viewability] - if true it will pause the ad whenever is not visible for the viewer.
-   * Defaults to `false`
-   * @param {boolean} [options.responsive] - if true it will resize the ad unit whenever the ad container changes sizes
-   * Defaults to `false`
+   * @param vastChain The {@link VastChain} with all the {@link VastResponse}
+   * @param videoAdContainer container instance to place the ad
+   * @param options Options Map. The allowed properties are:
    */
-  constructor (vastChain, videoAdContainer, {viewability = false, responsive = false, logger = console} = {}) {
+  public constructor (vastChain: VastChain, videoAdContainer:VideoAdContainer, {viewability = false, responsive = false, logger = console}: VideoAdUnitOptions = {}) {
     super(logger);
 
     const {onFinishCallbacks, handleViewableImpression} = this[_protected];
@@ -121,11 +155,11 @@ class VideoAdUnit extends Emitter {
       onFinishCallbacks.push(removeIcons);
     }
 
-    const viewableImpression = vastChain.some(({ad}) => getViewable(ad));
+    const viewableImpression = vastChain.some(({ad}) => ad && getViewable(ad));
 
     if (viewableImpression) {
       this.once(start, () => {
-        let timeoutId;
+        let timeoutId: number;
 
         const unsubscribe = onElementVisibilityChange(
           this.videoAdContainer.element,
@@ -141,7 +175,7 @@ class VideoAdUnit extends Emitter {
             }
 
             if (visible) {
-              timeoutId = setTimeout(handleViewableImpression, 2000, viewable);
+              timeoutId = window.setTimeout(handleViewableImpression, 2000, viewable);
             } else {
               clearTimeout(timeoutId);
             }
@@ -199,7 +233,7 @@ class VideoAdUnit extends Emitter {
           const height = element.clientHeight;
           const width = element.clientWidth;
 
-          if (height !== prevSize.height || width !== prevSize.width) {
+          if (height !== prevSize?.height || width !== prevSize?.width) {
             this.resize(width, height, viewmode(width, height));
           }
         });
@@ -215,7 +249,7 @@ class VideoAdUnit extends Emitter {
    * @throws if called twice.
    * @throws if ad unit is finished.
    */
-  start () {
+  public start (): void {
     this[_protected].throwIfCalled();
   }
 
@@ -225,7 +259,7 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  resume () {
+  public resume (): void {
     this[_protected].throwIfCalled();
   }
 
@@ -235,7 +269,7 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  pause () {
+  public pause (): void {
     this[_protected].throwIfCalled();
   }
 
@@ -245,7 +279,7 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  skip () {
+  public skip (): void {
     this[_protected].throwIfCalled();
   }
 
@@ -255,10 +289,9 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    *
-   * @param {number} volume - must be a value between 0 and 1;
+   * @param volume must be a value between 0 and 1;
    */
-  // eslint-disable-next-line no-unused-vars
-  setVolume (volume) {
+  public setVolume (_volume: number): void {
     this[_protected].throwIfCalled();
   }
 
@@ -268,9 +301,9 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    *
-   * @returns {number} - the volume of the ad unit.
+   * @returns the volume of the ad unit.
    */
-  getVolume () {
+  public getVolume (): void {
     this[_protected].throwIfCalled();
   }
 
@@ -279,32 +312,32 @@ class VideoAdUnit extends Emitter {
    *
    * @throws if ad unit is finished.
    */
-  cancel () {
+  public cancel (): void {
     this[_protected].throwIfCalled();
   }
 
   /**
    * Returns the duration of the ad Creative or 0 if there is no creative.
    *
-   * @returns {number} - the duration of the ad unit.
+   * @returns the duration of the ad unit.
    */
-  duration () {
+  public duration (): void {
     this[_protected].throwIfCalled();
   }
 
   /**
    * Returns true if the ad is paused and false otherwise
    */
-  paused () {
+  public paused (): void {
     this[_protected].throwIfCalled();
   }
 
   /**
    * Returns the current time of the ad Creative or 0 if there is no creative.
    *
-   * @returns {number} - the current time of the ad unit.
+   * @returns the current time of the ad unit.
    */
-  currentTime () {
+  public currentTime (): void {
     this[_protected].throwIfCalled();
   }
 
@@ -313,9 +346,9 @@ class VideoAdUnit extends Emitter {
    *
    * @throws if ad unit is finished.
    *
-   * @param {Function} callback - will be called once the ad unit finished
+   * @param callback will be called once the ad unit finished
    */
-  onFinish (callback) {
+  public onFinish (callback: Listener): void {
     if (typeof callback !== 'function') {
       throw new TypeError('Expected a callback function');
     }
@@ -328,9 +361,9 @@ class VideoAdUnit extends Emitter {
    *
    * @throws if ad unit is finished.
    *
-   * @param {Function} callback - will be called on ad unit error passing the Error instance  and an object with the adUnit and the  {@link VastChain}.
+   * @param callback will be called on ad unit error passing the Error instance  and an object with the adUnit and the  {@link VastChain}.
    */
-  onError (callback) {
+  public onError (callback: Listener): void {
     if (typeof callback !== 'function') {
       throw new TypeError('Expected a callback function');
     }
@@ -339,16 +372,16 @@ class VideoAdUnit extends Emitter {
   }
 
   /**
-   * @returns {boolean} - true if the ad unit is finished and false otherwise
+   * @returns true if the ad unit is finished and false otherwise
    */
-  isFinished () {
+  public isFinished (): boolean {
     return this[_protected].finished;
   }
 
   /**
-   * @returns {boolean} - true if the ad unit has started and false otherwise
+   * @returns true if the ad unit has started and false otherwise
    */
-  isStarted () {
+  public isStarted (): boolean {
     return this[_protected].started;
   }
 
@@ -358,9 +391,9 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    *
-   * @returns {Promise} - that resolves once the unit was resized
+   * @returns Promise that resolves once the unit was resized
    */
-  async resize (width, height, mode) {
+  public async resize (width: number, height: number, mode: string): Promise<void> {
     this[_protected].size = {
       height,
       viewmode: mode,
@@ -368,8 +401,8 @@ class VideoAdUnit extends Emitter {
     };
 
     if (this.isStarted() && !this.isFinished() && this.icons) {
-      await this[_protected].removeIcons();
-      await this[_protected].drawIcons();
+      await this[_protected].removeIcons?.();
+      await this[_protected].drawIcons?.();
     }
   }
 }

@@ -1,6 +1,6 @@
-interface Listener {
+export interface Listener {
   (...args: any[]): void
-  _: this
+  _?: this
 }
 
 /**
@@ -9,7 +9,7 @@ interface Listener {
  * @param logger Optional logger instance. Must comply to the [Console interface]{@link https://developer.mozilla.org/es/docs/Web/API/Console}.
  */
 class Emitter {
-  private logger: Console;
+  public logger: Console;
   private events: Record<string, Listener[]>
 
   constructor (logger?: Console) {

@@ -33,20 +33,17 @@ const removeDrawnIcons = (icons: VastIcon[]): void =>
     .filter(({element}) => Boolean(element?.parentNode))
     .forEach(({element}) => element?.parentNode?.removeChild(element));
 
-interface AddIconsOptions {
+export interface AddIconsOptions {
   videoAdContainer?: VideoAdContainer;
   onIconView?(icon: VastIcon): void;
   onIconClick?(icon: VastIcon): void;
   logger?: Console;
 }
 
-interface AddedIcons {
+export interface AddedIcons {
   drawIcons(): Promise<void>;
-  hasPendingIconRedraws(
-    icons: VastIcon[],
-    videoElement: HTMLVideoElement
-  ): boolean;
-  removeIcons(icons: VastIcon[]): void;
+  hasPendingIconRedraws(): boolean;
+  removeIcons(): void;
 }
 
 const addIcons = (

@@ -471,7 +471,7 @@ export interface VastEventTrackerOptions {
   /**
    * Error code. Needed if we are tracking an error.
    */
-  errorCode?: string;
+  errorCode?: string | null;
   /**
    * Optional tracker to use for the actual tracking. Defaults to the pixel tracker.
    */
@@ -526,4 +526,63 @@ export interface RequestNextAdOptions extends RequestAdOptions {
    * Defaults to `true`.
    */
   fallbackOnNoAd: boolean;
+}
+
+/**
+ * Vpaid Creative environment variables
+ */
+export interface EnvironmentVars {
+  slot?: HTMLElement
+  videoSlot?: HTMLVideoElement
+  videoSlotCanAutoPlay?: boolean
+}
+
+/**
+ * The Vpaid Creative ad unit
+ */
+export interface VpaidCreativeAdUnit {
+  handshakeVersion(version: string): string
+  initAd(width: number, height: number, mode: string, desiredBitrate?: number, creativeData?: CreativeData, environmentVars?: EnvironmentVars): void
+  resizeAd(width: number, height: number, mode: string): void
+  startAd(): void
+  stopAd(): void
+  pauseAd(): void
+  resumeAd(): void
+  expandAd(): void
+  skipAd(): void
+  collapseAd(): void
+  getAdLinear(): void
+  getAdWidth(): number
+  getAdHeight(): number
+  getAdExpanded(): boolean
+  getAdSkippableState(): boolean
+  getAdRemainingTime(): number
+  getAdDuration(): number
+  getAdVolume(): number
+  getAdCompanions(): unknown[]
+  getAdIcons(): VastIcon[]
+  setAdVolume(volume: number): void
+  subscribe(listener: (...args: any[]) => void, event: string): void
+  unsubscribe(listener: (...args: any[]) => void, event: string): void
+}
+
+/**
+ * The Vpaid execution context.
+ */
+export interface ExecutionContext extends Window {
+  getVPAIDAd(): VpaidCreativeAdUnit
+}
+
+/**
+ * Hooks to configure the behaviour of the ad.
+ */
+export interface Hooks {
+  /**
+   * If provided it will be called to generate the skip control. Must return a clickable [HTMLElement](https://developer.mozilla.org/es/docs/Web/API/HTMLElement) that is detached from the DOM.
+   */
+  createSkipControl?(): void
+  /**
+   * If provided it will be called to get a {@link MediaFile} by size of the current video element.
+   */
+  getMediaFile?(mediaFiles: MediaFile[], screenRect: ClientRect): MediaFile
 }

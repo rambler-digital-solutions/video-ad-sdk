@@ -1,3 +1,4 @@
+import {ExecutionContext} from '../types'
 import loadScript, {LoadScriptOptions} from './helpers/loadScript';
 import createAdVideoElement from './helpers/createAdVideoElement';
 import createAdContainer from './helpers/createAdContainer';
@@ -21,7 +22,7 @@ interface Hidden {
 class VideoAdContainer {
   element: HTMLElement;
   videoElement: HTMLVideoElement;
-  executionContext: Window | null;
+  executionContext: ExecutionContext | null;
   isOriginalVideoElement: boolean;
 
   [hidden]: Hidden = {
@@ -79,7 +80,7 @@ class VideoAdContainer {
     if (!iframe) {
       iframe = await createIframe(this.element, this[hidden].id);
       this[hidden].iframe = iframe;
-      this.executionContext = iframe.contentWindow;
+      this.executionContext = iframe.contentWindow as ExecutionContext;
     }
 
     const placeholder = getContentDocument(iframe)?.body;

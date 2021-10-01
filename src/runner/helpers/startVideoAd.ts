@@ -10,8 +10,9 @@ import {
   adStopped,
   adUserClose
 } from '../../adUnit/helpers/vpaid/api';
+import {VastChain, ParsedAd} from '../../types'
 
-const validate = (vastChain, videoAdContainer) => {
+const validate = (vastChain: VastChain, videoAdContainer: VideoAdContainer): void => {
   if (!Array.isArray(vastChain) || vastChain.length === 0) {
     throw new TypeError('Invalid vastChain');
   }
@@ -21,9 +22,9 @@ const validate = (vastChain, videoAdContainer) => {
   }
 };
 
-const hasVpaidCreative = (ad) => Boolean(getInteractiveFiles(ad));
+const hasVpaidCreative = (ad: ParsedAd): boolean => Boolean(getInteractiveFiles(ad));
 
-const hasVastCreative = (ad, videoElement) => {
+const hasVastCreative = (ad: ParsedAd, videoElement: HTMLVideoElement): boolean => {
   const mediaFiles = getMediaFiles(ad);
 
   if (mediaFiles) {
@@ -33,7 +34,7 @@ const hasVastCreative = (ad, videoElement) => {
   return false;
 };
 
-const startAdUnit = (adUnit, {onAdReady}) => new Promise((resolve, reject) => {
+const startAdUnit = (adUnit: VastAdUnit | VpaidAdUnit, {onAdReady}) => new Promise((resolve, reject) => {
   const createRejectHandler = (event) => () =>
     reject(new Error(`Ad unit start rejected due to event '${event}'`));
 

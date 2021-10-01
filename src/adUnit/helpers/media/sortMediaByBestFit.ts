@@ -1,6 +1,6 @@
-import {MediaFile} from '../../../vastSelectors'
+import {MediaFile} from '../../../types'
 
-const sortMediaByBestFit = (mediaFiles: MediaFile[], screenRect: Screen): MediaFile[] => {
+const sortMediaByBestFit = (mediaFiles: MediaFile[], screenRect: ClientRect): MediaFile[] => {
   const screenWidth = screenRect.width;
   const compareTo = (mediaFileA: MediaFile, mediaFileB: MediaFile): number => {
     const deltaA = Math.abs(screenWidth - (mediaFileA.width || 0));

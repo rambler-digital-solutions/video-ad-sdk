@@ -1,7 +1,9 @@
-const waitFor = (creativeAd, event, timeout) => new Promise((resolve, reject) => {
+import {VpaidCreativeAdUnit} from '../../../types'
+
+const waitFor = (creativeAd: VpaidCreativeAdUnit, event: string, timeout?: number): Promise<void> => new Promise<void>((resolve, reject) => {
   // eslint-disable-next-line prefer-const
-  let timeoutId;
-  const handler = () => {
+  let timeoutId: number;
+  const handler = (): void => {
     if (typeof timeout === 'number') {
       clearTimeout(timeoutId);
     }
@@ -11,7 +13,7 @@ const waitFor = (creativeAd, event, timeout) => new Promise((resolve, reject) =>
   };
 
   if (typeof timeout === 'number') {
-    timeoutId = setTimeout(() => {
+    timeoutId = window.setTimeout(() => {
       creativeAd.unsubscribe(handler, event);
       reject(new Error(`Timeout waiting for event '${event}'`));
     }, timeout);

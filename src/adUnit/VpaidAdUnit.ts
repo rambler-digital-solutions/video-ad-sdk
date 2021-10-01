@@ -1,7 +1,8 @@
-/* eslint-disable promise/prefer-await-to-callbacks, class-methods-use-this, import/no-named-as-default-member */
 import linearEvents from '../tracker/linearEvents';
 import {acceptInvitation, adCollapse} from '../tracker/nonLinearEvents';
 import {getClickThrough} from '../vastSelectors';
+import {VastChain, VpaidCreativeAdUnit} from '../types'
+import VideoAdContainer from '../adContainer/VideoAdContainer'
 import {volumeChanged, adProgress} from './adUnitEvents';
 import loadCreative from './helpers/vpaid/loadCreative';
 import {
@@ -43,7 +44,8 @@ import waitFor from './helpers/vpaid/waitFor';
 import callAndWait from './helpers/vpaid/callAndWait';
 import handshake from './helpers/vpaid/handshake';
 import initAd from './helpers/vpaid/initAd';
-import VideoAdUnit, {_protected} from './VideoAdUnit';
+import AdUnitError from './helpers/adUnitError'
+import VideoAdUnit, {_protected, VideoAdUnitOptions} from './VideoAdUnit';
 
 const {
   complete,
@@ -69,8 +71,8 @@ const VPAID_EVENTS = EVENTS.filter((event) => event !== adLoaded);
 // eslint-disable-next-line id-match
 const _private = Symbol('_private');
 
-const vpaidGeneralError = (payload) => {
-  const error = payload instanceof Error ? payload : new Error('VPAID general error');
+const vpaidGeneralError = (payload: Error | unknown): AdUnitError => {
+  const error: AdUnitError = payload instanceof Error ? payload : new AdUnitError('VPAID general error');
 
   if (!error.code) {
     error.code = 901;
@@ -78,6 +80,17 @@ const vpaidGeneralError = (payload) => {
 
   return error;
 };
+
+interface Private {
+  evtHandler: Record<string, (...args: any[]) => void>
+  handleVpaidEvt(event: string, ...args: any[]): void
+  muted: boolean
+  paused: boolean
+  videoStart?: boolean
+  loadCreativePromise?: Promise<VpaidCreativeAdUnit>
+}
+
+export type VpaidAdUnitOptions = VideoAdUnitOptions
 
 /**
  * @class
@@ -88,17 +101,20 @@ const vpaidGeneralError = (payload) => {
  * @description This class provides everything necessary to run a Vpaid ad.
  */
 class VpaidAdUnit extends VideoAdUnit {
-  [_private] = {
+  private [_private]: Private = {
     evtHandler: {
-      [adClickThru]: (url, id, playerHandles) => {
+      [adClickThru]: (url: string, _id: string, playerHandles: boolean) => {
         if (playerHandles) {
           if (this.paused()) {
             this.resume();
           } else {
-            const clickThroughUrl = typeof url === 'string' && url.length > 0 ? url : getClickThrough(this.vastChain[0].ad);
+            const inlineAd = this.vastChain[0].ad
+            const clickThroughUrl = typeof url === 'string' && url.length > 0 ? url : inlineAd && getClickThrough(inlineAd);
 
-            this.pause();
-            window.open(clickThroughUrl, '_blank');
+            if (clickThroughUrl) {
+              this.pause();
+              window.open(clickThroughUrl, '_blank');
+            }
           }
         }
 
@@ -113,9 +129,9 @@ class VpaidAdUnit extends VideoAdUnit {
           type: adProgress
         });
       },
-      [adError]: (payload) => {
+      [adError]: (payload: Error | unknown) => {
         this.error = vpaidGeneralError(payload);
-        this.errorCode = this.error.code;
+        this.errorCode = this.error.code || null;
 
         this[_protected].onErrorCallbacks.forEach((callback) =>
           callback(this.error, {
@@ -281,26 +297,19 @@ class VpaidAdUnit extends VideoAdUnit {
   };
 
   /** Ad unit type. Will be `VPAID` for VpaidAdUnit */
-  type = 'VPAID';
+  public type = 'VPAID';
 
   /** Reference to the Vpaid Creative ad unit. Will be null before the ad unit starts. */
-  creativeAd = null;
+  public creativeAd: VpaidCreativeAdUnit | null = null;
 
   /**
    * Creates a {VpaidAdUnit}.
    *
-   * @param {VastChain} vastChain - The {@link VastChain} with all the {@link VastResponse}
-   * @param {VideoAdContainer} videoAdContainer - container instance to place the ad
-   * @param {Object} [options] - Options Map. The allowed properties are:
-   * @param {Console} [options.logger] - Optional logger instance. Must comply to the [Console interface]{@link https://developer.mozilla.org/es/docs/Web/API/Console}.
-   * Defaults to `window.console`
-   * @param {boolean} [options.viewability] - if true it will pause the ad whenever is not visible for the viewer.
-   * Defaults to `false`
-   * @param {boolean} [options.responsive] - if true it will resize the ad unit whenever the ad container changes sizes
-   * Defaults to `false`
-   * Defaults to `window.console`
+   * @param vastChain The {@link VastChain} with all the {@link VastResponse}
+   * @param videoAdContainer container instance to place the ad
+   * @param options Options Map
    */
-  constructor (vastChain, videoAdContainer, options = {}) {
+  constructor (vastChain: VastChain, videoAdContainer: VideoAdContainer, options: VpaidAdUnitOptions = {}) {
     super(vastChain, videoAdContainer, options);
 
     this[_private].loadCreativePromise = loadCreative(vastChain, videoAdContainer);
@@ -312,7 +321,7 @@ class VpaidAdUnit extends VideoAdUnit {
    * @throws if called twice.
    * @throws if ad unit is finished.
    */
-  async start () {
+  public async start (): Promise<void> {
     this[_protected].throwIfFinished();
 
     if (this.isStarted()) {
@@ -320,7 +329,7 @@ class VpaidAdUnit extends VideoAdUnit {
     }
 
     try {
-      this.creativeAd = await this[_private].loadCreativePromise;
+      this.creativeAd = await this[_private].loadCreativePromise as VpaidCreativeAdUnit;
       const adLoadedPromise = waitFor(this.creativeAd, adLoaded);
 
       for (const creativeEvt of VPAID_EVENTS) {
@@ -351,14 +360,14 @@ class VpaidAdUnit extends VideoAdUnit {
           await callAndWait(this.creativeAd, startAd, adStarted);
 
           if (this.icons) {
-            const drawIcons = async () => {
+            const drawIcons = async (): Promise<void> => {
               if (this.isFinished()) {
                 return;
               }
 
-              await this[_protected].drawIcons();
+              await this[_protected].drawIcons?.();
 
-              if (this[_protected].hasPendingIconRedraws() && !this.isFinished()) {
+              if (this[_protected].hasPendingIconRedraws?.() && !this.isFinished()) {
                 setTimeout(drawIcons, 500);
               }
             };
@@ -371,8 +380,6 @@ class VpaidAdUnit extends VideoAdUnit {
           this.cancel();
         }
       }
-
-      return this;
     } catch (error) {
       this[_private].handleVpaidEvt(adError, error);
       throw error;
@@ -385,8 +392,8 @@ class VpaidAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  resume () {
-    this.creativeAd[resumeAd]();
+  public resume (): void {
+    this.creativeAd?.[resumeAd]();
   }
 
   /**
@@ -395,8 +402,8 @@ class VpaidAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  pause () {
-    this.creativeAd[pauseAd]();
+  public pause (): void {
+    this.creativeAd?.[pauseAd]();
   }
 
   /**
@@ -405,14 +412,14 @@ class VpaidAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  skip () {
-    this.creativeAd[skipAd]();
+  public skip (): void {
+    this.creativeAd?.[skipAd]();
   }
 
   /**
    * Returns true if the ad is paused and false otherwise
    */
-  paused () {
+  public paused (): boolean {
     return this.isFinished() || this[_private].paused;
   }
 
@@ -422,10 +429,10 @@ class VpaidAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    *
-   * @param {number} volume - must be a value between 0 and 1;
+   * @param volume must be a value between 0 and 1;
    */
-  setVolume (volume) {
-    this.creativeAd[setAdVolume](volume);
+  public setVolume (volume: number): void {
+    this.creativeAd?.[setAdVolume](volume);
   }
 
   /**
@@ -434,9 +441,13 @@ class VpaidAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    *
-   * @returns {number} - the volume of the ad unit.
+   * @returns the volume of the ad unit.
    */
-  getVolume () {
+  public getVolume (): number {
+    if (!this.creativeAd) {
+      return 0;
+    }
+
     return this.creativeAd[getAdVolume]();
   }
 
@@ -445,13 +456,13 @@ class VpaidAdUnit extends VideoAdUnit {
    *
    * @throws if ad unit is finished.
    */
-  async cancel () {
+  public async cancel (): Promise<void> {
     this[_protected].throwIfFinished();
 
     try {
-      const adStoppedPromise = waitFor(this.creativeAd, adStopped, 3000);
+      const adStoppedPromise = this.creativeAd && waitFor(this.creativeAd, adStopped, 3000);
 
-      this.creativeAd[stopAd]();
+      this.creativeAd?.[stopAd]();
       await adStoppedPromise;
     } catch (error) {
       this[_protected].finish();
@@ -463,9 +474,9 @@ class VpaidAdUnit extends VideoAdUnit {
    *
    * Note: if the user has engaged with the ad, the duration becomes unknown and it will return 0;
    *
-   * @returns {number} - the duration of the ad unit.
+   * @returns the duration of the ad unit.
    */
-  duration () {
+  public duration (): number {
     if (!this.creativeAd) {
       return 0;
     }
@@ -484,9 +495,9 @@ class VpaidAdUnit extends VideoAdUnit {
    *
    * Note: if the user has engaged with the ad, the currentTime becomes unknown and it will return 0;
    *
-   * @returns {number} - the current time of the ad unit.
+   * @returns the current time of the ad unit.
    */
-  currentTime () {
+  public currentTime (): number {
     if (!this.creativeAd) {
       return 0;
     }
@@ -506,10 +517,14 @@ class VpaidAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    *
-   * @returns {Promise} - that resolves once the unit was resized
+   * @returns Promise that resolves once the unit was resized
    */
-  async resize (width, height, viewmode) {
+  public async resize (width: number, height: number, viewmode: string): Promise<void> {
     await super.resize(width, height, viewmode);
+
+    if (!this.creativeAd) {
+      return
+    }
 
     return callAndWait(this.creativeAd, resizeAd, adSizeChange, width, height, viewmode);
   }
