@@ -1,5 +1,5 @@
 import {trackError} from '../tracker';
-import createVideoAdContainer from '../adContainer/createVideoAdContainer';
+import {createVideoAdContainer} from '../adContainer';
 import startVideoAd from './helpers/startVideoAd';
 
 /**

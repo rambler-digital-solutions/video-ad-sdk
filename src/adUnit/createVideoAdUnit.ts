@@ -5,7 +5,7 @@ import {
   trackNonLinearEvent
 } from '../tracker';
 import {VastChain, VastEventTrackerOptions} from '../types'
-import VideoAdContainer from '../adContainer/VideoAdContainer'
+import {VideoAdContainer} from '../adContainer'
 import VastAdUnit from './VastAdUnit';
 import VpaidAdUnit from './VpaidAdUnit';
 

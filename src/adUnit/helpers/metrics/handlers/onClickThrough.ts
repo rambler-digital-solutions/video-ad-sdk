@@ -1,18 +1,19 @@
 /* eslint-disable callback-return, promise/prefer-await-to-callbacks */
 import {linearEvents} from '../../../../tracker';
+import {VideoAdContainer} from '../../../../adContainer'
 
 const {clickThrough} = linearEvents;
 
-const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl} = {}) => {
+const onClickThrough = ({videoElement, element}: VideoAdContainer, callback, {clickThroughUrl} = {}) => {
   const placeholder = element || videoElement.parentNode;
-  const anchor = document.createElement('A');
+  const anchor = document.createElement('a');
 
   anchor.classList.add('mol-vast-clickthrough');
   anchor.style.width = '100%';
   anchor.style.height = '100%';
   anchor.style.position = 'absolute';
-  anchor.style.left = 0;
-  anchor.style.top = 0;
+  anchor.style.left = '0';
+  anchor.style.top = '0';
 
   if (clickThroughUrl) {
     anchor.href = clickThroughUrl;
@@ -20,14 +21,10 @@ const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl} = {
   }
 
   anchor.onclick = (event) => {
-    if (Event.prototype.stopPropagation !== undefined) {
-      event.stopPropagation();
-    }
+    event.stopPropagation?.();
 
     if (videoElement.paused) {
-      if (Event.prototype.preventDefault !== undefined) {
-        event.preventDefault();
-      }
+      event.preventDefault?.();
 
       videoElement.play();
     } else {

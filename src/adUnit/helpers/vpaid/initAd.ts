@@ -1,4 +1,4 @@
-import VideoAdContainer from '../../../adContainer/VideoAdContainer'
+import {VideoAdContainer} from '../../../adContainer'
 import {getCreativeData} from '../../../vastSelectors';
 import {VpaidCreativeAdUnit, VastChain} from '../../../types'
 import viewmode from './viewmode';

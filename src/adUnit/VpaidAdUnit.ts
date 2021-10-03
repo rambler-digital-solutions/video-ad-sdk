@@ -2,7 +2,7 @@ import linearEvents from '../tracker/linearEvents';
 import {acceptInvitation, adCollapse} from '../tracker/nonLinearEvents';
 import {getClickThrough} from '../vastSelectors';
 import {VastChain, VpaidCreativeAdUnit} from '../types'
-import VideoAdContainer from '../adContainer/VideoAdContainer'
+import {VideoAdContainer} from '../adContainer'
 import {volumeChanged, adProgress} from './adUnitEvents';
 import loadCreative from './helpers/vpaid/loadCreative';
 import {

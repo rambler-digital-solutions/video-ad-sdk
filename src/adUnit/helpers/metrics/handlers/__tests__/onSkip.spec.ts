@@ -1,4 +1,4 @@
-import createVideoAdContainer from '../../../../../adContainer/createVideoAdContainer';
+import {createVideoAdContainer} from '../../../../../adContainer';
 import {linearEvents} from '../../../../../tracker';
 import onSkip from '../onSkip';
 

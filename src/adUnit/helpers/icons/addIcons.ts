@@ -1,4 +1,4 @@
-import VideoAdContainer from '../../../adContainer/VideoAdContainer';
+import {VideoAdContainer} from '../../../adContainer';
 import {VastIcon as BaseIcon} from '../../../types';
 import renderIcons from './renderIcons';
 

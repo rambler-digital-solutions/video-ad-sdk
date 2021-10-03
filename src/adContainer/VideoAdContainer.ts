@@ -20,12 +20,12 @@ interface Hidden {
  * This class provides everything necessary to contain and create a video ad within a given placeholder Element.
  */
 class VideoAdContainer {
-  element: HTMLElement;
-  videoElement: HTMLVideoElement;
-  executionContext: ExecutionContext | null;
-  isOriginalVideoElement: boolean;
+  public element: HTMLElement;
+  public videoElement: HTMLVideoElement;
+  public executionContext: ExecutionContext | null;
+  public isOriginalVideoElement: boolean;
 
-  [hidden]: Hidden = {
+  private [hidden]: Hidden = {
     destroyed: false,
     id: nextId(),
     iframe: null,
@@ -38,7 +38,7 @@ class VideoAdContainer {
    * @param placeholder DIV that will contain the ad.
    * @param videoElement optional videoElement that will be used to play the ad.
    */
-  constructor(
+  public constructor(
     placeholder: HTMLElement,
     videoElement: HTMLVideoElement | null = null
   ) {
@@ -67,7 +67,7 @@ class VideoAdContainer {
    * @param src script source uri.
    * @param options Options map.
    */
-  async addScript(
+  public async addScript(
     src: string,
     options: Omit<LoadScriptOptions, 'placeholder'> = {}
   ): Promise<HTMLScriptElement> {
@@ -94,7 +94,7 @@ class VideoAdContainer {
   /**
    * Destroys the VideoAdContainer.
    */
-  destroy(): Promise<void> {
+  public destroy(): Promise<void> {
     // NOTE: calling destroy immediately terminates the iframe and cancels
     //       tracking requests from vpaid script, so destroying should
     //       immediately hides and remove the iframe from dom after timeout
@@ -116,7 +116,7 @@ class VideoAdContainer {
    *
    * @returns true if the container is destroyed and false otherwise.
    */
-  isDestroyed(): boolean {
+  public isDestroyed(): boolean {
     return this[hidden].destroyed;
   }
 }

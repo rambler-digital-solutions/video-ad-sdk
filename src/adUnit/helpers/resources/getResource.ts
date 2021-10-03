@@ -1,4 +1,4 @@
-import {VastIcon} from '../../../vastSelectors'
+import {VastIcon} from '../../../types'
 
 const getResource = ({
   staticResource,

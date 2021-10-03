@@ -1,7 +1,7 @@
 import {linearEvents} from '../tracker';
 import {getViewable} from '../vastSelectors';
 import {VastChain, VastIcon} from '../types'
-import VideoAdContainer from '../adContainer/VideoAdContainer'
+import {VideoAdContainer} from '../adContainer'
 import {finish} from './adUnitEvents';
 import {onElementVisibilityChange, onElementResize} from './helpers/dom/elementObservers';
 import preventManualProgress from './helpers/dom/preventManualProgress';

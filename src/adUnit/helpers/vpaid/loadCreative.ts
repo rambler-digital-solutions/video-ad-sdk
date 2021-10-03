@@ -1,4 +1,4 @@
-import VideoAdContainer from '../../../adContainer/VideoAdContainer'
+import {VideoAdContainer} from '../../../adContainer'
 import {getInteractiveFiles} from '../../../vastSelectors';
 import {VastChain, VpaidCreativeAdUnit, ExecutionContext} from '../../../types'
 import isSupported from './isSupported';

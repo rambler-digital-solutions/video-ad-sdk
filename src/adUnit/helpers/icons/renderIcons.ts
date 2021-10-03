@@ -1,5 +1,5 @@
 import {VastIcon} from '../../../types';
-import VideoAdContainer from '../../../adContainer/VideoAdContainer';
+import {VideoAdContainer} from '../../../adContainer';
 import renderIcon from './renderIcon';
 import canBeShown from './canBeShown';
 

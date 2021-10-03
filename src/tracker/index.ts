@@ -1,15 +1,6 @@
-import linearEvents from './linearEvents';
-import nonLinearEvents from './nonLinearEvents';
-import trackLinearEvent from './trackLinearEvent';
-import trackNonLinearEvent from './trackNonLinearEvent';
-import pixelTracker from './helpers/pixelTracker';
-import trackError from './helpers/trackError';
-
-export {
-  linearEvents,
-  nonLinearEvents,
-  pixelTracker,
-  trackLinearEvent,
-  trackNonLinearEvent,
-  trackError
-};
+export {default as linearEvents} from './linearEvents';
+export {default as nonLinearEvents} from './nonLinearEvents';
+export {default as trackLinearEvent} from './trackLinearEvent';
+export {default as trackNonLinearEvent} from './trackNonLinearEvent';
+export {default as pixelTracker} from './helpers/pixelTracker';
+export {default as trackError} from './helpers/trackError';

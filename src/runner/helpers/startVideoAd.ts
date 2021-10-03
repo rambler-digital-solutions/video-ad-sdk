@@ -1,5 +1,5 @@
-import createVideoAdUnit from '../../adUnit/createVideoAdUnit';
-import VideoAdContainer from '../../adContainer/VideoAdContainer';
+import {createVideoAdUnit} from '../../adUnit';
+import {VideoAdContainer} from '../../adContainer';
 import {getInteractiveFiles, getMediaFiles} from '../../vastSelectors';
 import canPlay from '../../adUnit/helpers/media/canPlay';
 import {

@@ -1,7 +1,7 @@
 import {linearEvents} from '../tracker';
 import {getSkipOffset} from '../vastSelectors';
 import {VastChain, Hooks, MacroData} from '../types'
-import VideoAdContainer from '../adContainer/VideoAdContainer'
+import {VideoAdContainer} from '../adContainer'
 import findBestMedia from './helpers/media/findBestMedia';
 import once from './helpers/dom/once';
 import setupMetricHandlers from './helpers/metrics/setupMetricHandlers';

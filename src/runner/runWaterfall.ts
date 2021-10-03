@@ -1,7 +1,6 @@
 /* eslint-disable promise/prefer-await-to-callbacks, callback-return */
 import {trackError} from '../tracker';
-import requestAd from '../vastRequest/requestAd';
-import requestNextAd from '../vastRequest/requestNextAd';
+import {requestAd, requestNextAd} from '../vastRequest';
 import {getInteractiveFiles} from '../vastSelectors';
 import isIOS from '../utils/isIOS';
 import run from './run';

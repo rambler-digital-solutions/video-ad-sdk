@@ -1,12 +1,13 @@
-import {getLinearTrackingEvents, VastChain, VastTrackingEvent} from '../../../vastSelectors';
+import {getLinearTrackingEvents} from '../../../vastSelectors';
+import {VastChain, VastTrackingEvent, ParsedAd} from '../../../types'
 import {linearEvents} from '../../../tracker';
 
 const {
   progress
 } = linearEvents;
 
-const getProgressEvents = (vastChain: VastChain): VastTrackingEvent[] => vastChain.map(({ad}) => ad)
-  .reduce((accumulated: VastTrackingEvent[], ad) => {
+const getProgressEvents = (vastChain: VastChain): VastTrackingEvent[] => vastChain.map(({ad}: VastChain) => ad)
+  .reduce((accumulated: VastTrackingEvent[], ad: ParsedAd) => {
     const events = ad && getLinearTrackingEvents(ad, progress) || [];
 
     return [
@@ -14,7 +15,7 @@ const getProgressEvents = (vastChain: VastChain): VastTrackingEvent[] => vastCha
       ...events
     ];
   }, [])
-  .map(({offset, uri}) => ({
+  .map(({offset, uri}: VastTrackingEvent) => ({
     offset,
     uri
   }));
