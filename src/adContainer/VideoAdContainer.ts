@@ -1,4 +1,4 @@
-import {ExecutionContext} from '../types'
+import {ExecutionContext} from '../types';
 import loadScript, {LoadScriptOptions} from './helpers/loadScript';
 import createAdVideoElement from './helpers/createAdVideoElement';
 import createAdContainer from './helpers/createAdContainer';
@@ -40,7 +40,7 @@ class VideoAdContainer {
    */
   public constructor(
     placeholder: HTMLElement,
-    videoElement: HTMLVideoElement | null = null
+    videoElement?: HTMLVideoElement
   ) {
     if (!(placeholder instanceof Element)) {
       throw new TypeError('placeholder is not an Element');

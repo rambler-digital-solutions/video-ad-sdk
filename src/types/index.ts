@@ -471,7 +471,7 @@ export interface VastEventTrackerOptions {
   /**
    * Error code. Needed if we are tracking an error.
    */
-  errorCode?: string | null;
+  errorCode?: number | null;
   /**
    * Optional tracker to use for the actual tracking. Defaults to the pixel tracker.
    */
@@ -492,12 +492,7 @@ export interface RequestAdOptions extends RequestInit {
    * Sets the maximum number of wrappers allowed in the {@link VastChain}.
    * Defaults to `5`.
    */
-  wrapperLimit: number;
-  /**
-   * Boolean to indicate whether adPods are allowed or not.
-   * Defaults to `true`.
-   */
-  allowMultipleAds: boolean;
+  wrapperLimit?: number;
   /**
    * Timeout number in milliseconds. If set, the request will timeout if it is not fulfilled before the specified time.
    */
@@ -506,7 +501,7 @@ export interface RequestAdOptions extends RequestInit {
    * Optional function to track whatever errors occur during the loading.
    * Defaults to `video-ad-tracker` track method.
    */
-  tracker: PixelTracker;
+  tracker?: PixelTracker;
 }
 
 /**
@@ -519,58 +514,65 @@ export interface RequestNextAdOptions extends RequestAdOptions {
    * Set it to true if an ad from an adPod failed and you want to replace it with an ad from the ad buffet.
    * Defaults to `false`.
    */
-  useAdBuffet: boolean;
+  useAdBuffet?: boolean;
   /**
    * Tells the video player to select an ad from any stand-alone ads available.
    * Note: if the {@link VastChain} contains an adPod this property will be ignored.
    * Defaults to `true`.
    */
-  fallbackOnNoAd: boolean;
+  fallbackOnNoAd?: boolean;
 }
 
 /**
  * Vpaid Creative environment variables
  */
 export interface EnvironmentVars {
-  slot?: HTMLElement
-  videoSlot?: HTMLVideoElement
-  videoSlotCanAutoPlay?: boolean
+  slot?: HTMLElement;
+  videoSlot?: HTMLVideoElement;
+  videoSlotCanAutoPlay?: boolean;
 }
 
 /**
  * The Vpaid Creative ad unit
  */
 export interface VpaidCreativeAdUnit {
-  handshakeVersion(version: string): string
-  initAd(width: number, height: number, mode: string, desiredBitrate?: number, creativeData?: CreativeData, environmentVars?: EnvironmentVars): void
-  resizeAd(width: number, height: number, mode: string): void
-  startAd(): void
-  stopAd(): void
-  pauseAd(): void
-  resumeAd(): void
-  expandAd(): void
-  skipAd(): void
-  collapseAd(): void
-  getAdLinear(): void
-  getAdWidth(): number
-  getAdHeight(): number
-  getAdExpanded(): boolean
-  getAdSkippableState(): boolean
-  getAdRemainingTime(): number
-  getAdDuration(): number
-  getAdVolume(): number
-  getAdCompanions(): unknown[]
-  getAdIcons(): VastIcon[]
-  setAdVolume(volume: number): void
-  subscribe(listener: (...args: any[]) => void, event: string): void
-  unsubscribe(listener: (...args: any[]) => void, event: string): void
+  handshakeVersion(version: string): string;
+  initAd(
+    width: number,
+    height: number,
+    mode: string,
+    desiredBitrate?: number,
+    creativeData?: CreativeData,
+    environmentVars?: EnvironmentVars
+  ): void;
+  resizeAd(width: number, height: number, mode: string): void;
+  startAd(): void;
+  stopAd(): void;
+  pauseAd(): void;
+  resumeAd(): void;
+  expandAd(): void;
+  skipAd(): void;
+  collapseAd(): void;
+  getAdLinear(): void;
+  getAdWidth(): number;
+  getAdHeight(): number;
+  getAdExpanded(): boolean;
+  getAdSkippableState(): boolean;
+  getAdRemainingTime(): number;
+  getAdDuration(): number;
+  getAdVolume(): number;
+  getAdCompanions(): unknown[];
+  getAdIcons(): VastIcon[];
+  setAdVolume(volume: number): void;
+  subscribe(listener: (...args: any[]) => void, event: string): void;
+  unsubscribe(listener: (...args: any[]) => void, event: string): void;
 }
 
 /**
  * The Vpaid execution context.
  */
 export interface ExecutionContext extends Window {
-  getVPAIDAd(): VpaidCreativeAdUnit
+  getVPAIDAd(): VpaidCreativeAdUnit;
 }
 
 /**
@@ -580,9 +582,9 @@ export interface Hooks {
   /**
    * If provided it will be called to generate the skip control. Must return a clickable [HTMLElement](https://developer.mozilla.org/es/docs/Web/API/HTMLElement) that is detached from the DOM.
    */
-  createSkipControl?(): void
+  createSkipControl?(): void;
   /**
    * If provided it will be called to get a {@link MediaFile} by size of the current video element.
    */
-  getMediaFile?(mediaFiles: MediaFile[], screenRect: ClientRect): MediaFile
+  getMediaFile?(mediaFiles: MediaFile[], screenRect: ClientRect): MediaFile;
 }

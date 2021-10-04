@@ -1,12 +1,19 @@
-/* eslint-disable promise/prefer-await-to-callbacks, callback-return */
 import {trackError} from '../tracker';
 import {requestAd, requestNextAd} from '../vastRequest';
+import VastError from '../vastRequest/helpers/vastError';
 import {getInteractiveFiles} from '../vastSelectors';
+import {VastAdUnit, VpaidAdUnit} from '../adUnit';
+import {VastChain, Hooks} from '../types';
 import isIOS from '../utils/isIOS';
-import run from './run';
+import run, {RunOptions} from './run';
 
-const isVpaid = (vastChain) => Boolean(getInteractiveFiles(vastChain[0].ad));
-const validateVastChain = (vastChain, options) => {
+const isVpaid = (vastChain: VastChain): boolean =>
+  Boolean(vastChain[0].ad && getInteractiveFiles(vastChain[0].ad));
+
+const validateVastChain = (
+  vastChain: VastChain,
+  options: RunWaterfallOptions
+): void => {
   if (!vastChain || vastChain.length === 0) {
     throw new Error('Invalid VastChain');
   }
@@ -14,7 +21,9 @@ const validateVastChain = (vastChain, options) => {
   const lastVastResponse = vastChain[0];
 
   if (!options.vpaidEnabled && isVpaid(vastChain)) {
-    const error = new Error('VPAID ads are not supported by the current player');
+    const error = new VastError(
+      'VPAID ads are not supported by the current player'
+    );
 
     error.code = 200;
     lastVastResponse.errorCode = 200;
@@ -25,36 +34,54 @@ const validateVastChain = (vastChain, options) => {
     throw lastVastResponse.error;
   }
 
-  if (options.hooks && typeof options.hooks.validateVastResponse === 'function') {
+  if (typeof options.hooks?.validateVastResponse === 'function') {
     options.hooks.validateVastResponse(vastChain);
   }
 };
 
-const callbackHandler = (cb) => (...args) => {
-  if (typeof cb === 'function') {
-    cb(...args);
-  }
-};
+const callbackHandler =
+  (callback?: (...args: any[]) => void) =>
+  (...args: any[]): void => {
+    if (typeof callback === 'function') {
+      callback(...args);
+    }
+  };
 
-const getErrorCode = (vastChain, error) => vastChain && vastChain[0] && vastChain[0].errorCode || error.code;
-const transformVastResponse = (vastChain, {hooks}) => {
-  if (hooks && typeof hooks.transformVastResponse === 'function') {
+const getErrorCode = (
+  vastChain?: VastChain,
+  error?: VastError
+): number | undefined => vastChain?.[0]?.errorCode || error?.code;
+
+const transformVastResponse = (
+  vastChain: VastChain,
+  {hooks}: WaterfallOptions
+): VastChain => {
+  if (typeof hooks?.transformVastResponse === 'function') {
     return hooks.transformVastResponse(vastChain);
   }
 
   return vastChain;
 };
 
-// eslint-disable-next-line complexity
-const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
-  let vastChain;
-  let runEpoch;
-  let adUnit;
-  const opts = {...options};
-  const {onAdStart, onError, onRunFinish} = opts;
+export type WaterfallOptions = Omit<
+  RunWaterfallOptions,
+  'onAdStart' | 'onError' | 'onRunFinish'
+> &
+  Required<Pick<RunWaterfallOptions, 'onAdStart' | 'onError' | 'onRunFinish'>>;
+
+const waterfall = async (
+  fetchVastChain: () => Promise<VastChain>,
+  placeholder: HTMLElement,
+  {...options}: WaterfallOptions,
+  isCanceled: () => boolean
+): Promise<void> => {
+  let vastChain: VastChain | undefined;
+  let runEpoch!: number;
+  let adUnit: VastAdUnit | VpaidAdUnit | undefined;
+  const {onAdStart, onError, onRunFinish} = options;
 
   try {
-    if (typeof opts.timeout === 'number') {
+    if (typeof options.timeout === 'number') {
       runEpoch = Date.now();
     }
 
@@ -69,13 +96,18 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
     if (runEpoch) {
       const newEpoch = Date.now();
 
-      opts.timeout -= newEpoch - runEpoch;
+      if (options.timeout) {
+        options.timeout -= newEpoch - runEpoch;
+      }
+
       runEpoch = newEpoch;
     }
 
-    validateVastChain(vastChain, opts);
+    validateVastChain(vastChain, options);
 
-    adUnit = await run(transformVastResponse(vastChain, opts), placeholder, {...opts});
+    adUnit = await run(transformVastResponse(vastChain, options), placeholder, {
+      ...options
+    });
 
     if (isCanceled()) {
       adUnit.cancel();
@@ -90,7 +122,7 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
   } catch (error) {
     const errorCode = getErrorCode(vastChain, error);
 
-    if (Boolean(errorCode)) {
+    if (vastChain && errorCode) {
       const {tracker} = options;
 
       trackError(vastChain, {
@@ -105,12 +137,17 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
     });
 
     if (vastChain && !isCanceled()) {
-      if (runEpoch) {
-        opts.timeout -= Date.now() - runEpoch;
+      if (options.timeout && runEpoch) {
+        options.timeout -= Date.now() - runEpoch;
       }
 
-      if (!runEpoch || opts.timeout > 0) {
-        waterfall(() => requestNextAd(vastChain, opts), placeholder, {...opts}, isCanceled);
+      if (!runEpoch || (options.timeout && options.timeout > 0)) {
+        waterfall(
+          () => requestNextAd(vastChain as VastChain, options),
+          placeholder,
+          {...options},
+          isCanceled
+        );
 
         return;
       }
@@ -120,50 +157,83 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
   }
 };
 
+interface ErrorData {
+  /**
+   * The {@link VastChain} that caused the error.
+   */
+  vastChain?: VastChain;
+  /**
+   * Ad unit instance it can be a {@link VastAdUnit} or a {@link VpaidAdUnit}. Will only be added if the vastChain had an ad.
+   */
+  adUnit?: VastAdUnit | VpaidAdUnit;
+}
+
+interface RunWaterfallHooks extends Hooks {
+  /**
+   * If provided it will be called passing the current {@link VastChain} for each valid vast response. Must throw if there is a problem with the vast response. If the Error instance has an `code` number then it will be tracked using the error macros in the Vast response. It will also call {@link runWaterfall~onError} with the thrown error.
+   */
+  validateVastResponse?(vastChain: VastChain): void;
+  /**
+   * If provided it will be called with the current {@link VastChain} before building the adUnit allowing the modification of the vastResponse if needed.
+   */
+  transformVastResponse?(vastChain: VastChain): VastChain;
+}
+
+export interface RunWaterfallOptions extends RunOptions {
+  /**
+   * Sets the maximum number of wrappers allowed in the {@link VastChain}. Defaults to `5`.
+   */
+  wrapperLimit?: number;
+  /**
+   * If false and it gets a VPAID ad, it will throw an error before starting the ad and continue down in the waterfall. Defaults to `true`.
+   */
+  vpaidEnabled?: boolean;
+  /**
+   * Will be called once the ad starts with the ad unit.
+   *
+   * @param adUnit the ad unit instance.
+   */
+  onAdStart?(adUnit: VastAdUnit | VpaidAdUnit): void;
+  /**
+   * Will be called whenever the an error occurs within the ad unit. It may be called several times with different errors
+   *
+   * @param error the ad unit error.
+   * @param data Data object that will contain.
+   */
+  onError?(error: Error, data: ErrorData): void;
+  /**
+   * Will be called once the ad run is finished. It will be called no matter how the run was finished (due to an ad complete or an error). It can be used to know when to unmount the component.
+   */
+  onRunFinish?(): void;
+  /**
+   * Optional map with hooks to configure the behaviour of the ad.
+   */
+  hooks?: RunWaterfallHooks;
+}
+
 /**
  * Will try to start one of the ads returned by the `adTag`. It will keep trying until it times out or it runs out of ads.
  *
- * @memberof module:video-ad-sdk
- * @static
- * @alias runWaterfall
- * @param {string} adTag - The VAST ad tag request url.
- * @param {HTMLElement} placeholder - placeholder element that will contain the video ad.
- * @param {Object} [options] - Options Map. The allowed properties are:
- * @param {HTMLVideoElement} [options.videoElement] - optional videoElement that will be used to play the ad.
- * @param {Console} [options.logger] - Optional logger instance. Must comply to the [Console interface]{@link https://developer.mozilla.org/es/docs/Web/API/Console}.
- * Defaults to `window.console`
- * @param {number} [options.wrapperLimit] - Sets the maximum number of wrappers allowed in the {@link VastChain}.
- *  Defaults to `5`.
- * @param {runWaterfall~onAdReady} [options.onAdReady] - will be called once the ad is ready with the ad unit.
- * @param {runWaterfall~onAdStart} [options.onAdStart] - will be called once the ad starts with the ad unit.
- * @param {runWaterfall~onError} [options.onError] - will be called if there is an error with the video ad with the error instance and an obj with the {@link VastChain} and the ad unit if it exists.
- * @param {runWaterfall~onRunFinish} [options.onRunFinish] - will be called whenever the ad run finishes.
- * @param {boolean} [options.viewability] - if true it will pause the ad whenever is not visible for the viewer.
- * Defaults to `false`
- * @param {boolean} [options.responsive] - if true it will resize the ad unit whenever the ad container changes sizes.
- * Defaults to `false`
- * @param {number} [options.timeout] - timeout number in milliseconds. If set, the video ad will time out if it doesn't start within the specified time.
- * @param {TrackerFn} [options.tracker] - If provided it will be used to track the VAST events instead of the default {@link pixelTracker}.
- * @param {boolean} [options.vpaidEnabled] - if false and it gets a VPAID ad, it will throw an error before starting the ad and continue down in the waterfall.
- * Defaults to `true`.
- * @param {Object} [options.hooks] - Optional map with hooks to configure the behaviour of the ad.
- * @param {Function} [options.hooks.createSkipControl] - If provided it will be called to generate the skip control. Must return a clickable [HTMLElement](https://developer.mozilla.org/es/docs/Web/API/HTMLElement) that is detached from the DOM.
- * @param {Function} [options.hooks.getMediaFile] - If provided it will be called to get a {@link MediaFile} by size of the current video element.
- * @param {Function} [options.hooks.validateVastResponse] - If provided it will be called passing the current {@link VastChain} for each valid vast response. Must throw if there is a problem with the vast response. If the Error instance has an `code` number then it will be tracked using the error macros in the Vast response. It will also call {@link runWaterfall~onError} with the thrown error.
- * @param {Function} [options.hooks.transformVastResponse] - If provided it will be called with the current {@link VastChain} before building the adUnit allowing the modification of the vastResponse if needed.
- * @returns {Function} - Cancel function. If called it will cancel the ad run. {@link runWaterfall~onRunFinish} will still be called;
+ * @param adTag The VAST ad tag request url.
+ * @param placeholder placeholder element that will contain the video ad.
+ * @param options Options Map
+ * @returns Cancel function. If called it will cancel the ad run. {@link runWaterfall~onRunFinish} will still be called;
  */
-const runWaterfall = (adTag, placeholder, options) => {
+const runWaterfall = (
+  adTag: string,
+  placeholder: HTMLElement,
+  options: RunWaterfallOptions
+): (() => void) => {
   let canceled = false;
-  let adUnit = null;
-  const isCanceled = () => canceled;
+  let adUnit: VastAdUnit | VpaidAdUnit | undefined;
+  const isCanceled = (): boolean => canceled;
   const onAdStartHandler = callbackHandler(options.onAdStart);
-  const onAdStart = (newAdUnit) => {
+  const onAdStart = (newAdUnit: VastAdUnit | VpaidAdUnit): void => {
     adUnit = newAdUnit;
     onAdStartHandler(adUnit);
   };
 
-  const opts = {
+  const resultOptions: WaterfallOptions = {
     vpaidEnabled: true,
     ...options,
     // eslint-disable-next-line sort-keys
@@ -180,9 +250,14 @@ const runWaterfall = (adTag, placeholder, options) => {
     options.videoElement.load();
   }
 
-  waterfall(() => requestAd(adTag, opts), placeholder, opts, isCanceled);
+  waterfall(
+    () => requestAd(adTag, resultOptions),
+    placeholder,
+    resultOptions,
+    isCanceled
+  );
 
-  return () => {
+  return (): void => {
     canceled = true;
 
     if (adUnit && !adUnit.isFinished()) {
@@ -192,33 +267,3 @@ const runWaterfall = (adTag, placeholder, options) => {
 };
 
 export default runWaterfall;
-
-/**
- * Called once the ad starts.
- *
- * @callback RunWaterfall~onAdStart
- * @param {VastAdUnit | VideoAdUnit} adUnit - the ad unit instance.
- */
-
-/**
- * Called once the ad unit is created.
- *
- * @callback RunWaterfall~onAdReady
- * @param {VastAdUnit | VideoAdUnit} adUnit - the ad unit instance.
- */
-
-/**
- * Called whenever the an error occurs within the ad unit. It may be called several times with different errors
- *
- * @callback RunWaterfall~onError
- * @param {Error} error - the ad unit error.
- * @param {Object} [data] - Data object that will contain:
- * @param {VastChain} [data.vastChain] - The {@link VastChain} that caused the error.
- * @param {VideoAdUnit} [data.adUnit] - Ad unit instance it can be a {@link VastAdUnit} or a {@link VpaidAdUnit}. Will only be added if the vastChain had an ad.
- */
-
-/**
- * Called once the ad run is finished. It will be called no matter how the run was finished (due to an ad complete or an error). It can be used to know when to unmount the component.
- *
- * @callback RunWaterfall~onRunFinish
- */

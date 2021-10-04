@@ -11,7 +11,7 @@ import VideoAdContainer from './VideoAdContainer';
  */
 const createVideoAdContainer = (
   placeholder: HTMLElement,
-  videoElement: HTMLVideoElement | null
+  videoElement?: HTMLVideoElement
 ): VideoAdContainer => {
   if (!placeholder) {
     throw new TypeError('placeholder is required');
