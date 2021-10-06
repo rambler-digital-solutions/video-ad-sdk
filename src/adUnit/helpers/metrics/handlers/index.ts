@@ -1,4 +1,5 @@
-/* eslint-disable import/max-dependencies */
+import {VideoAdContainer} from '../../../../adContainer';
+import {MetricHandlerData, Cancel} from '../../../../types';
 import onFullscreenChange from './onFullscreenChange';
 import onPlayPause from './onPlayPause';
 import onRewind from './onRewind';
@@ -10,7 +11,13 @@ import onImpression from './onImpression';
 import onProgress from './onProgress';
 import onClickThrough from './onClickThrough';
 
-const handlers = [
+type MetricHandler = (
+  videoAdContainer: VideoAdContainer,
+  callback: (event: string, ...args: any[]) => void,
+  data: MetricHandlerData
+) => Cancel;
+
+const handlers: MetricHandler[] = [
   onClickThrough,
   onError,
   onFullscreenChange,

@@ -34,7 +34,7 @@ const removeDrawnIcons = (icons: VastIcon[]): void =>
     .forEach(({element}) => element?.parentNode?.removeChild(element));
 
 export interface AddIconsOptions {
-  videoAdContainer?: VideoAdContainer;
+  videoAdContainer: VideoAdContainer;
   onIconView?(icon: VastIcon): void;
   onIconClick?(icon: VastIcon): void;
   logger?: Console;
@@ -53,7 +53,7 @@ const addIcons = (
     onIconView = noop,
     onIconClick = noop,
     ...rest
-  }: AddIconsOptions = {}
+  }: AddIconsOptions
 ): AddedIcons => {
   const {videoElement, element} = videoAdContainer;
   const drawIcons = async (): Promise<void> => {

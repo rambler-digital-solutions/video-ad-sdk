@@ -47,7 +47,7 @@ const fetchAdXML = async (
     const XML = await response.text();
 
     return {response, XML};
-  } catch (error) {
+  } catch (error: any) {
     error.code = 502;
     error.response ??= response;
 
@@ -58,7 +58,7 @@ const fetchAdXML = async (
 const parseVastXml = (xml: string): ParsedXML => {
   try {
     return parseXml(xml);
-  } catch (error) {
+  } catch (error: any) {
     error.code = 100;
     throw error;
   }
@@ -75,7 +75,7 @@ const getAd = (parsedXML: ParsedXML): ParsedAd => {
     }
 
     throw new Error('No Ad');
-  } catch (error) {
+  } catch (error: any) {
     error.code = 303;
     throw error;
   }
@@ -199,7 +199,7 @@ const requestAd = async (
     }
 
     return [vastAdResponse, ...vastChain];
-  } catch (error) {
+  } catch (error: any) {
     /* istanbul ignore if */
     if (!Number.isInteger(error.code)) {
       error.code = 900;

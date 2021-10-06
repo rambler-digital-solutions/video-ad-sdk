@@ -154,6 +154,15 @@ export interface VastIcon {
   element?: HTMLAnchorElement;
 }
 
+export interface RenderedVastIcon extends VastIcon {
+  height: number;
+  left: number;
+  top: number;
+  width: number;
+  signature: string;
+  updated: boolean;
+}
+
 /**
  * From [VAST specification]{@link https://iabtechlab.com/standards/vast/}:
  *
@@ -582,9 +591,23 @@ export interface Hooks {
   /**
    * If provided it will be called to generate the skip control. Must return a clickable [HTMLElement](https://developer.mozilla.org/es/docs/Web/API/HTMLElement) that is detached from the DOM.
    */
-  createSkipControl?(): void;
+  createSkipControl?(): HTMLElement;
   /**
    * If provided it will be called to get a {@link MediaFile} by size of the current video element.
    */
   getMediaFile?(mediaFiles: MediaFile[], screenRect: ClientRect): MediaFile;
 }
+
+/**
+ * VAST metric handler data
+ */
+export interface MetricHandlerData extends Hooks {
+  clickThroughUrl?: string | null;
+  progressEvents?: VastTrackingEvent[];
+  skipoffset?: ParsedOffset | null;
+}
+
+/**
+ * Cancelation function
+ */
+export type Cancel = () => void;

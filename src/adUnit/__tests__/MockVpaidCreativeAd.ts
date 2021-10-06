@@ -1,5 +1,6 @@
 import Emitter from '../helpers/Emitter';
 import {
+  handshakeVersion,
   initAd,
   startAd,
   stopAd,
@@ -16,35 +17,37 @@ import {
 } from '../helpers/vpaid/api';
 
 class MockVpaidCreativeAd extends Emitter {
-  constructor (version = '2.0') {
+  version: string;
+  volume = 0.8;
+
+  constructor(version = '2.0') {
     super();
     this.version = version;
-    this.volume = 0.8;
-
-    this.handshakeVersion = jest.fn(() => version);
-    this[initAd] = jest.fn();
-    this[startAd] = jest.fn();
-    this[stopAd] = jest.fn();
-    this[resumeAd] = jest.fn();
-    this[pauseAd] = jest.fn();
-    this[skipAd] = jest.fn();
-    this[getAdIcons] = jest.fn();
-    this[getAdDuration] = jest.fn();
-    this[getAdRemainingTime] = jest.fn();
-    this[setAdVolume] = jest.fn((volume) => {
-      this.volume = volume;
-      this.emit(adVolumeChange);
-    });
-    this[getAdVolume] = jest.fn(() => this.volume);
-    this[resizeAd] = jest.fn();
   }
 
-  subscribe (callback, event) {
-    this.on(event, callback);
+  [handshakeVersion] = jest.fn(() => this.version);
+  [initAd] = jest.fn();
+  [startAd] = jest.fn();
+  [stopAd] = jest.fn();
+  [resumeAd] = jest.fn();
+  [pauseAd] = jest.fn();
+  [skipAd] = jest.fn();
+  [getAdIcons] = jest.fn();
+  [getAdDuration] = jest.fn();
+  [getAdRemainingTime] = jest.fn();
+  [setAdVolume] = jest.fn((volume) => {
+    this.volume = volume;
+    this.emit(adVolumeChange);
+  });
+  [getAdVolume] = jest.fn(() => this.volume);
+  [resizeAd] = jest.fn();
+
+  subscribe(listener: (...args: any[]) => void, event: string): void {
+    this.on(event, listener);
   }
 
-  unsubscribe (callback, event) {
-    this.removeListener(event, callback);
+  unsubscribe(listener: (...args: any[]) => void, event: string): void {
+    this.removeListener(event, listener);
   }
 }
 

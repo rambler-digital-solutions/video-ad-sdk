@@ -1,10 +1,14 @@
-/* eslint-disable callback-return, promise/prefer-await-to-callbacks */
 import {linearEvents} from '../../../../tracker';
-import {VideoAdContainer} from '../../../../adContainer'
+import {VideoAdContainer} from '../../../../adContainer';
+import {MetricHandlerData, Cancel} from '../../../../types';
 
 const {clickThrough} = linearEvents;
 
-const onClickThrough = ({videoElement, element}: VideoAdContainer, callback, {clickThroughUrl} = {}) => {
+const onClickThrough = (
+  {videoElement, element}: VideoAdContainer,
+  callback: (event: string) => void,
+  {clickThroughUrl}: MetricHandlerData = {}
+): Cancel => {
   const placeholder = element || videoElement.parentNode;
   const anchor = document.createElement('a');
 
@@ -40,4 +44,3 @@ const onClickThrough = ({videoElement, element}: VideoAdContainer, callback, {cl
 };
 
 export default onClickThrough;
-

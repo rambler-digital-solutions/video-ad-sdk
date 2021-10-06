@@ -1,10 +1,15 @@
-import {MediaFile} from '../../../types'
+import {MediaFile} from '../../../types';
 
-const sortMediaByBestFit = (mediaFiles: MediaFile[], screenRect: ClientRect): MediaFile[] => {
+const sortMediaByBestFit = (
+  mediaFiles: MediaFile[],
+  screenRect: ClientRect
+): MediaFile[] => {
   const screenWidth = screenRect.width;
   const compareTo = (mediaFileA: MediaFile, mediaFileB: MediaFile): number => {
-    const deltaA = Math.abs(screenWidth - (mediaFileA.width || 0));
-    const deltaB = Math.abs(screenWidth - (mediaFileB.width || 0));
+    const widthA = mediaFileA.width;
+    const widthB = mediaFileB.width;
+    const deltaA = Math.abs(screenWidth - (widthA ? parseInt(widthA, 10) : 0));
+    const deltaB = Math.abs(screenWidth - (widthB ? parseInt(widthB, 10) : 0));
 
     return deltaA - deltaB;
   };

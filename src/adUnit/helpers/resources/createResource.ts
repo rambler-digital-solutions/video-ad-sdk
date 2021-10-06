@@ -8,6 +8,8 @@ export type ResourceElement =
   | HTMLIFrameElement
   | HTMLImageElement;
 
+const noopResource = document.createElement('div');
+
 const createResource = (
   document: Document,
   data: VastIcon
@@ -28,10 +30,14 @@ const createResource = (
     });
   }
 
-  return createIframeResource(iFrameResource, {
-    data,
-    document
-  });
+  if (iFrameResource) {
+    return createIframeResource(iFrameResource, {
+      data,
+      document
+    });
+  }
+
+  return noopResource;
 };
 
 export default createResource;

@@ -16,3 +16,15 @@ interface Array<T> {
     thisArg?: any
   ): Exclude<S, Falsy>[];
 }
+
+interface Window {
+  MozMutationObserver?: MutationObserver;
+  WebKitMutationObserver?: MutationObserver;
+  MSStream?: ReadableStream;
+}
+
+interface Document {
+  mozFullScreenElement?: Element;
+  msFullscreenElement?: Element;
+  webkitFullscreenElement?: Element;
+}

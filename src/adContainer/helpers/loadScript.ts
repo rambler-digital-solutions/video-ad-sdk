@@ -26,12 +26,7 @@ export interface LoadScriptOptions {
  */
 const loadScript = (
   src: string,
-  {
-    async = false,
-    defer = false,
-    type = 'text/javascript',
-    placeholder
-  }: LoadScriptOptions = {}
+  {async = false, defer = false, type, placeholder}: LoadScriptOptions = {}
 ): Promise<HTMLScriptElement> => {
   if (!src) {
     throw new TypeError('Missing required "src" parameter');
@@ -41,7 +36,7 @@ const loadScript = (
     const script = document.createElement('script');
     let scriptPlaceholder: HTMLElement | Node | null | undefined = placeholder;
 
-    script.type = type;
+    script.type = type ?? 'text/javascript';
     script.async = async;
     script.defer = defer;
     script.onerror = () =>

@@ -1,12 +1,16 @@
-import {VpaidCreativeAdUnit} from '../../../types'
+import {VpaidCreativeAdUnit} from '../../../types';
 import waitFor from './waitFor';
 
-type ArgumentsType<T> = T extends  (...args: infer U) => any ? U: never;
-
-const callAndWait = <T extends keyof VpaidCreativeAdUnit>(creativeAd: VpaidCreativeAdUnit, method: T, event: string, ...args: ArgumentsType<VpaidCreativeAdUnit[T]>): Promise<void> => {
+const callAndWait = (
+  creativeAd: VpaidCreativeAdUnit,
+  method: keyof VpaidCreativeAdUnit,
+  event: string,
+  ...args: any[]
+): Promise<void> => {
   const waitPromise = waitFor(creativeAd, event, 5000);
+  const creativeMethod: any = creativeAd[method];
 
-  creativeAd[method](...args);
+  creativeMethod?.apply(creativeAd, args);
 
   return waitPromise;
 };

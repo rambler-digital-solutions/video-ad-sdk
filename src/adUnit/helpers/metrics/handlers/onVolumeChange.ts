@@ -1,17 +1,19 @@
-/* eslint-disable promise/prefer-await-to-callbacks, callback-return */
+import {VideoAdContainer} from '../../../../adContainer';
+import {Cancel} from '../../../../types';
 import {linearEvents} from '../../../../tracker';
 import {volumeChanged} from '../../../adUnitEvents';
 
-const {
-  mute,
-  unmute
-} = linearEvents;
-const isMuted = (videoElement) => videoElement.muted || videoElement.volume === 0;
+const {mute, unmute} = linearEvents;
+const isMuted = (videoElement: HTMLVideoElement): boolean =>
+  videoElement.muted || videoElement.volume === 0;
 
-const onVolumeChange = ({videoElement}, callback) => {
+const onVolumeChange = (
+  {videoElement}: VideoAdContainer,
+  callback: (event: string) => void
+): Cancel => {
   let wasMuted = isMuted(videoElement);
 
-  const volumechangeHandler = () => {
+  const volumechangeHandler = (): void => {
     callback(volumeChanged);
 
     if (wasMuted && !isMuted(videoElement)) {

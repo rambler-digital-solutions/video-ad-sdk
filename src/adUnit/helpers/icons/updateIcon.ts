@@ -1,13 +1,9 @@
-import {VastIcon as BaseIcon} from '../../../types';
+import {VastIcon, RenderedVastIcon} from '../../../types';
 
-interface VastIcon extends BaseIcon {
-  updated?: boolean;
-}
-
-const isCustomXposition = (xPosition: string | number): boolean =>
+const isCustomXposition = (xPosition: string | number): xPosition is number =>
   !['left', 'right'].includes(String(xPosition).toLowerCase());
 
-const isCustomYPosition = (yPosition: string | number): boolean =>
+const isCustomYPosition = (yPosition: string | number): yPosition is number =>
   !['top', 'bottom'].includes(String(yPosition).toLowerCase());
 
 const calculateIconLeft = (
@@ -17,7 +13,7 @@ const calculateIconLeft = (
   phWidth: number
 ): number => {
   const drawnIconsWidth = drawnIcons.reduce(
-    (accumulator, icon) => accumulator + icon.width + 1,
+    (accumulator, icon) => accumulator + (icon.width ? icon.width + 1 : 0),
     0
   );
 
@@ -41,7 +37,7 @@ const calculateIconTop = (
 };
 
 interface UpdateIconOptions {
-  drawnIcons: VastIcon[];
+  drawnIcons: RenderedVastIcon[];
   placeholder: HTMLElement;
 }
 
@@ -49,7 +45,7 @@ const updateIcon = (
   icon: VastIcon,
   iconElement: HTMLElement,
   {drawnIcons, placeholder}: UpdateIconOptions
-): VastIcon => {
+): RenderedVastIcon => {
   const oldSignature = icon.signature;
   const rect = iconElement.getBoundingClientRect();
   const phRect = placeholder.getBoundingClientRect();
@@ -77,7 +73,7 @@ const updateIcon = (
 
   const signature = `${left}-${top}_${width}x${height}`;
 
-  return Object.assign<VastIcon, VastIcon>(icon, {
+  return Object.assign<VastIcon, RenderedVastIcon>(icon, {
     height,
     left,
     signature,

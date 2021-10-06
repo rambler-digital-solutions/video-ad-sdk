@@ -1,6 +1,6 @@
 export interface Listener {
-  (...args: any[]): void
-  _?: this
+  (...args: any[]): void;
+  _?: this;
 }
 
 /**
@@ -10,9 +10,9 @@ export interface Listener {
  */
 class Emitter {
   public logger: Console;
-  private events: Record<string, Listener[]>
+  private events: Record<string, Listener[]>;
 
-  constructor (logger?: Console) {
+  constructor(logger?: Console) {
     this.events = {};
     this.logger = logger || console;
   }
@@ -24,7 +24,7 @@ class Emitter {
    * @param listener Listener fn that handles the evt.
    * @returns The Emitter instance.
    */
-  on (eventName: string, listener: Listener): this {
+  on(eventName: string, listener: Listener): this {
     const events = this.events;
     const eventListeners = events[eventName] || (events[eventName] = []);
 
@@ -40,11 +40,13 @@ class Emitter {
    * @param listener Listener fn that handles the evt.
    * @returns The Emitter instance.
    */
-  removeListener (eventName: string, listener: Listener): this {
+  removeListener(eventName: string, listener: Listener): this {
     const events = this.events;
     const eventListeners = events[eventName] || (events[eventName] = []);
 
-    events[eventName] = eventListeners.filter((eListener) => eListener !== listener && eListener._ !== listener);
+    events[eventName] = eventListeners.filter(
+      (eListener) => eListener !== listener && eListener._ !== listener
+    );
 
     return this;
   }
@@ -55,9 +57,9 @@ class Emitter {
    * @param eventName The name of the event. Optional if omitted all listeners will be removed.
    * @returns The Emitter instance.
    */
-  removeAllListeners (eventName: string): this {
+  removeAllListeners(eventName: string): this {
     if (eventName) {
-      delete this.events[eventName]
+      delete this.events[eventName];
     } else {
       this.events = {};
     }
@@ -73,7 +75,7 @@ class Emitter {
    * @param listener Listener fn that handles the evt.
    * @returns The Emitter instance.
    */
-  once (eventName: string, listener: Listener): this {
+  once(eventName: string, listener: Listener): this {
     const handler: Listener = (...args) => {
       this.removeListener(eventName, handler);
       listener(...args);
@@ -91,7 +93,7 @@ class Emitter {
    * @param eventName The name of the event.
    * @returns Returns true if the event had listeners, false otherwise.
    */
-  emit (eventName: string, ...args: any[]): boolean {
+  emit(eventName: string, ...args: any[]): boolean {
     const events = this.events;
     const eventListeners = events[eventName] || (events[eventName] = []);
     const hasListeners = eventListeners.length > 0;
@@ -100,7 +102,9 @@ class Emitter {
       try {
         handler(...args);
       } catch (error) {
-        this.logger.error(error, error.stack);
+        if (error instanceof Error) {
+          this.logger.error(error, error.stack);
+        }
       }
     });
 

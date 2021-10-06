@@ -1,12 +1,16 @@
-/* eslint-disable promise/prefer-await-to-callbacks, callback-return */
+import {VideoAdContainer} from '../../../../adContainer';
+import {Cancel} from '../../../../types';
 import {linearEvents} from '../../../../tracker';
 
 const {impression, creativeView} = linearEvents;
 
-const onImpression = ({videoElement}, callback) => {
+const onImpression = (
+  {videoElement}: VideoAdContainer,
+  callback: (event: string) => void
+): Cancel => {
   let started = false;
 
-  const impressionHandler = () => {
+  const impressionHandler = (): void => {
     const currentTime = videoElement.currentTime;
 
     if (!started && currentTime > 0) {

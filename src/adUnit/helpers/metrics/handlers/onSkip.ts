@@ -1,9 +1,10 @@
-/* eslint-disable callback-return, promise/prefer-await-to-callbacks */
+import {VideoAdContainer} from '../../../../adContainer';
+import {MetricHandlerData, Cancel} from '../../../../types';
 import {linearEvents} from '../../../../tracker';
 
 const {skip} = linearEvents;
-const createDefaultSkipControl = () => {
-  const skipBtn = document.createElement('BUTTON');
+const createDefaultSkipControl = (): HTMLButtonElement => {
+  const skipBtn = document.createElement('button');
 
   skipBtn.classList.add('mol-vast-skip-control');
   skipBtn.type = 'button';
@@ -15,27 +16,29 @@ const createDefaultSkipControl = () => {
   return skipBtn;
 };
 
-const onSkip = (videoAdContainer, callback, {skipoffset, createSkipControl = createDefaultSkipControl} = {}) => {
+const onSkip = (
+  videoAdContainer: VideoAdContainer,
+  callback: (event: string) => void,
+  {
+    skipoffset,
+    createSkipControl = createDefaultSkipControl
+  }: MetricHandlerData = {}
+): Cancel => {
   if (!Boolean(skipoffset)) {
-    return () => {};
+    return () => null;
   }
 
-  let skipControl;
-  const {
-    videoElement,
-    element
-  } = videoAdContainer;
+  let skipControl: HTMLElement;
+  const {videoElement, element} = videoAdContainer;
 
-  const skipHandler = () => {
+  const skipHandler = (): void => {
     const currentTimeMs = videoElement.currentTime * 1000;
 
-    if (!Boolean(skipControl) && currentTimeMs >= skipoffset) {
+    if (!Boolean(skipControl) && skipoffset && currentTimeMs >= skipoffset) {
       skipControl = createSkipControl();
 
       skipControl.onclick = (event) => {
-        if (Event.prototype.stopPropagation !== undefined) {
-          event.stopPropagation();
-        }
+        event.stopPropagation?.();
 
         callback(skip);
 

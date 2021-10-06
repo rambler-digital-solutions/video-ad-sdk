@@ -3,7 +3,7 @@ import {requestAd, requestNextAd} from '../vastRequest';
 import VastError from '../vastRequest/helpers/vastError';
 import {getInteractiveFiles} from '../vastSelectors';
 import {VastAdUnit, VpaidAdUnit} from '../adUnit';
-import {VastChain, Hooks} from '../types';
+import {VastChain, Hooks, Cancel} from '../types';
 import isIOS from '../utils/isIOS';
 import run, {RunOptions} from './run';
 
@@ -119,7 +119,7 @@ const waterfall = async (
     adUnit.onError(onError);
     adUnit.onFinish(onRunFinish);
     onAdStart(adUnit);
-  } catch (error) {
+  } catch (error: any) {
     const errorCode = getErrorCode(vastChain, error);
 
     if (vastChain && errorCode) {
@@ -223,7 +223,7 @@ const runWaterfall = (
   adTag: string,
   placeholder: HTMLElement,
   options: RunWaterfallOptions
-): (() => void) => {
+): Cancel => {
   let canceled = false;
   let adUnit: VastAdUnit | VpaidAdUnit | undefined;
   const isCanceled = (): boolean => canceled;

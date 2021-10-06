@@ -6,7 +6,7 @@ import parseTime from './helpers/parseTime';
 const formatSize = (size: string | number): number => {
   const match = `${size}`.match(/\d+/g);
 
-  return parseInt(match[0], 10);
+  return parseInt(match?.[0] || '', 10);
 };
 
 const formatPosition = (position: string): number | string => {
@@ -66,9 +66,9 @@ const getIconResource = (iconElement: ParsedXML): VastIcon => {
 };
 
 const getIconViewTracking = (iconElement: ParsedXML): VastIcon => {
-  const iconTrackingElements = getAll(iconElement, 'IconViewTracking').map(
-    (iconViewTrackingElement) => getText(iconViewTrackingElement)
-  );
+  const iconTrackingElements = getAll(iconElement, 'IconViewTracking')
+    .map((iconViewTrackingElement) => getText(iconViewTrackingElement))
+    .filter(Boolean);
 
   if (iconTrackingElements.length === 0) {
     return {};
@@ -85,9 +85,9 @@ const getIconClicks = (iconElement: ParsedXML): VastIcon => {
     iconClicksElement && get(iconClicksElement, 'IconClickThrough');
   const iconClickTrackingElements =
     iconClicksElement &&
-    getAll(iconClicksElement, 'IconClickTracking').map(
-      (iconClickTrackingElement) => getText(iconClickTrackingElement)
-    );
+    getAll(iconClicksElement, 'IconClickTracking')
+      .map((iconClickTrackingElement) => getText(iconClickTrackingElement))
+      .filter(Boolean);
 
   return {
     iconClickThrough:

@@ -1,11 +1,15 @@
-/* eslint-disable promise/prefer-await-to-callbacks, callback-return */
+import {VideoAdContainer} from '../../../../adContainer';
+import {Cancel} from '../../../../types';
 import {linearEvents} from '../../../../tracker';
 
 const {rewind} = linearEvents;
-const onRewind = ({videoElement}, callback) => {
+const onRewind = (
+  {videoElement}: VideoAdContainer,
+  callback: (event: string) => void
+): Cancel => {
   let currentTime = videoElement.currentTime;
 
-  const timeupdateHandler = () => {
+  const timeupdateHandler = (): void => {
     const delta = videoElement.currentTime - currentTime;
 
     if (delta < 0 && Math.abs(delta) >= 1) {

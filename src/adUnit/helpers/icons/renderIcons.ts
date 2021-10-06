@@ -1,20 +1,20 @@
-import {VastIcon} from '../../../types';
+import {VastIcon, RenderedVastIcon} from '../../../types';
 import {VideoAdContainer} from '../../../adContainer';
 import renderIcon from './renderIcon';
 import canBeShown from './canBeShown';
 
 interface RenderIconsOptions {
   videoAdContainer: VideoAdContainer;
-  logger: Console;
+  logger?: Console;
   onIconClick?(icon: VastIcon): void;
 }
 
 const renderIcons = (
   icons: VastIcon[],
-  {onIconClick, videoAdContainer, logger}: RenderIconsOptions
+  {onIconClick, videoAdContainer, logger = console}: RenderIconsOptions
 ): Promise<VastIcon[]> => {
   const {element, videoElement} = videoAdContainer;
-  const drawnIcons: VastIcon[] = [];
+  const drawnIcons: RenderedVastIcon[] = [];
 
   const {iconsToShow, otherIcons} = icons.reduce<{
     iconsToShow: VastIcon[];

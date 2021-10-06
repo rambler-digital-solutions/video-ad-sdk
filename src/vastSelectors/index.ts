@@ -33,8 +33,16 @@ const getBooleanValue = (val: unknown): boolean => {
 };
 
 const compareBySequence = (itemA: ParsedXML, itemB: ParsedXML): number => {
-  const itemASequence = parseInt(getAttribute(itemA, 'sequence'), 10);
-  const itemBSequence = parseInt(getAttribute(itemB, 'sequence'), 10);
+  const itemASequenceString = getAttribute(itemA, 'sequence');
+  const itemBSequenceString = getAttribute(itemB, 'sequence');
+  const itemASequence =
+    itemASequenceString && parseInt(itemASequenceString, 10);
+  const itemBSequence =
+    itemBSequenceString && parseInt(itemBSequenceString, 10);
+
+  if (typeof itemASequence !== 'string' || typeof itemBSequence !== 'string') {
+    return 0;
+  }
 
   if (itemASequence < itemBSequence) {
     return -1;
@@ -79,9 +87,7 @@ export const getVastErrorURI = (
     const errors = getAll(vastElement, 'Error');
 
     if (errors && errors.length > 0) {
-      return errors
-        .map((error) => getText(error) ?? '')
-        .filter(Boolean);
+      return errors.map((error) => getText(error) ?? '').filter(Boolean);
     }
   }
 
@@ -95,7 +101,8 @@ export const getVastErrorURI = (
  * @returns The pod ad sequence number or `null`.
  */
 export const getPodAdSequence = (ad: ParsedAd): number | null => {
-  const sequence = parseInt(getAttribute(ad, 'sequence'), 10);
+  const sequenceString = getAttribute(ad, 'sequence');
+  const sequence = sequenceString && parseInt(sequenceString, 10);
 
   if (typeof sequence === 'number' && !isNaN(sequence)) {
     return sequence;
@@ -234,9 +241,7 @@ export const getAdErrorURI = (ad: ParsedAd): string[] | null => {
     const errors = getAll(adTypeElement, 'Error');
 
     if (errors && errors.length > 0) {
-      return errors
-        .map((error) => getText(error) ?? '')
-        .filter(Boolean);
+      return errors.map((error) => getText(error) ?? '').filter(Boolean);
     }
   }
 
@@ -587,8 +592,4 @@ export const getCreativeData = (xml: string): CreativeData => {
   };
 };
 
-export {
-  getIcons,
-  getLinearTrackingEvents,
-  getNonLinearTrackingEvents
-};
+export {getIcons, getLinearTrackingEvents, getNonLinearTrackingEvents};

@@ -1,4 +1,10 @@
-const once = <T extends (...args: any) => any>(element: HTMLElement, eventName: string, listener: T): (() => void) => {
+import {Cancel} from '../../../types';
+
+const once = <T extends (...args: any) => any>(
+  element: HTMLElement,
+  eventName: string,
+  listener: T
+): Cancel => {
   const handler = (...args: unknown[]): void => {
     element.removeEventListener(eventName, handler);
 
@@ -13,4 +19,3 @@ const once = <T extends (...args: any) => any>(element: HTMLElement, eventName: 
 };
 
 export default once;
-

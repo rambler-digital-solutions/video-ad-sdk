@@ -1,10 +1,10 @@
-import {VastIcon} from '../../../types';
+import {VastIcon, RenderedVastIcon} from '../../../types';
 import loadResource, {LoadResourceOptions} from '../resources/loadResource';
 import updateIcon from './updateIcon';
 import canBeRendered from './canBeRendered';
 
 export interface RenderIconOptions extends LoadResourceOptions {
-  drawnIcons: VastIcon[];
+  drawnIcons: RenderedVastIcon[];
   onIconClick?(icon: VastIcon): void;
 }
 
@@ -66,7 +66,7 @@ const createIcon = async (
 
 const updateIconElement = (
   iconElement: HTMLElement,
-  icon: VastIcon
+  icon: RenderedVastIcon
 ): HTMLElement => {
   const {height, width, left, top, yPosition} = icon;
 
@@ -98,7 +98,7 @@ const updateIconElement = (
 const renderIcon = async (
   icon: VastIcon,
   config: RenderIconOptions
-): Promise<VastIcon> => {
+): Promise<RenderedVastIcon> => {
   const {placeholder} = config;
   const iconElement = await createIcon(icon, config);
   const updatedIcon = updateIcon(icon, iconElement, config);

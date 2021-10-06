@@ -1,17 +1,17 @@
-/* eslint-disable promise/prefer-await-to-callbacks, callback-return */
-
+import {VideoAdContainer} from '../../../../adContainer';
+import {Cancel} from '../../../../types';
 import {linearEvents} from '../../../../tracker';
 
-const {
-  pause,
-  resume
-} = linearEvents;
+const {pause, resume} = linearEvents;
 
-const onPlayPause = ({videoElement}, callback) => {
+const onPlayPause = (
+  {videoElement}: VideoAdContainer,
+  callback: (event: string) => void
+): Cancel => {
   let started = false;
   let paused = true;
 
-  const playHandler = () => {
+  const playHandler = (): void => {
     if (!started) {
       started = true;
       paused = false;
@@ -21,7 +21,7 @@ const onPlayPause = ({videoElement}, callback) => {
     }
   };
 
-  const pauseHandler = () => {
+  const pauseHandler = (): void => {
     if (!paused) {
       paused = true;
       callback(pause);

@@ -1,23 +1,26 @@
-/* eslint-disable promise/prefer-await-to-callbacks, callback-return */
+import {VideoAdContainer} from '../../../../adContainer';
+import {Cancel} from '../../../../types';
 import {linearEvents} from '../../../../tracker';
 import {adProgress} from '../../../adUnitEvents';
 
-const {
-  complete,
-  firstQuartile,
-  midpoint,
-  start,
-  thirdQuartile
-} = linearEvents;
-const percentageProgress = (currentTime, duration) => currentTime * 100 / duration;
-const isPassFirstQuartile = (currentTime, duration) => percentageProgress(currentTime, duration) >= 25;
-const isPassMidPoint = (currentTime, duration) => percentageProgress(currentTime, duration) >= 50;
-const isPassThirdQuartile = (currentTime, duration) => percentageProgress(currentTime, duration) >= 75;
-const isCompleted = (currentTime, duration) => percentageProgress(currentTime, duration) >= 99;
+const {complete, firstQuartile, midpoint, start, thirdQuartile} = linearEvents;
+const percentageProgress = (currentTime: number, duration: number): number =>
+  (currentTime * 100) / duration;
+const isPassFirstQuartile = (currentTime: number, duration: number): boolean =>
+  percentageProgress(currentTime, duration) >= 25;
+const isPassMidPoint = (currentTime: number, duration: number): boolean =>
+  percentageProgress(currentTime, duration) >= 50;
+const isPassThirdQuartile = (currentTime: number, duration: number): boolean =>
+  percentageProgress(currentTime, duration) >= 75;
+const isCompleted = (currentTime: number, duration: number): boolean =>
+  percentageProgress(currentTime, duration) >= 99;
 
 // TODO: implement logic to track `timeSpentViewing` linear event
 
-const onTimeUpdate = ({videoElement}, callback) => {
+const onTimeUpdate = (
+  {videoElement}: VideoAdContainer,
+  callback: (event: string) => void
+): Cancel => {
   let started = false;
   let passFirstQuartile = false;
   let passMidPoint = false;
@@ -25,7 +28,7 @@ const onTimeUpdate = ({videoElement}, callback) => {
   let completed = false;
 
   // eslint-disable-next-line complexity
-  const timeupdateHandler = () => {
+  const timeupdateHandler = (): void => {
     const duration = videoElement.duration;
     const currentTime = videoElement.currentTime;
 
@@ -57,7 +60,7 @@ const onTimeUpdate = ({videoElement}, callback) => {
     callback(adProgress);
   };
 
-  const endedHandler = () => {
+  const endedHandler = (): void => {
     const duration = videoElement.duration;
     const currentTime = videoElement.currentTime;
 

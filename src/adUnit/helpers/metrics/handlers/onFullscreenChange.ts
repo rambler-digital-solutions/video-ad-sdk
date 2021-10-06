@@ -1,22 +1,28 @@
-/* eslint-disable promise/prefer-await-to-callbacks, callback-return */
+import {VideoAdContainer} from '../../../../adContainer';
+import {Cancel} from '../../../../types';
 import {linearEvents} from '../../../../tracker';
 
-const fullscreenElement = () => document.fullscreenElement ||
-document.webkitFullscreenElement ||
-document.mozFullScreenElement ||
-document.msFullscreenElement || null;
+const fullscreenElement = (): Element | null =>
+  document.fullscreenElement ||
+  document.webkitFullscreenElement ||
+  document.mozFullScreenElement ||
+  document.msFullscreenElement ||
+  null;
 
-const {
-  fullscreen,
-  exitFullscreen,
-  playerCollapse,
-  playerExpand
-} = linearEvents;
+const {fullscreen, exitFullscreen, playerCollapse, playerExpand} = linearEvents;
 
-const onFullscreenChange = ({videoElement}, callback) => {
-  const fullscreenEvtNames = ['webkitfullscreenchange', 'mozfullscreenchange', 'fullscreenchange', 'MSFullscreenChange'];
+const onFullscreenChange = (
+  {videoElement}: VideoAdContainer,
+  callback: (event: string) => void
+): Cancel => {
+  const fullscreenEvtNames = [
+    'webkitfullscreenchange',
+    'mozfullscreenchange',
+    'fullscreenchange',
+    'MSFullscreenChange'
+  ];
   let fullscreenOn = false;
-  const fullscreenchangeHandler = () => {
+  const fullscreenchangeHandler = (): void => {
     if (fullscreenElement() === videoElement) {
       fullscreenOn = true;
       callback(playerExpand);
