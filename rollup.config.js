@@ -2,7 +2,7 @@
 import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import babel from '@rollup/plugin-babel';
+import typescript from '@rollup/plugin-typescript';
 import {terser} from 'rollup-plugin-terser';
 import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
 import sourcemaps from 'rollup-plugin-sourcemaps';
@@ -13,8 +13,8 @@ const production = process.env.NODE_ENV === 'production';
 
 const plugins = [
   sourcemaps(),
-  babel({
-    babelHelpers: 'runtime',
+  typescript({
+    importHelpers: true,
     exclude: ['../../node_modules/**', 'node_modules/**']
   }),
   commonjs(),
@@ -34,7 +34,7 @@ const onwarn = (warning, warn) => {
 
 const config = [
   {
-    input: './src/index.js',
+    input: './src/index.ts',
     onwarn,
     output: {
       sourcemap: true,
@@ -45,7 +45,7 @@ const config = [
     plugins: [resolve(), ...plugins, production && terser()]
   },
   {
-    input: './src/index.js',
+    input: './src/index.ts',
     onwarn,
     output: {
       sourcemap: true,
@@ -56,7 +56,7 @@ const config = [
     external
   },
   {
-    input: './src/index.js',
+    input: './src/index.ts',
     onwarn,
     output: {
       sourcemap: true,

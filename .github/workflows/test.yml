@@ -35,6 +35,7 @@ jobs:
           node-version: '10.x'
       - run: yarn
       - run: yarn lint
+      - run: yarn typecheck
       - run: yarn build
 
   commitlint:
