@@ -17,7 +17,7 @@ import run from '../run';
 import runWaterfall from '../runWaterfall';
 import VideoAdContainer from '../../adContainer/VideoAdContainer';
 import VastAdUnit from '../../adUnit/VastAdUnit';
-import {trackError} from '../../tracker';
+import {trackError, errorCodes} from '../../tracker';
 import {_protected} from '../../adUnit/VideoAdUnit';
 import isIOS from '../../utils/isIOS';
 
@@ -26,6 +26,7 @@ jest.mock('../../vastRequest/requestAd', () => jest.fn());
 jest.mock('../../vastRequest/requestNextAd', () => jest.fn());
 jest.mock('../run', () => jest.fn());
 jest.mock('../../tracker', () => ({
+  ...jest.requireActual('../../tracker'),
   linearEvents: {},
   trackError: jest.fn()
 }));
@@ -147,12 +148,12 @@ describe('runWaterfall', () => {
 
       const error = onError.mock.calls[0][0];
 
-      expect(error.code).toBe(200);
+      expect(error.code).toBe(errorCodes.VAST_UNEXPECTED_AD_TYPE);
       expect(error.message).toBe('VPAID ads are not supported by the current player');
       expect(trackError).toHaveBeenCalledWith(
         vpaidChain,
         expect.objectContaining({
-          errorCode: 200,
+          errorCode: errorCodes.VAST_UNEXPECTED_AD_TYPE,
           tracker: options.tracker
         })
       );
@@ -199,7 +200,7 @@ describe('runWaterfall', () => {
         {
           ...vastAdChain[0],
           error: vastChainError,
-          errorCode: 900
+          errorCode: errorCodes.UNKNOWN_ERROR
         }
       ];
 
@@ -218,7 +219,7 @@ describe('runWaterfall', () => {
       expect(trackError).toHaveBeenCalledWith(
         vastChainWithError,
         expect.objectContaining({
-          errorCode: 900,
+          errorCode: errorCodes.UNKNOWN_ERROR,
           tracker: options.tracker
         })
       );
@@ -228,7 +229,7 @@ describe('runWaterfall', () => {
       const onError = jest.fn();
       const vastChainError = new Error('boom');
 
-      vastChainError.code = 900;
+      vastChainError.code = errorCodes.UNKNOWN_ERROR;
 
       requestAd.mockReturnValue(Promise.resolve(vastAdChain));
 
@@ -250,7 +251,7 @@ describe('runWaterfall', () => {
       expect(trackError).toHaveBeenCalledWith(
         vastAdChain,
         expect.objectContaining({
-          errorCode: 900,
+          errorCode: errorCodes.UNKNOWN_ERROR,
           tracker: options.tracker
         })
       );

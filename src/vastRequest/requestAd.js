@@ -1,4 +1,5 @@
 import {parseXml} from '../xml';
+import {errorCodes, isVastErrorCode} from '../tracker';
 import {getWrapperOptions, getFirstAd, getVASTAdTagURI, hasAdPod, isInline, isWrapper} from '../vastSelectors';
 import fetch from './helpers/fetch';
 import {markAdAsRequested} from './helpers/adUtils';
@@ -7,7 +8,7 @@ const validateChain = (vastChain, {wrapperLimit = 5}) => {
   if (vastChain.length > wrapperLimit) {
     const error = new Error('Wrapper Limit reached');
 
-    error.code = 304;
+    error.code = errorCodes.VAST_TOO_MANY_REDIRECTS;
     throw error;
   }
 };
@@ -22,7 +23,7 @@ const fetchAdXML = async (adTag, options) => {
     return {response,
       XML};
   } catch (error) {
-    error.code = 502;
+    error.code = errorCodes.VAST_NONLINEAR_LOADING_FAILED;
     error.response = error.response || response;
 
     throw error;
@@ -33,7 +34,7 @@ const parseVastXml = (xml) => {
   try {
     return parseXml(xml);
   } catch (error) {
-    error.code = 100;
+    error.code = errorCodes.VAST_XML_PARSING_ERROR;
     throw error;
   }
 };
@@ -50,7 +51,7 @@ const getAd = (parsedXML) => {
 
     throw new Error('No Ad');
   } catch (error) {
-    error.code = 303;
+    error.code = errorCodes.VAST_NO_ADS_AFTER_WRAPPER;
     throw error;
   }
 };
@@ -59,21 +60,21 @@ const validateResponse = ({ad, parsedXML}, {allowMultipleAds = true, followAddit
   if (!isWrapper(ad) && !isInline(ad)) {
     const error = new Error('Invalid VAST, ad contains neither Wrapper nor Inline');
 
-    error.code = 101;
+    error.code = errorCodes.VAST_SCHEMA_VALIDATION_ERROR;
     throw error;
   }
 
   if (hasAdPod(parsedXML) && !allowMultipleAds) {
     const error = new Error('Multiple ads are not allowed');
 
-    error.code = 203;
+    error.code = errorCodes.VAST_UNEXPECTED_MEDIA_FILE;
     throw error;
   }
 
   if (isWrapper(ad) && !followAdditionalWrappers) {
     const error = new Error('To follow additional wrappers is not allowed');
 
-    error.code = 200;
+    error.code = errorCodes.VAST_UNEXPECTED_AD_TYPE;
     throw error;
   }
 };
@@ -136,7 +137,7 @@ const requestAd = async (adTag, options, vastChain = []) => {
           setTimeout(() => {
             const error = new Error('RequestAd timeout');
 
-            error.code = 301;
+            error.code = errorCodes.VAST_LOAD_TIMEOUT;
             reject(error);
           }, timeout);
         })
@@ -170,8 +171,8 @@ const requestAd = async (adTag, options, vastChain = []) => {
     return [VASTAdResponse, ...vastChain];
   } catch (error) {
     /* istanbul ignore if */
-    if (!Number.isInteger(error.code)) {
-      error.code = 900;
+    if (!isVastErrorCode(error.code)) {
+      error.code = errorCodes.UNKNOWN_ERROR;
     }
 
     VASTAdResponse.errorCode = error.code;

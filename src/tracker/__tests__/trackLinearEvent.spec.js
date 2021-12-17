@@ -1,11 +1,5 @@
 import {getFirstAd} from '../../vastSelectors';
-import {
-  wrapperParsedXML,
-  inlineAd,
-  inlineParsedXML,
-  vastInlineXML,
-  vastPodXML
-} from '../../../fixtures';
+import {wrapperParsedXML, inlineAd, inlineParsedXML, vastInlineXML, vastPodXML} from '../../../fixtures';
 import trackLinearEvent from '../trackLinearEvent';
 import {
   clickThrough,
@@ -36,6 +30,7 @@ import {
 } from '../linearEvents';
 import pixelTracker from '../helpers/pixelTracker';
 import trackError from '../helpers/trackError';
+import {errorCodes} from '../errors';
 
 jest.mock('../helpers/trackError', () => jest.fn());
 
@@ -64,7 +59,7 @@ afterEach(() => {
 
 test('trackLinearEvent must track the error linear event with the default pixelTracker', () => {
   const data = {};
-  const errorCode = 900;
+  const errorCode = errorCodes.UNKNOWN_ERROR;
 
   trackLinearEvent(error, vastChain, {
     data,
@@ -210,10 +205,7 @@ test('trackLinearEvent must track viewUndetermined linear event with the default
 
 test('trackLinearEvent must track iconClicks', () => {
   const data = {
-    iconClickTracking: [
-      'https://test.example.com/iconClick',
-      'https://test.example.com/iconClick2'
-    ]
+    iconClickTracking: ['https://test.example.com/iconClick', 'https://test.example.com/iconClick2']
   };
   const tracker = jest.fn();
 
@@ -229,10 +221,7 @@ test('trackLinearEvent must track iconClicks', () => {
 
 test('trackLinearEvent must track iconViews', () => {
   const data = {
-    iconViewTracking: [
-      'https://test.example.com/iconView',
-      'https://test.example.com/iconView2'
-    ]
+    iconViewTracking: ['https://test.example.com/iconView', 'https://test.example.com/iconView2']
   };
   const tracker = jest.fn();
 
