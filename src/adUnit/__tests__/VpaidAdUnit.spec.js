@@ -56,6 +56,7 @@ import linearEvents, {
   creativeView
 } from '../../tracker/linearEvents';
 import {acceptInvitation, adCollapse} from '../../tracker/nonLinearEvents';
+import {errorCodes} from '../../tracker';
 import addIcons from '../helpers/icons/addIcons';
 import retrieveIcons from '../helpers/icons/retrieveIcons';
 import {volumeChanged, adProgress} from '../adUnitEvents';
@@ -1017,8 +1018,8 @@ describe('VpaidAdUnit', () => {
         const error = adUnit.error;
 
         expect(error.message).toBe('VPAID general error');
-        expect(error.code).toBe(901);
-        expect(adUnit.errorCode).toBe(901);
+        expect(error.code).toBe(errorCodes.VPAID_ERROR);
+        expect(adUnit.errorCode).toBe(errorCodes.VPAID_ERROR);
       });
 
       it('must use the emitted error if provided', async () => {
@@ -1029,7 +1030,7 @@ describe('VpaidAdUnit', () => {
 
         const creativeError = new Error('test error');
 
-        creativeError.code = 302;
+        creativeError.code = errorCodes.VAST_TOO_MANY_REDIRECTS;
         adUnit.creativeAd.emit(adError, creativeError);
 
         expect(callback).toHaveBeenCalledWith({
@@ -1039,8 +1040,8 @@ describe('VpaidAdUnit', () => {
         const error = adUnit.error;
 
         expect(error).toBe(creativeError);
-        expect(error.code).toBe(302);
-        expect(adUnit.errorCode).toBe(302);
+        expect(error.code).toBe(errorCodes.VAST_TOO_MANY_REDIRECTS);
+        expect(adUnit.errorCode).toBe(errorCodes.VAST_TOO_MANY_REDIRECTS);
       });
     });
 

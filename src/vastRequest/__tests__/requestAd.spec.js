@@ -1,5 +1,6 @@
 /* eslint-disable id-match */
 import {parseXml} from '../../xml';
+import {errorCodes} from '../../tracker';
 import {getAds, getFirstAd} from '../../vastSelectors';
 import {
   noAdParsedXML,
@@ -21,28 +22,28 @@ import {markAdAsRequested, unmarkAdAsRequested} from '../helpers/adUtils';
 jest.useFakeTimers();
 
 describe('requestAd', () => {
-  test('must return a chain with errorcode 304 if the wrapperLimit is reached', async () => {
+  test('must return a chain with errorcode 302 if the wrapperLimit is reached', async () => {
     const vastChain = await requestAd('http://adtag.test.example.com', {wrapperLimit: 1}, [{}, {}]);
     const lastVastResponse = vastChain[0];
 
     expect(lastVastResponse).toEqual({
       ad: null,
       error: expect.any(Error),
-      errorCode: 304,
+      errorCode: errorCodes.VAST_TOO_MANY_REDIRECTS,
       parsedXML: null,
       requestTag: 'http://adtag.test.example.com',
       XML: null
     });
   });
 
-  test('must return a chain with errorcode 304 if the default wrapperLimit is reached', async () => {
+  test('must return a chain with errorcode 302 if the default wrapperLimit is reached', async () => {
     const vastChain = await requestAd('http://adtag.test.example.com', {}, [{}, {}, {}, {}, {}, {}]);
     const lastVastResponse = vastChain[0];
 
     expect(lastVastResponse).toEqual({
       ad: null,
       error: expect.any(Error),
-      errorCode: 304,
+      errorCode: errorCodes.VAST_TOO_MANY_REDIRECTS,
       parsedXML: null,
       requestTag: 'http://adtag.test.example.com',
       XML: null
@@ -59,7 +60,7 @@ describe('requestAd', () => {
     expect(lastVastResponse).toEqual({
       ad: null,
       error: fetchError,
-      errorCode: 502,
+      errorCode: errorCodes.VAST_NONLINEAR_LOADING_FAILED,
       parsedXML: null,
       requestTag: 'http://adtag.test.example.com',
       XML: null
@@ -82,7 +83,7 @@ describe('requestAd', () => {
     expect(lastVastResponse).toEqual({
       ad: null,
       error: noTextError,
-      errorCode: 502,
+      errorCode: errorCodes.VAST_NONLINEAR_LOADING_FAILED,
       parsedXML: null,
       requestTag: 'http://adtag.test.example.com',
       response,
@@ -103,7 +104,7 @@ describe('requestAd', () => {
     expect(lastVastResponse).toEqual({
       ad: null,
       error: expect.any(Error),
-      errorCode: 100,
+      errorCode: errorCodes.VAST_XML_PARSING_ERROR,
       parsedXML: null,
       requestTag: 'http://adtag.test.example.com',
       response,
@@ -124,7 +125,7 @@ describe('requestAd', () => {
     expect(lastVastResponse).toEqual({
       ad: null,
       error: expect.any(Error),
-      errorCode: 303,
+      errorCode: errorCodes.VAST_NO_ADS_AFTER_WRAPPER,
       parsedXML: noAdParsedXML,
       requestTag: 'http://adtag.test.example.com',
       response,
@@ -202,7 +203,7 @@ describe('requestAd', () => {
       {
         ad: getAds(vastInvalidParsedXML)[0],
         error: expect.any(Error),
-        errorCode: 101,
+        errorCode: errorCodes.VAST_SCHEMA_VALIDATION_ERROR,
         parsedXML: vastInvalidParsedXML,
         requestTag: 'http://adtag.test.example.com',
         response: invalidVastResponse,
@@ -245,7 +246,7 @@ describe('requestAd', () => {
       {
         ad: firstPodAd,
         error: expect.any(Error),
-        errorCode: 203,
+        errorCode: errorCodes.VAST_UNEXPECTED_MEDIA_FILE,
         parsedXML: podParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         response: podResponse,
@@ -297,7 +298,7 @@ describe('requestAd', () => {
       {
         ad: firstPodAd,
         error: expect.any(Error),
-        errorCode: 203,
+        errorCode: errorCodes.VAST_UNEXPECTED_MEDIA_FILE,
         parsedXML: podParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         response: podResponse,
@@ -342,7 +343,7 @@ describe('requestAd', () => {
       {
         ad: wrapperAd,
         error: expect.any(Error),
-        errorCode: 200,
+        errorCode: errorCodes.VAST_UNEXPECTED_AD_TYPE,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         response: anotherWrapperResponse,
@@ -452,7 +453,7 @@ describe('requestAd', () => {
         {
           ad: null,
           error: expect.any(Error),
-          errorCode: 301,
+          errorCode: errorCodes.VAST_LOAD_TIMEOUT,
           parsedXML: null,
           requestTag: 'http://adtag.test.example.com',
           XML: null

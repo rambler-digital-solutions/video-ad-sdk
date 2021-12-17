@@ -1,5 +1,5 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
-import {linearEvents} from '../tracker';
+import {linearEvents, errorCodes, isVastErrorCode} from '../tracker';
 import {getSkipOffset} from '../vastSelectors';
 import findBestMedia from './helpers/media/findBestMedia';
 import once from './helpers/dom/once';
@@ -29,7 +29,7 @@ class VastAdUnit extends VideoAdUnit {
       }
       case errorEvt: {
         this.error = data;
-        this.errorCode = this.error && this.error.code ? this.error.code : 405;
+        this.errorCode = this.error && isVastErrorCode(this.error.code) ? this.error.code : errorCodes.VAST_PROBLEM_DISPLAYING_MEDIA_FILE;
         this[_protected].onErrorCallbacks.forEach((callback) =>
           callback(this.error, {
             adUnit: this,
@@ -134,7 +134,7 @@ class VastAdUnit extends VideoAdUnit {
     } else {
       const adUnitError = new Error('Can\'t find a suitable media to play');
 
-      adUnitError.code = 403;
+      adUnitError.code = errorCodes.VAST_LINEAR_ASSET_MISMATCH;
       this[_private].handleMetric(errorEvt, adUnitError);
     }
 

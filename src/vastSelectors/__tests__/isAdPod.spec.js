@@ -10,10 +10,8 @@ import {
   vastInlineXML,
   vastPodXML
 } from '../../../fixtures';
-import {
-  getFirstAd,
-  isAdPod
-} from '../index';
+import {errorCodes} from '../../tracker';
+import {getFirstAd, isAdPod} from '../index';
 
 test('isAdPod must return true if the passed vastChain has an adPod', () => {
   const adPodVastChain = [
@@ -42,7 +40,7 @@ test('isAdPod must return false if the passed vasChain has no adPod', () => {
     {
       ad: null,
       error: expect.any(Error),
-      errorCode: 203,
+      errorCode: errorCodes.VAST_UNEXPECTED_MEDIA_FILE,
       parsedXML: noAdParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastNoAdXML
@@ -96,4 +94,3 @@ test('isAdPod must return false if the passed vasChain has no adPod', () => {
   expect(isAdPod(errorVastChain)).toBe(false);
   expect(isAdPod(successVastChain)).toBe(false);
 });
-

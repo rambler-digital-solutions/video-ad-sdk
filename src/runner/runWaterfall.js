@@ -1,5 +1,5 @@
 /* eslint-disable promise/prefer-await-to-callbacks, callback-return */
-import {trackError} from '../tracker';
+import {trackError, errorCodes, isVastErrorCode} from '../tracker';
 import requestAd from '../vastRequest/requestAd';
 import requestNextAd from '../vastRequest/requestNextAd';
 import {getInteractiveFiles} from '../vastSelectors';
@@ -17,8 +17,8 @@ const validateVastChain = (vastChain, options) => {
   if (!options.vpaidEnabled && isVpaid(vastChain)) {
     const error = new Error('VPAID ads are not supported by the current player');
 
-    error.code = 200;
-    lastVastResponse.errorCode = 200;
+    error.code = errorCodes.VAST_UNEXPECTED_AD_TYPE;
+    lastVastResponse.errorCode = errorCodes.VAST_UNEXPECTED_AD_TYPE;
     lastVastResponse.error = error;
   }
 
@@ -38,6 +38,7 @@ const callbackHandler = (cb) => (...args) => {
 };
 
 const getErrorCode = (vastChain, error) => vastChain && vastChain[0] && vastChain[0].errorCode || error.code;
+
 const transformVastResponse = (vastChain, {hooks}) => {
   if (hooks && typeof hooks.transformVastResponse === 'function') {
     return hooks.transformVastResponse(vastChain);
@@ -89,10 +90,14 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
     adUnit.onFinish(onRunFinish);
     onAdStart(adUnit);
   } catch (error) {
-    const errorCode = getErrorCode(vastChain, error);
+    let errorCode = getErrorCode(vastChain, error);
 
     if (Boolean(errorCode)) {
       const {tracker} = options;
+
+      if (!isVastErrorCode(errorCode)) {
+        errorCode = errorCodes.UNKNOWN_ERROR;
+      }
 
       trackError(vastChain, {
         errorCode,
