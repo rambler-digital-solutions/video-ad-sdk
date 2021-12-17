@@ -100,7 +100,7 @@
 <section>
   <article>
     <pre class="prettyprint source linenums"><code>/* eslint-disable promise/prefer-await-to-callbacks, class-methods-use-this, import/no-named-as-default-member */
-import linearEvents from '../tracker/linearEvents';
+import {linearEvents, errorCodes, isVastErrorCode} from '../tracker';
 import {acceptInvitation, adCollapse} from '../tracker/nonLinearEvents';
 import {getClickThrough} from '../vastSelectors';
 import {volumeChanged, adProgress} from './adUnitEvents';
@@ -173,8 +173,8 @@ const _private = Symbol('_private');
 const vpaidGeneralError = (payload) => {
   const error = payload instanceof Error ? payload : new Error('VPAID general error');
 
-  if (!error.code) {
-    error.code = 901;
+  if (!isVastErrorCode(error.code)) {
+    error.code = errorCodes.VPAID_ERROR;
   }
 
   return error;
