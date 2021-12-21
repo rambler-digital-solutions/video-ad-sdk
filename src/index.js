@@ -9,5 +9,6 @@ import requestAd from './vastRequest/requestAd';
 import requestNextAd from './vastRequest/requestNextAd';
 import getDetails from './vastChain/getDetails';
 import * as vastSelectors from './vastSelectors';
+import {errorCodes} from './tracker';
 
-export {getDetails, run, runWaterfall, requestAd, requestNextAd, vastSelectors};
+export {getDetails, run, runWaterfall, requestAd, requestNextAd, vastSelectors, errorCodes};
