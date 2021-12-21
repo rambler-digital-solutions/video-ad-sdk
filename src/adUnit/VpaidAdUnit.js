@@ -208,8 +208,6 @@ class VpaidAdUnit extends VideoAdUnit {
           adUnit: this,
           type: complete
         });
-
-        this[_protected].finish();
       },
       [adVideoFirstQuartile]: () => {
         this.emit(firstQuartile, {
