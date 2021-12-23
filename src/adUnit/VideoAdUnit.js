@@ -79,8 +79,10 @@ class VideoAdUnit extends Emitter {
    * Defaults to `false`
    * @param {boolean} [options.responsive] - if true it will resize the ad unit whenever the ad container changes sizes
    * Defaults to `false`
+   * @param {boolean} [options.pauseOnAdClick] - if true it will pause the ad unit whenever a user click on the ad.
+   * Defaults to `true`
    */
-  constructor (vastChain, videoAdContainer, {viewability = false, responsive = false, logger = console} = {}) {
+  constructor (vastChain, videoAdContainer, {viewability = false, responsive = false, logger = console, pauseOnAdClick = true} = {}) {
     super(logger);
 
     const {onFinishCallbacks, handleViewableImpression} = this[_protected];
@@ -93,6 +95,8 @@ class VideoAdUnit extends Emitter {
 
     /** Array of {@link VastIcon} definitions to display from the passed {@link VastChain} or null if there are no icons.*/
     this.icons = retrieveIcons(vastChain);
+
+    this.pauseOnAdClick = pauseOnAdClick;
 
     onFinishCallbacks.push(preventManualProgress(this.videoAdContainer.videoElement));
 

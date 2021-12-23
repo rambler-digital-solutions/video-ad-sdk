@@ -996,6 +996,29 @@ describe('VpaidAdUnit', () => {
             expect(window.open).toHaveBeenCalledWith('https://test.example.com/clickthrough', '_blank');
           });
         });
+
+        test('if paused, must not resume the adUnit and open the provided url in a new tab', () => {
+          adUnit.pauseOnAdClick = false;
+          adUnit.creativeAd.emit(adVideoStart);
+          adUnit.creativeAd.emit(adPaused);
+          expect(adUnit.paused()).toBe(true);
+          adUnit.creativeAd.emit(adClickThru, 'https://test.example.com/clickUrl', undefined, true);
+          expect(window.open).toHaveBeenCalledTimes(1);
+          expect(window.open).toHaveBeenCalledWith('https://test.example.com/clickUrl', '_blank');
+          expect(adUnit.creativeAd.pauseAd).not.toHaveBeenCalled();
+          expect(adUnit.creativeAd.resumeAd).not.toHaveBeenCalled();
+        });
+
+        test('if playing, must not pause the adUnit and open the provided url in a new tab', () => {
+          adUnit.pauseOnAdClick = false;
+          adUnit.creativeAd.emit(adVideoStart);
+          expect(adUnit.paused()).toBe(false);
+          adUnit.creativeAd.emit(adClickThru, 'https://test.example.com/clickUrl', undefined, true);
+          expect(window.open).toHaveBeenCalledTimes(1);
+          expect(window.open).toHaveBeenCalledWith('https://test.example.com/clickUrl', '_blank');
+          expect(adUnit.creativeAd.pauseAd).not.toHaveBeenCalled();
+          expect(adUnit.creativeAd.resumeAd).not.toHaveBeenCalled();
+        });
       });
     });
 
