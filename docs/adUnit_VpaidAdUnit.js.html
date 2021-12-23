@@ -193,12 +193,15 @@ class VpaidAdUnit extends VideoAdUnit {
     evtHandler: {
       [adClickThru]: (url, id, playerHandles) => {
         if (playerHandles) {
-          if (this.paused()) {
+          if (this.paused() &amp;&amp; this.pauseOnAdClick) {
             this.resume();
           } else {
             const clickThroughUrl = typeof url === 'string' &amp;&amp; url.length > 0 ? url : getClickThrough(this.vastChain[0].ad);
 
-            this.pause();
+            if (this.pauseOnAdClick) {
+              this.pause();
+            }
+
             window.open(clickThroughUrl, '_blank');
           }
         }
@@ -397,7 +400,8 @@ class VpaidAdUnit extends VideoAdUnit {
    * Defaults to `false`
    * @param {boolean} [options.responsive] - if true it will resize the ad unit whenever the ad container changes sizes
    * Defaults to `false`
-   * Defaults to `window.console`
+   * @param {boolean} [options.pauseOnAdClick] - if true it will pause the ad unit whenever a user click on the ad.
+   * Defaults to `true`
    */
   constructor (vastChain, videoAdContainer, options = {}) {
     super(vastChain, videoAdContainer, options);
