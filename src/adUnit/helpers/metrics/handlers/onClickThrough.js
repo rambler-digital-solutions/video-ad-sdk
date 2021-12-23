@@ -3,7 +3,7 @@ import {linearEvents} from '../../../../tracker';
 
 const {clickThrough} = linearEvents;
 
-const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl} = {}) => {
+const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl, pauseOnAdClick = true} = {}) => {
   const placeholder = element || videoElement.parentNode;
   const anchor = document.createElement('A');
 
@@ -24,14 +24,16 @@ const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl} = {
       event.stopPropagation();
     }
 
-    if (videoElement.paused) {
+    if (videoElement.paused && pauseOnAdClick) {
       if (Event.prototype.preventDefault !== undefined) {
         event.preventDefault();
       }
 
       videoElement.play();
     } else {
-      videoElement.pause();
+      if (pauseOnAdClick) {
+        videoElement.pause();
+      }
 
       callback(clickThrough);
     }
@@ -43,4 +45,3 @@ const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl} = {
 };
 
 export default onClickThrough;
-

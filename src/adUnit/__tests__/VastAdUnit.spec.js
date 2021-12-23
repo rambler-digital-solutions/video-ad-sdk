@@ -105,6 +105,7 @@ describe('VastAdUnit', () => {
       expect(handler).toHaveBeenCalledTimes(1);
       expect(handler).toHaveBeenCalledWith(videoAdContainer, expect.any(Function), {
         clickThroughUrl: 'https://test.example.com/clickthrough',
+        pauseOnAdClick: true,
         progressEvents: [
           {offset: 5000,
             uri: 'https://test.example.com/progress'},
@@ -141,6 +142,7 @@ describe('VastAdUnit', () => {
       expect(handler).toHaveBeenCalledWith(videoAdContainer, expect.any(Function), {
         clickThroughUrl: 'https://test.example.com/clickthrough',
         createSkipOffset,
+        pauseOnAdClick: true,
         progressEvents: expect.any(Array),
         skipoffset: 5000
       });

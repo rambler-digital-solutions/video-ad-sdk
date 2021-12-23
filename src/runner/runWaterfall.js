@@ -148,6 +148,8 @@ const waterfall = async (fetchVastChain, placeholder, options, isCanceled) => {
  * Defaults to `false`
  * @param {boolean} [options.responsive] - if true it will resize the ad unit whenever the ad container changes sizes.
  * Defaults to `false`
+ * @param {boolean} [options.pauseOnAdClick] - if true it will pause the ad unit whenever a user click on the ad.
+ * Defaults to `true`
  * @param {number} [options.timeout] - timeout number in milliseconds. If set, the video ad will time out if it doesn't start within the specified time.
  * @param {TrackerFn} [options.tracker] - If provided it will be used to track the VAST events instead of the default {@link pixelTracker}.
  * @param {boolean} [options.vpaidEnabled] - if false and it gets a VPAID ad, it will throw an error before starting the ad and continue down in the waterfall.
