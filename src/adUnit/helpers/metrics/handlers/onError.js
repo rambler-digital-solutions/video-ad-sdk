@@ -7,7 +7,9 @@ const onError = ({videoElement}, callback) => {
   const errorHandler = () => {
     const mediaError = videoElement.error;
 
-    mediaError.code = errorCodes.VAST_PROBLEM_DISPLAYING_MEDIA_FILE;
+    Object.defineProperty(mediaError, 'code', {
+      get: () => errorCodes.VAST_PROBLEM_DISPLAYING_MEDIA_FILE
+    });
 
     callback(error, mediaError);
   };
