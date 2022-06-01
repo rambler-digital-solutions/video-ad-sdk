@@ -1,22 +1,150 @@
 import sortMediaByBestFit from '../sortMediaByBestFit';
 
-test('sortMediaByBestFit must sort the mediaFiles by best screen fit', () => {
-  const mediafiles = [
-    {width: 120},
-    {width: 100},
-    {width: 90},
-    {width: 95},
-    {width: 150}
-  ];
+let mediafiles;
 
-  const sortedMediaFiles = sortMediaByBestFit(mediafiles, {width: 100});
+beforeEach(() => {
+  mediafiles = [
+    {
+      height: 360,
+      width: 640
+    },
+    {
+      height: 1080,
+      width: 1920
+    },
+    {
+      height: 480,
+      width: 854
+    },
+    {
+      height: 720,
+      width: 1280
+    },
+    {
+      height: 270,
+      width: 480
+    },
+    {
+      height: 640,
+      width: 360
+    },
+    {
+      height: 1920,
+      width: 1080
+    },
+    {
+      height: 854,
+      width: 480
+    },
+    {
+      height: 1280,
+      width: 720
+    },
+    {
+      height: 480,
+      width: 270
+    }
+  ];
+});
+
+test('sortMediaByBestFit must sort the mediaFiles by best fit into the horizontally oriented screen', () => {
+  const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
+    height: 480,
+    width: 854
+  });
 
   expect(sortedMediaFiles).not.toBe(mediafiles);
   expect(sortedMediaFiles).toEqual([
-    {width: 100},
-    {width: 95},
-    {width: 90},
-    {width: 120},
-    {width: 150}
+    {
+      height: 480,
+      width: 854
+    },
+    {
+      height: 360,
+      width: 640
+    },
+    {
+      height: 270,
+      width: 480
+    },
+    {
+      height: 720,
+      width: 1280
+    },
+    {
+      height: 1080,
+      width: 1920
+    },
+    {
+      height: 1280,
+      width: 720
+    },
+    {
+      height: 1920,
+      width: 1080
+    },
+    {
+      height: 854,
+      width: 480
+    },
+    {
+      height: 640,
+      width: 360
+    },
+    {
+      height: 480,
+      width: 270
+    }
+  ]);
+});
+
+test('sortMediaByBestFit must sort the mediaFiles by best fit into the vertically oriented screen', () => {
+  const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
+    height: 854,
+    width: 480
+  });
+
+  expect(sortedMediaFiles).not.toBe(mediafiles);
+  expect(sortedMediaFiles).toEqual([
+    {
+      height: 854,
+      width: 480
+    },
+    {
+      height: 640,
+      width: 360
+    },
+    {
+      height: 480,
+      width: 270
+    },
+    {
+      height: 1280,
+      width: 720
+    },
+    {
+      height: 1920,
+      width: 1080
+    },
+    {
+      height: 270,
+      width: 480
+    },
+    {
+      height: 360,
+      width: 640
+    },
+    {
+      height: 480,
+      width: 854
+    },
+    {
+      height: 720,
+      width: 1280
+    },
+    {
+      height: 1080,
+      width: 1920
+    }
   ]);
 });
