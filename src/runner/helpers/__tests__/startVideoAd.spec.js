@@ -18,14 +18,9 @@ import VpaidAdUnit from '../../../adUnit/VpaidAdUnit';
 import canPlay from '../../../adUnit/helpers/media/canPlay';
 import VideoAdContainer from '../../../adContainer/VideoAdContainer';
 import startVideoAd from '../startVideoAd';
-import {
-  start,
-  closeLinear
-} from '../../../tracker/linearEvents';
-import {
-  adStopped,
-  adUserClose
-} from '../../../adUnit/helpers/vpaid/api';
+import {errorCodes} from '../../../tracker';
+import {start, closeLinear} from '../../../tracker/linearEvents';
+import {adStopped, adUserClose} from '../../../adUnit/helpers/vpaid/api';
 
 jest.mock('../../../adUnit/createVideoAdUnit');
 jest.mock('../../../adUnit/helpers/media/canPlay');
@@ -153,10 +148,11 @@ describe('startVideoAd', () => {
   });
 
   test('must fail if the ad chain has no creatives', async () => {
-    expect.assertions(1);
+    expect.assertions(2);
     try {
       await startVideoAd(wrongVastAdChain, videoAdContainer, options);
     } catch (error) {
+      expect(error.code).toBe(errorCodes.VAST_MEDIA_FILE_NOT_FOUND);
       expect(error.message).toBe('No valid creative found in the passed VAST chain');
     }
   });
@@ -167,7 +163,7 @@ describe('startVideoAd', () => {
     const adUnit = createAdUnitMock(vastAdChain, videoAdContainer, options);
 
     createVideoAdUnit.mockImplementation(() => {
-    // eslint-disable-next-line promise/always-return, promise/always-return, promise/catch-or-return, promise/prefer-await-to-then
+      // eslint-disable-next-line promise/always-return, promise/always-return, promise/catch-or-return, promise/prefer-await-to-then
       adUnit.start = () => {
         adUnit.__simulateError(adUnitError);
       };
@@ -178,11 +174,7 @@ describe('startVideoAd', () => {
     expect(startVideoAd(vastAdChain, videoAdContainer, options)).rejects.toBe(adUnitError);
   });
 
-  [
-    adUserClose,
-    adStopped,
-    closeLinear
-  ].forEach((event) => {
+  [adUserClose, adStopped, closeLinear].forEach((event) => {
     test(`must cancel the ad unit start on '${event}' event`, async () => {
       expect.assertions(1);
       const adUnit = createAdUnitMock(vastAdChain, videoAdContainer, options);
@@ -236,7 +228,7 @@ describe('startVideoAd', () => {
     const adUnit = createAdUnitMock(vastAdChain, videoAdContainer, options);
 
     createVideoAdUnit.mockImplementation(() => {
-    // eslint-disable-next-line promise/always-return, promise/always-return, promise/catch-or-return, promise/prefer-await-to-then
+      // eslint-disable-next-line promise/always-return, promise/always-return, promise/catch-or-return, promise/prefer-await-to-then
       adUnit.start = () => {
         adUnit.emit(start);
       };
@@ -274,18 +266,19 @@ describe('startVideoAd', () => {
       const adUnitError = new Error('adUnit error');
       const adUnit = createAdUnitMock(vastAdChain, videoAdContainer, options);
 
-      createVideoAdUnit.mockImplementationOnce(() => {
-        const vpaidUnit = createAdUnitMock(vastAdChain, videoAdContainer, options);
-
-        // eslint-disable-next-line promise/always-return, promise/always-return, promise/catch-or-return, promise/prefer-await-to-then
-        vpaidUnit.start = () => {
-          vpaidUnit.__simulateError(adUnitError);
-        };
-
-        return vpaidUnit;
-      })
+      createVideoAdUnit
         .mockImplementationOnce(() => {
-        // eslint-disable-next-line promise/always-return, promise/always-return, promise/catch-or-return, promise/prefer-await-to-then
+          const vpaidUnit = createAdUnitMock(vastAdChain, videoAdContainer, options);
+
+          // eslint-disable-next-line promise/always-return, promise/always-return, promise/catch-or-return, promise/prefer-await-to-then
+          vpaidUnit.start = () => {
+            vpaidUnit.__simulateError(adUnitError);
+          };
+
+          return vpaidUnit;
+        })
+        .mockImplementationOnce(() => {
+          // eslint-disable-next-line promise/always-return, promise/always-return, promise/catch-or-return, promise/prefer-await-to-then
 
           adUnit.start = () => {
             adUnit.emit(start);
