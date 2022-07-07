@@ -24,7 +24,7 @@ const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl, pau
       event.stopPropagation();
     }
 
-    if (videoElement.paused && (pauseOnAdClick || !clickThroughUrl)) {
+    if (videoElement.paused && pauseOnAdClick) {
       if (Event.prototype.preventDefault !== undefined) {
         event.preventDefault();
       }

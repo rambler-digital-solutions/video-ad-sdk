@@ -92,11 +92,11 @@ class VpaidAdUnit extends VideoAdUnit {
     evtHandler: {
       [adClickThru]: (url, id, playerHandles) => {
         if (playerHandles) {
-          const clickThroughUrl = typeof url === 'string' && url.length > 0 ? url : getClickThrough(this.vastChain[0].ad);
-
-          if (this.paused() && (this.pauseOnAdClick || !clickThroughUrl)) {
+          if (this.paused() && this.pauseOnAdClick) {
             this.resume();
           } else {
+            const clickThroughUrl = typeof url === 'string' && url.length > 0 ? url : getClickThrough(this.vastChain[0].ad);
+
             if (this.pauseOnAdClick) {
               this.pause();
             }
