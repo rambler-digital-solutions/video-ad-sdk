@@ -98,12 +98,8 @@ test('onClickThrough must on anchor second click, play the video and not call th
 
 test('onClickThrough must on anchor every click, not pause the video and call the callback with clickthrough', () => {
   const {element, videoElement} = videoAdContainer;
-  const clickThroughUrl = 'http://test.example.com/clickThroughUrl';
 
-  onClickThrough(videoAdContainer, callback, {
-    clickThroughUrl,
-    pauseOnAdClick: false
-  });
+  onClickThrough(videoAdContainer, callback, {pauseOnAdClick: false});
 
   const anchor = element.querySelector('a.mol-vast-clickthrough');
 
@@ -118,12 +114,8 @@ test('onClickThrough must on anchor every click, not pause the video and call th
 
 test('onClickThrough must on anchor every click, not play the video and call the callback with clickthrough', () => {
   const {element, videoElement} = videoAdContainer;
-  const clickThroughUrl = 'http://test.example.com/clickThroughUrl';
 
-  onClickThrough(videoAdContainer, callback, {
-    clickThroughUrl,
-    pauseOnAdClick: false
-  });
+  onClickThrough(videoAdContainer, callback, {pauseOnAdClick: false});
 
   const anchor = element.querySelector('a.mol-vast-clickthrough');
 
