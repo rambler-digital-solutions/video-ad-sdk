@@ -137,3 +137,21 @@ test('onClickThrough must remove the anchor on disconnect', () => {
 
   expect(element.querySelector('a.mol-vast-clickthrough')).toEqual(null);
 });
+
+test('onClickThrough must use custom click element', () => {
+  const {element, videoElement} = videoAdContainer;
+  const customClickElement = document.createElement('span');
+
+  element.appendChild(customClickElement);
+
+  const createClickControl = () => customClickElement;
+
+  onClickThrough(videoAdContainer, callback, {createClickControl});
+
+  videoElement.paused = false;
+  customClickElement.click();
+
+  expect(element.querySelector('a.mol-vast-clickthrough')).toBeNull();
+  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback).toHaveBeenCalledWith(clickThrough);
+});
