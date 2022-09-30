@@ -68,6 +68,7 @@ class VastAdUnit extends VideoAdUnit {
    * Defaults to `window.console`
    * @param {Object} [options.hooks] - Optional map with hooks to configure the behaviour of the ad.
    * @param {Function} [options.hooks.createSkipControl] - If provided it will be called to generate the skip control. Must return a clickable [HTMLElement](https://developer.mozilla.org/es/docs/Web/API/HTMLElement) that is detached from the DOM.
+   * @param {Function} [options.hooks.createClickControl] - If provided it will be called to generate the click control. Must return a clickable [HTMLElement](https://developer.mozilla.org/es/docs/Web/API/HTMLElement) that is detached from the DOM.
    * @param {Function} [options.hooks.getMediaFile] - If provided it will be called to get a {@link MediaFile} by size of the current video element.
    * @param {boolean} [options.viewability] - if true it will pause the ad whenever is not visible for the viewer.
    * Defaults to `false`

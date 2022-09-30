@@ -3,8 +3,7 @@ import {linearEvents} from '../../../../tracker';
 
 const {clickThrough} = linearEvents;
 
-const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl, pauseOnAdClick = true} = {}) => {
-  const placeholder = element || videoElement.parentNode;
+const createDefaultClickControl = () => {
   const anchor = document.createElement('A');
 
   anchor.classList.add('mol-vast-clickthrough');
@@ -14,7 +13,19 @@ const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl, pau
   anchor.style.left = 0;
   anchor.style.top = 0;
 
-  if (clickThroughUrl) {
+  return anchor;
+};
+
+const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl, pauseOnAdClick = true, createClickControl = createDefaultClickControl} = {}) => {
+  const placeholder = element || videoElement.parentNode;
+  const anchor = createClickControl();
+  const isVirtual = !document.body.contains(anchor);
+
+  if (isVirtual) {
+    placeholder.appendChild(anchor);
+  }
+
+  if (clickThroughUrl && anchor.tagName === 'A') {
     anchor.href = clickThroughUrl;
     anchor.target = '_blank';
   }
@@ -39,9 +50,11 @@ const onClickThrough = ({videoElement, element}, callback, {clickThroughUrl, pau
     }
   };
 
-  placeholder.appendChild(anchor);
-
-  return () => placeholder.removeChild(anchor);
+  return () => {
+    if (isVirtual) {
+      placeholder.removeChild(anchor);
+    }
+  };
 };
 
 export default onClickThrough;
