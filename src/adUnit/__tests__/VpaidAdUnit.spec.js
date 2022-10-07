@@ -96,6 +96,7 @@ describe('VpaidAdUnit', () => {
       }
     ];
     videoAdContainer = new VideoAdContainer(document.createElement('DIV'));
+    videoAdContainer.slotElement = document.createElement('DIV');
   });
 
   afterEach(() => {

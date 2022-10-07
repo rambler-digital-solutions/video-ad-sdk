@@ -1,8 +1,4 @@
-import {
-  vpaidInlineAd,
-  vpaidInlineParsedXML,
-  vastVpaidInlineXML
-} from '../../../../../fixtures';
+import {vpaidInlineAd, vpaidInlineParsedXML, vastVpaidInlineXML} from '../../../../../fixtures';
 import VideoAdContainer from '../../../../adContainer/VideoAdContainer';
 import initAd from '../initAd';
 import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd';
@@ -59,7 +55,7 @@ describe('initAd', () => {
         xmlEncoded: false
       },
       {
-        slot: expect.any(HTMLDivElement),
+        slot: videoAdContainer.slotElement,
         videoSlot: videoAdContainer.videoElement,
         videoSlotCanAutoPlay: false
       }
@@ -68,16 +64,18 @@ describe('initAd', () => {
     const {slot} = mockCreativeAd.initAd.mock.calls[0][5];
 
     expect(slot).toBeInstanceOf(HTMLDivElement);
-    expect(slot.style).toEqual(expect.objectContaining({
-      border: '0px',
-      cursor: 'pointer',
-      height: '0px',
-      left: '0px',
-      margin: '0px',
-      padding: '0px',
-      position: 'absolute',
-      top: '0px',
-      width: '0px'
-    }));
+    expect(slot.style).toEqual(
+      expect.objectContaining({
+        border: '0px',
+        cursor: 'pointer',
+        height: '0px',
+        left: '0px',
+        margin: '0px',
+        padding: '0px',
+        position: 'absolute',
+        top: '0px',
+        width: '0px'
+      })
+    );
   });
 });
