@@ -513,6 +513,13 @@ class VpaidAdUnit extends VideoAdUnit {
   async resize (width, height, viewmode) {
     await super.resize(width, height, viewmode);
 
+    if (this.isStarted() && !this.isFinished()) {
+      const slot = this.videoAdContainer.slotElement;
+
+      slot.style.height = `${height}px`;
+      slot.style.width = `${width}px`;
+    }
+
     return callAndWait(this.creativeAd, resizeAd, adSizeChange, width, height, viewmode);
   }
 }

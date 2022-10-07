@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createSlot must return a slot element 1`] = `
+<div
+  style="border: 0px; cursor: pointer; height: 200px; left: 0px; margin: 0px; padding: 0px; position: absolute; top: 0px; width: 300px;"
+/>
+`;

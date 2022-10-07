@@ -75,10 +75,13 @@ describe('VideoAdContainer', () => {
 
       expect(iframe).toBeInstanceOf(HTMLIFrameElement);
       expect(loadScript).toHaveBeenCalledTimes(1);
-      expect(loadScript).toBeCalledWith(src, expect.objectContaining({
-        placeholder: iframeBody,
-        ...scriptOpts
-      }));
+      expect(loadScript).toBeCalledWith(
+        src,
+        expect.objectContaining({
+          placeholder: iframeBody,
+          ...scriptOpts
+        })
+      );
     });
 
     test('must reuse the iframe to add scripts', async () => {
@@ -113,6 +116,19 @@ describe('VideoAdContainer', () => {
 
       expect(videoAdContainer.executionContext).toBe(iframe.contentWindow);
     });
+  });
+
+  test('must create a slot element and add it to the ad container', () => {
+    const videoAdContainer = new VideoAdContainer(placeholder);
+    const adContainerElement = videoAdContainer.element;
+
+    videoAdContainer.addSlot(300, 200);
+
+    expect(videoAdContainer.slotElement).toBeInstanceOf(Element);
+    expect(videoAdContainer.slotElement.tagName).toBe('DIV');
+    expect(videoAdContainer.slotElement.style.width).toBe('300px');
+    expect(videoAdContainer.slotElement.style.height).toBe('200px');
+    expect(videoAdContainer.slotElement.parentNode).toBe(adContainerElement);
   });
 
   test('destroy must remove the adContainer from the placeHolder', async () => {

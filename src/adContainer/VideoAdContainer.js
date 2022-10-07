@@ -3,6 +3,7 @@ import loadScript from './helpers/loadScript';
 import createAdVideoElement from './helpers/createAdVideoElement';
 import createAdContainer from './helpers/createAdContainer';
 import createIframe from './helpers/createIframe';
+import createSlot from './helpers/createSlot';
 import getContentDocument from './helpers/getContentDocument';
 import unique from './helpers/unique';
 
@@ -34,6 +35,7 @@ class VideoAdContainer {
 
     this[hidden].id = nextId();
     this.element = createAdContainer();
+    this.slotElement = null;
     this.executionContext = null;
 
     this.isOriginalVideoElement = Boolean(videoElement);
@@ -73,6 +75,22 @@ class VideoAdContainer {
       placeholder,
       ...options
     });
+  }
+
+  /**
+   * Adds the slot to the ad container.
+   *
+   * @param {number} width - Slot width.
+   * @param {number} height - Slot height.
+   */
+  addSlot (width, height) {
+    if (this.isDestroyed()) {
+      throw new Error('VideoAdContainer has been destroyed');
+    }
+
+    if (!this.slotElement) {
+      this.slotElement = createSlot(this.element, width, height);
+    }
   }
 
   /**
