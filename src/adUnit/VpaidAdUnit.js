@@ -329,8 +329,14 @@ class VpaidAdUnit extends VideoAdUnit {
         this.creativeAd.subscribe(this[_private].handleVpaidEvt.bind(this, creativeEvt), creativeEvt);
       }
 
-      if (this.creativeAd[getAdIcons] && !this.creativeAd[getAdIcons]()) {
-        this.icons = null;
+      if (this.creativeAd[getAdIcons]) {
+        try {
+          if (!this.creativeAd[getAdIcons]()) {
+            this.icons = null;
+          }
+        } catch (error) {
+          this.icons = null;
+        }
       }
 
       handshake(this.creativeAd, '2.0');
