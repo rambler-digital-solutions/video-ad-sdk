@@ -1,7 +1,7 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
 import {vastWrapperXML, vastInlineXML, wrapperParsedXML, inlineParsedXML, wrapperAd, inlineAd} from '../../../fixtures';
 import createVideoAdContainer from '../../adContainer/createVideoAdContainer';
-import {linearEvents} from '../../tracker';
+import {linearEvents, ErrorCode} from '../../tracker';
 import VastAdUnit from '../VastAdUnit';
 import canPlay from '../helpers/media/canPlay';
 import updateMedia from '../helpers/media/updateMedia';
@@ -105,6 +105,7 @@ describe('VastAdUnit', () => {
       expect(handler).toHaveBeenCalledTimes(1);
       expect(handler).toHaveBeenCalledWith(videoAdContainer, expect.any(Function), {
         clickThroughUrl: 'https://test.example.com/clickthrough',
+        pauseOnAdClick: true,
         progressEvents: [
           {offset: 5000,
             uri: 'https://test.example.com/progress'},
@@ -141,6 +142,7 @@ describe('VastAdUnit', () => {
       expect(handler).toHaveBeenCalledWith(videoAdContainer, expect.any(Function), {
         clickThroughUrl: 'https://test.example.com/clickthrough',
         createSkipOffset,
+        pauseOnAdClick: true,
         progressEvents: expect.any(Array),
         skipoffset: 5000
       });
@@ -282,7 +284,7 @@ describe('VastAdUnit', () => {
 
     expect(adUnit.error).toBeInstanceOf(Error);
     expect(adUnit.error.message).toBe('Can\'t find a suitable media to play');
-    expect(adUnit.errorCode).toBe(403);
+    expect(adUnit.errorCode).toBe(ErrorCode.VAST_LINEAR_ASSET_MISMATCH);
     expect(errorHandler).toHaveBeenCalledTimes(1);
     expect(errorHandler).toHaveBeenCalledWith({
       adUnit,
@@ -506,7 +508,7 @@ describe('VastAdUnit', () => {
       vastChain
     });
     expect(adUnit.error).toBe(mediaError);
-    expect(adUnit.errorCode).toBe(405);
+    expect(adUnit.errorCode).toBe(ErrorCode.VAST_PROBLEM_DISPLAYING_MEDIA_FILE);
     expect(adUnit.isFinished()).toBe(true);
   });
 

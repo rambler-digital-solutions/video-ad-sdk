@@ -96,6 +96,38 @@ test('onClickThrough must on anchor second click, play the video and not call th
   expect(callback).not.toHaveBeenCalled();
 });
 
+test('onClickThrough must on anchor every click, not pause the video and call the callback with clickthrough', () => {
+  const {element, videoElement} = videoAdContainer;
+
+  onClickThrough(videoAdContainer, callback, {pauseOnAdClick: false});
+
+  const anchor = element.querySelector('a.mol-vast-clickthrough');
+
+  videoElement.paused = false;
+  anchor.click();
+
+  expect(videoElement.pause).not.toHaveBeenCalled();
+  expect(videoElement.play).not.toHaveBeenCalled();
+  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback).toHaveBeenCalledWith(clickThrough);
+});
+
+test('onClickThrough must on anchor every click, not play the video and call the callback with clickthrough', () => {
+  const {element, videoElement} = videoAdContainer;
+
+  onClickThrough(videoAdContainer, callback, {pauseOnAdClick: false});
+
+  const anchor = element.querySelector('a.mol-vast-clickthrough');
+
+  videoElement.paused = true;
+  anchor.click();
+
+  expect(videoElement.pause).not.toHaveBeenCalled();
+  expect(videoElement.play).not.toHaveBeenCalled();
+  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback).toHaveBeenCalledWith(clickThrough);
+});
+
 test('onClickThrough must remove the anchor on disconnect', () => {
   const {element} = videoAdContainer;
 
@@ -104,4 +136,22 @@ test('onClickThrough must remove the anchor on disconnect', () => {
   disconnect();
 
   expect(element.querySelector('a.mol-vast-clickthrough')).toEqual(null);
+});
+
+test('onClickThrough must use custom click element', () => {
+  const {element, videoElement} = videoAdContainer;
+  const customClickElement = document.createElement('span');
+
+  element.appendChild(customClickElement);
+
+  const createClickControl = () => customClickElement;
+
+  onClickThrough(videoAdContainer, callback, {createClickControl});
+
+  videoElement.paused = false;
+  customClickElement.click();
+
+  expect(element.querySelector('a.mol-vast-clickthrough')).toBeNull();
+  expect(callback).toHaveBeenCalledTimes(1);
+  expect(callback).toHaveBeenCalledWith(clickThrough);
 });

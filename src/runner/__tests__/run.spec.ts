@@ -1,12 +1,4 @@
-/* eslint-disable max-nested-callbacks */
-import {
-  vastWrapperXML,
-  vastInlineXML,
-  wrapperParsedXML,
-  inlineParsedXML,
-  wrapperAd,
-  inlineAd
-} from '../../../fixtures';
+import {vastWrapperXML, vastInlineXML, wrapperParsedXML, inlineParsedXML, wrapperAd, inlineAd} from '../../../fixtures';
 import startVideoAd from '../helpers/startVideoAd';
 import run from '../run';
 import VideoAdContainer from '../../adContainer/VideoAdContainer';
@@ -17,6 +9,7 @@ import defer from '../../utils/defer';
 jest.mock('../helpers/startVideoAd', () => jest.fn());
 jest.mock('../../adContainer/createVideoAdContainer', () => jest.fn());
 jest.mock('../../tracker', () => ({
+  ...jest.requireActual('../../tracker'),
   linearEvents: {},
   trackError: jest.fn()
 }));

@@ -1,4 +1,4 @@
-import {linearEvents} from '../tracker';
+import {linearEvents, ErrorCode, isVastErrorCode} from '../tracker';
 import {getSkipOffset} from '../vastSelectors';
 import {VastChain, Hooks, MacroData} from '../types'
 import {VideoAdContainer} from '../adContainer'
@@ -39,7 +39,7 @@ class VastAdUnit extends VideoAdUnit {
       case errorEvt: {
         if (data instanceof Error) {
           this.error = data;
-          this.errorCode = this.error.code || 405;
+          this.errorCode = this.error?.code && isVastErrorCode(this.error.code) ? this.error.code : ErrorCode.VAST_PROBLEM_DISPLAYING_MEDIA_FILE;
         }
         this[_protected].onErrorCallbacks.forEach((callback) =>
           callback(this.error, {
@@ -76,7 +76,7 @@ class VastAdUnit extends VideoAdUnit {
    *
    * @param vastChain The {@link VastChain} with all the {@link VastResponse}
    * @param videoAdContainer - container instance to place the ad
-   * @param Options Map
+   * @param options Options Map
    */
   public constructor (vastChain: VastChain, videoAdContainer: VideoAdContainer, options: VastAdUnitOptions = {}) {
     super(vastChain, videoAdContainer, options);
@@ -89,6 +89,7 @@ class VastAdUnit extends VideoAdUnit {
     const removeMetricHandlers = setupMetricHandlers(
       {
         hooks: this.hooks,
+        pauseOnAdClick: this.pauseOnAdClick,
         vastChain: this.vastChain,
         videoAdContainer: this.videoAdContainer
       },
@@ -141,7 +142,7 @@ class VastAdUnit extends VideoAdUnit {
     } else {
       const adUnitError = new AdUnitError('Can\'t find a suitable media to play');
 
-      adUnitError.code = 403;
+      adUnitError.code = ErrorCode.VAST_LINEAR_ASSET_MISMATCH;
       this[_private].handleMetric(errorEvt, adUnitError);
     }
 

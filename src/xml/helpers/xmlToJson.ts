@@ -16,7 +16,7 @@ const nodeType = (node: Node): NodeType => {
   throw new Error('Unsupported element type');
 };
 
-const xmlToJson = (node: Document | ChildNode) => {
+const xmlToJson = (node: Document | ChildNode): ParsedXML => {
   const type = nodeType(node);
 
   const element: ParsedXML = {

@@ -1,4 +1,4 @@
-import linearEvents from '../tracker/linearEvents';
+import {linearEvents, ErrorCode, isVastErrorCode} from '../tracker';
 import {acceptInvitation, adCollapse} from '../tracker/nonLinearEvents';
 import {getClickThrough} from '../vastSelectors';
 import {VastChain, VpaidCreativeAdUnit} from '../types'
@@ -74,8 +74,8 @@ const _private = Symbol('_private');
 const vpaidGeneralError = (payload: Error | unknown): AdUnitError => {
   const error: AdUnitError = payload instanceof Error ? payload : new AdUnitError('VPAID general error');
 
-  if (!error.code) {
-    error.code = 901;
+  if (!error.code || !isVastErrorCode(error.code)) {
+    error.code = ErrorCode.VPAID_ERROR;
   }
 
   return error;
@@ -105,14 +105,17 @@ class VpaidAdUnit extends VideoAdUnit {
     evtHandler: {
       [adClickThru]: (url: string, _id: string, playerHandles: boolean) => {
         if (playerHandles) {
-          if (this.paused()) {
+          if (this.paused() && this.pauseOnAdClick) {
             this.resume();
           } else {
             const inlineAd = this.vastChain[0].ad
             const clickThroughUrl = typeof url === 'string' && url.length > 0 ? url : inlineAd && getClickThrough(inlineAd);
 
-            if (clickThroughUrl) {
+            if (this.pauseOnAdClick) {
               this.pause();
+            }
+
+            if (clickThroughUrl) {
               window.open(clickThroughUrl, '_blank');
             }
           }
@@ -224,8 +227,6 @@ class VpaidAdUnit extends VideoAdUnit {
           adUnit: this,
           type: complete
         });
-
-        this[_protected].finish();
       },
       [adVideoFirstQuartile]: () => {
         this.emit(firstQuartile, {
@@ -336,8 +337,14 @@ class VpaidAdUnit extends VideoAdUnit {
         this.creativeAd.subscribe(this[_private].handleVpaidEvt.bind(this, creativeEvt), creativeEvt);
       }
 
-      if (this.creativeAd[getAdIcons] && !this.creativeAd[getAdIcons]()) {
-        this.icons = null;
+      if (this.creativeAd[getAdIcons]) {
+        try {
+          if (!this.creativeAd[getAdIcons]()) {
+            this.icons = null;
+          }
+        } catch (error) {
+          this.icons = null;
+        }
       }
 
       handshake(this.creativeAd, '2.0');
@@ -524,6 +531,15 @@ class VpaidAdUnit extends VideoAdUnit {
 
     if (!this.creativeAd) {
       return
+    }
+
+    if (this.isStarted() && !this.isFinished()) {
+      const slot = this.videoAdContainer.slotElement;
+
+      if (slot) {
+        slot.style.height = `${height}px`;
+        slot.style.width = `${width}px`;
+      }
     }
 
     return callAndWait(this.creativeAd, resizeAd, adSizeChange, width, height, viewmode);

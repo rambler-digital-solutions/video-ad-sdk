@@ -9,10 +9,11 @@ interface SetupMetricsHandlersOptions {
   vastChain: VastChain;
   videoAdContainer: VideoAdContainer;
   hooks: Hooks;
+  pauseOnAdClick: boolean
 }
 
 const setupMetricHandlers = (
-  {vastChain, videoAdContainer, hooks}: SetupMetricsHandlersOptions,
+  {vastChain, videoAdContainer, hooks, pauseOnAdClick}: SetupMetricsHandlersOptions,
   callback: (event: string, ...args: any[]) => void
 ): Cancel => {
   const inlineAd = vastChain[0].ad;
@@ -21,6 +22,7 @@ const setupMetricHandlers = (
   const progressEvents = getProgressEvents(vastChain);
   const data = {
     clickThroughUrl,
+    pauseOnAdClick,
     progressEvents,
     skipoffset,
     ...hooks

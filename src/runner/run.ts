@@ -1,4 +1,4 @@
-import {trackError} from '../tracker';
+import {trackError, ErrorCode} from '../tracker';
 import {createVideoAdContainer, VideoAdContainer} from '../adContainer';
 import {VastAdUnit, VpaidAdUnit} from '../adUnit';
 import {VastChain, PixelTracker} from '../types';
@@ -52,7 +52,7 @@ const run = async (
           const {tracker} = options;
 
           trackError(vastChain, {
-            errorCode: 402,
+            errorCode: ErrorCode.VAST_MEDIA_LOAD_TIMEOUT,
             tracker
           });
           timedOut = true;

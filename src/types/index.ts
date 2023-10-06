@@ -536,8 +536,8 @@ export interface RequestNextAdOptions extends RequestAdOptions {
  * Vpaid Creative environment variables
  */
 export interface EnvironmentVars {
-  slot?: HTMLElement;
-  videoSlot?: HTMLVideoElement;
+  slot?: HTMLElement | null;
+  videoSlot?: HTMLVideoElement | null;
   videoSlotCanAutoPlay?: boolean;
 }
 
@@ -593,6 +593,10 @@ export interface Hooks {
    */
   createSkipControl?(): HTMLElement;
   /**
+   * If provided it will be called to generate the click control. Must return a clickable [HTMLElement](https://developer.mozilla.org/es/docs/Web/API/HTMLElement) that is detached from the DOM.
+   */
+  createClickControl?(): HTMLElement
+  /**
    * If provided it will be called to get a {@link MediaFile} by size of the current video element.
    */
   getMediaFile?(mediaFiles: MediaFile[], screenRect: ClientRect): MediaFile;
@@ -605,6 +609,7 @@ export interface MetricHandlerData extends Hooks {
   clickThroughUrl?: string | null;
   progressEvents?: VastTrackingEvent[];
   skipoffset?: ParsedOffset | null;
+  pauseOnAdClick?: boolean
 }
 
 /**

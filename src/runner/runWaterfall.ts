@@ -1,4 +1,4 @@
-import {trackError} from '../tracker';
+import {trackError, isVastErrorCode, ErrorCode} from '../tracker';
 import {requestAd, requestNextAd} from '../vastRequest';
 import VastError from '../vastRequest/helpers/vastError';
 import {getInteractiveFiles} from '../vastSelectors';
@@ -25,8 +25,8 @@ const validateVastChain = (
       'VPAID ads are not supported by the current player'
     );
 
-    error.code = 200;
-    lastVastResponse.errorCode = 200;
+    error.code = ErrorCode.VAST_UNEXPECTED_AD_TYPE;
+    lastVastResponse.errorCode = ErrorCode.VAST_UNEXPECTED_AD_TYPE;
     lastVastResponse.error = error;
   }
 
@@ -120,10 +120,14 @@ const waterfall = async (
     adUnit.onFinish(onRunFinish);
     onAdStart(adUnit);
   } catch (error: any) {
-    const errorCode = getErrorCode(vastChain, error);
+    let errorCode = getErrorCode(vastChain, error);
 
     if (vastChain && errorCode) {
       const {tracker} = options;
+
+      if (!isVastErrorCode(errorCode)) {
+        errorCode = ErrorCode.UNKNOWN_ERROR;
+      }
 
       trackError(vastChain, {
         errorCode,
@@ -236,17 +240,14 @@ const runWaterfall = (
   const resultOptions: WaterfallOptions = {
     vpaidEnabled: true,
     ...options,
-    // eslint-disable-next-line sort-keys
     onAdReady: callbackHandler(options.onAdReady),
     onAdStart,
     onError: callbackHandler(options.onError),
     onRunFinish: callbackHandler(options.onRunFinish)
   };
 
+  // NOTE: It seems that if the video doesn't load synchronously inside a touchend or click event handler, the user gesture breaks on iOS and it won't allow a play.
   if (options.videoElement && options.videoElement.paused && isIOS()) {
-    /*
-      It seems that if the video doesn't load synchronously inside a touchend or click event handler, the user gesture breaks on iOS and it won't allow a play.
-    */
     options.videoElement.load();
   }
 

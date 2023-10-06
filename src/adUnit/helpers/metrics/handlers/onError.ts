@@ -1,5 +1,5 @@
 import {VideoAdContainer} from '../../../../adContainer';
-import {linearEvents} from '../../../../tracker';
+import {linearEvents, ErrorCode} from '../../../../tracker';
 import {Cancel} from '../../../../types';
 
 const {error} = linearEvents;
@@ -9,7 +9,13 @@ const onError = (
   callback: (event: string, mediaError: MediaError | null) => void
 ): Cancel => {
   const errorHandler = (): void => {
-    callback(error, videoElement.error);
+    const mediaError = videoElement.error;
+
+    Object.defineProperty(mediaError, 'code', {
+      get: () => ErrorCode.VAST_PROBLEM_DISPLAYING_MEDIA_FILE
+    });
+
+    callback(error, mediaError);
   };
 
   videoElement.addEventListener('error', errorHandler);

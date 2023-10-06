@@ -52,6 +52,11 @@ export interface VideoAdUnitOptions {
    * Defaults to `false`
    */
   responsive?: boolean
+  /**
+   * if true it will pause the ad unit whenever a user click on the ad
+   * Defaults to `true`
+   */
+  pauseOnAdClick?: boolean
 }
 
 /**
@@ -105,6 +110,7 @@ class VideoAdUnit extends Emitter {
   public vastChain: VastChain
   public videoAdContainer: VideoAdContainer
 
+  protected pauseOnAdClick: boolean
   protected icons: VastIcon[] | null
 
   /**
@@ -114,7 +120,7 @@ class VideoAdUnit extends Emitter {
    * @param videoAdContainer container instance to place the ad
    * @param options Options Map. The allowed properties are:
    */
-  public constructor (vastChain: VastChain, videoAdContainer:VideoAdContainer, {viewability = false, responsive = false, logger = console}: VideoAdUnitOptions = {}) {
+  public constructor (vastChain: VastChain, videoAdContainer: VideoAdContainer, {viewability = false, responsive = false, logger = console, pauseOnAdClick = true}: VideoAdUnitOptions = {}) {
     super(logger);
 
     const {onFinishCallbacks, handleViewableImpression} = this[_protected];
@@ -127,6 +133,8 @@ class VideoAdUnit extends Emitter {
 
     /** Array of {@link VastIcon} definitions to display from the passed {@link VastChain} or null if there are no icons.*/
     this.icons = retrieveIcons(vastChain);
+
+    this.pauseOnAdClick = pauseOnAdClick;
 
     onFinishCallbacks.push(preventManualProgress(this.videoAdContainer.videoElement));
 

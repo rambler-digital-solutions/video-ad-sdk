@@ -56,6 +56,7 @@ import linearEvents, {
   creativeView
 } from '../../tracker/linearEvents';
 import {acceptInvitation, adCollapse} from '../../tracker/nonLinearEvents';
+import {ErrorCode} from '../../tracker';
 import addIcons from '../helpers/icons/addIcons';
 import retrieveIcons from '../helpers/icons/retrieveIcons';
 import {volumeChanged, adProgress} from '../adUnitEvents';
@@ -95,6 +96,7 @@ describe('VpaidAdUnit', () => {
       }
     ];
     videoAdContainer = new VideoAdContainer(document.createElement('DIV'));
+    videoAdContainer.slotElement = document.createElement('DIV');
   });
 
   afterEach(() => {
@@ -995,6 +997,29 @@ describe('VpaidAdUnit', () => {
             expect(window.open).toHaveBeenCalledWith('https://test.example.com/clickthrough', '_blank');
           });
         });
+
+        test('if paused, must not resume the adUnit and open the provided url in a new tab', () => {
+          adUnit.pauseOnAdClick = false;
+          adUnit.creativeAd.emit(adVideoStart);
+          adUnit.creativeAd.emit(adPaused);
+          expect(adUnit.paused()).toBe(true);
+          adUnit.creativeAd.emit(adClickThru, 'https://test.example.com/clickUrl', undefined, true);
+          expect(window.open).toHaveBeenCalledTimes(1);
+          expect(window.open).toHaveBeenCalledWith('https://test.example.com/clickUrl', '_blank');
+          expect(adUnit.creativeAd.pauseAd).not.toHaveBeenCalled();
+          expect(adUnit.creativeAd.resumeAd).not.toHaveBeenCalled();
+        });
+
+        test('if playing, must not pause the adUnit and open the provided url in a new tab', () => {
+          adUnit.pauseOnAdClick = false;
+          adUnit.creativeAd.emit(adVideoStart);
+          expect(adUnit.paused()).toBe(false);
+          adUnit.creativeAd.emit(adClickThru, 'https://test.example.com/clickUrl', undefined, true);
+          expect(window.open).toHaveBeenCalledTimes(1);
+          expect(window.open).toHaveBeenCalledWith('https://test.example.com/clickUrl', '_blank');
+          expect(adUnit.creativeAd.pauseAd).not.toHaveBeenCalled();
+          expect(adUnit.creativeAd.resumeAd).not.toHaveBeenCalled();
+        });
       });
     });
 
@@ -1017,8 +1042,8 @@ describe('VpaidAdUnit', () => {
         const error = adUnit.error;
 
         expect(error.message).toBe('VPAID general error');
-        expect(error.code).toBe(901);
-        expect(adUnit.errorCode).toBe(901);
+        expect(error.code).toBe(ErrorCode.VPAID_ERROR);
+        expect(adUnit.errorCode).toBe(ErrorCode.VPAID_ERROR);
       });
 
       it('must use the emitted error if provided', async () => {
@@ -1029,7 +1054,7 @@ describe('VpaidAdUnit', () => {
 
         const creativeError = new Error('test error');
 
-        creativeError.code = 302;
+        creativeError.code = ErrorCode.VAST_TOO_MANY_REDIRECTS;
         adUnit.creativeAd.emit(adError, creativeError);
 
         expect(callback).toHaveBeenCalledWith({
@@ -1039,8 +1064,8 @@ describe('VpaidAdUnit', () => {
         const error = adUnit.error;
 
         expect(error).toBe(creativeError);
-        expect(error.code).toBe(302);
-        expect(adUnit.errorCode).toBe(302);
+        expect(error.code).toBe(ErrorCode.VAST_TOO_MANY_REDIRECTS);
+        expect(adUnit.errorCode).toBe(ErrorCode.VAST_TOO_MANY_REDIRECTS);
       });
     });
 

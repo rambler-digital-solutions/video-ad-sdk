@@ -1,5 +1,6 @@
 import {getAdErrorURI, getVastErrorURI} from '../../../vastSelectors';
 import {noAdParsedXML, vastNoAdXML, vastWrapperXML, wrapperParsedXML, wrapperAd} from '../../../../fixtures';
+import {ErrorCode} from '../../errors';
 import pixelTracker from '../pixelTracker';
 import trackError from '../trackError';
 
@@ -13,7 +14,7 @@ const vastChain = [
   {
     ad: null,
     error: expect.any(Error),
-    errorCode: 203,
+    errorCode: ErrorCode.VAST_UNEXPECTED_MEDIA_FILE,
     parsedXML: noAdParsedXML,
     requestTag: 'https://test.example.com/vastadtaguri',
     XML: vastNoAdXML

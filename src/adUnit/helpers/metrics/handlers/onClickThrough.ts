@@ -4,12 +4,7 @@ import {MetricHandlerData, Cancel} from '../../../../types';
 
 const {clickThrough} = linearEvents;
 
-const onClickThrough = (
-  {videoElement, element}: VideoAdContainer,
-  callback: (event: string) => void,
-  {clickThroughUrl}: MetricHandlerData = {}
-): Cancel => {
-  const placeholder = element || videoElement.parentNode;
+const createDefaultClickControl = (): HTMLElement=> {
   const anchor = document.createElement('a');
 
   anchor.classList.add('mol-vast-clickthrough');
@@ -19,28 +14,52 @@ const onClickThrough = (
   anchor.style.left = '0';
   anchor.style.top = '0';
 
-  if (clickThroughUrl) {
+  return anchor;
+};
+
+const onClickThrough = (
+  {videoElement, element}: VideoAdContainer,
+  callback: (event: string) => void,
+  {clickThroughUrl, pauseOnAdClick = true, createClickControl = createDefaultClickControl}: MetricHandlerData = {}
+): Cancel => {
+  const placeholder = element || videoElement.parentNode;
+  const anchor = createClickControl()
+  const isVirtual = !document.body.contains(anchor);
+
+  if (isVirtual) {
+    placeholder.appendChild(anchor);
+  }
+
+  if (clickThroughUrl && anchor instanceof HTMLAnchorElement) {
     anchor.href = clickThroughUrl;
     anchor.target = '_blank';
   }
 
   anchor.onclick = (event) => {
-    event.stopPropagation?.();
+    if (Event.prototype.stopPropagation !== undefined) {
+      event.stopPropagation();
+    }
 
-    if (videoElement.paused) {
-      event.preventDefault?.();
+    if (videoElement.paused && pauseOnAdClick) {
+      if (Event.prototype.preventDefault !== undefined) {
+        event.preventDefault();
+      }
 
       videoElement.play();
     } else {
-      videoElement.pause();
+      if (pauseOnAdClick) {
+        videoElement.pause();
+      }
 
       callback(clickThrough);
     }
   };
 
-  placeholder.appendChild(anchor);
-
-  return () => placeholder.removeChild(anchor);
+  return () => {
+    if (isVirtual) {
+      placeholder.removeChild(anchor);
+    }
+  };
 };
 
 export default onClickThrough;

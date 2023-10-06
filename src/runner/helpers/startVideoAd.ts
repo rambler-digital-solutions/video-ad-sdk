@@ -8,10 +8,12 @@ import {
   VpaidAdUnitOptions
 } from '../../adUnit';
 import {VideoAdContainer} from '../../adContainer';
+import {ErrorCode} from '../../tracker'
 import {getInteractiveFiles, getMediaFiles} from '../../vastSelectors';
 import canPlay from '../../adUnit/helpers/media/canPlay';
 import {start, closeLinear} from '../../tracker/linearEvents';
 import {adStopped, adUserClose} from '../../adUnit/helpers/vpaid/api';
+import VastError from '../../vastRequest/helpers/vastError';
 import {VastChain, ParsedAd} from '../../types';
 
 const validate = (
@@ -78,7 +80,10 @@ const tryToStartVpaidAd = (
   const inlineAd = vastChain[0].ad;
 
   if (!inlineAd || !hasVpaidCreative(inlineAd)) {
-    throw new Error('No valid creative found in the passed VAST chain');
+    const error = new VastError('No valid creative found in the passed VAST chain');
+
+    error.code = ErrorCode.VAST_MEDIA_FILE_NOT_FOUND;
+    throw error;
   }
 
   const adUnit = createVideoAdUnit(vastChain, videoAdContainer, {

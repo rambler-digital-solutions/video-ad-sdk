@@ -1,3 +1,4 @@
+export {ErrorCode, isVastErrorCode} from './errorCode';
 export {default as linearEvents} from './linearEvents';
 export {default as nonLinearEvents} from './nonLinearEvents';
 export {default as trackLinearEvent} from './trackLinearEvent';
