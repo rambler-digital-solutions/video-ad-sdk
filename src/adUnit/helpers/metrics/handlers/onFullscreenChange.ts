@@ -1,15 +1,15 @@
-import {VideoAdContainer} from '../../../../adContainer';
-import {Cancel} from '../../../../types';
-import {linearEvents} from '../../../../tracker';
+import {VideoAdContainer} from '../../../../adContainer'
+import {Cancel} from '../../../../types'
+import {linearEvents} from '../../../../tracker'
 
 const fullscreenElement = (): Element | null =>
   document.fullscreenElement ||
   document.webkitFullscreenElement ||
   document.mozFullScreenElement ||
   document.msFullscreenElement ||
-  null;
+  null
 
-const {fullscreen, exitFullscreen, playerCollapse, playerExpand} = linearEvents;
+const {fullscreen, exitFullscreen, playerCollapse, playerExpand} = linearEvents
 
 const onFullscreenChange = (
   {videoElement}: VideoAdContainer,
@@ -20,29 +20,29 @@ const onFullscreenChange = (
     'mozfullscreenchange',
     'fullscreenchange',
     'MSFullscreenChange'
-  ];
-  let fullscreenOn = false;
+  ]
+  let fullscreenOn = false
   const fullscreenchangeHandler = (): void => {
     if (fullscreenElement() === videoElement) {
-      fullscreenOn = true;
-      callback(playerExpand);
-      callback(fullscreen);
+      fullscreenOn = true
+      callback(playerExpand)
+      callback(fullscreen)
     } else if (fullscreenOn) {
-      fullscreenOn = false;
-      callback(playerCollapse);
-      callback(exitFullscreen);
+      fullscreenOn = false
+      callback(playerCollapse)
+      callback(exitFullscreen)
     }
-  };
+  }
 
   for (const event of fullscreenEvtNames) {
-    document.addEventListener(event, fullscreenchangeHandler);
+    document.addEventListener(event, fullscreenchangeHandler)
   }
 
   return () => {
     for (const event of fullscreenEvtNames) {
-      document.removeEventListener(event, fullscreenchangeHandler);
+      document.removeEventListener(event, fullscreenchangeHandler)
     }
-  };
-};
+  }
+}
 
-export default onFullscreenChange;
+export default onFullscreenChange

@@ -1,29 +1,29 @@
-import {VideoAdContainer} from '../../../../adContainer';
-import {Cancel} from '../../../../types';
-import {linearEvents} from '../../../../tracker';
+import {VideoAdContainer} from '../../../../adContainer'
+import {Cancel} from '../../../../types'
+import {linearEvents} from '../../../../tracker'
 
-const {rewind} = linearEvents;
+const {rewind} = linearEvents
 const onRewind = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
 ): Cancel => {
-  let currentTime = videoElement.currentTime;
+  let currentTime = videoElement.currentTime
 
   const timeupdateHandler = (): void => {
-    const delta = videoElement.currentTime - currentTime;
+    const delta = videoElement.currentTime - currentTime
 
     if (delta < 0 && Math.abs(delta) >= 1) {
-      callback(rewind);
+      callback(rewind)
     }
 
-    currentTime = videoElement.currentTime;
-  };
+    currentTime = videoElement.currentTime
+  }
 
-  videoElement.addEventListener('timeupdate', timeupdateHandler);
+  videoElement.addEventListener('timeupdate', timeupdateHandler)
 
   return () => {
-    videoElement.removeEventListener('timeupdate', timeupdateHandler);
-  };
-};
+    videoElement.removeEventListener('timeupdate', timeupdateHandler)
+  }
+}
 
-export default onRewind;
+export default onRewind

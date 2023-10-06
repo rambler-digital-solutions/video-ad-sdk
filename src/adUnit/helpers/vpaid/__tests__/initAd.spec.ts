@@ -1,15 +1,19 @@
-import {vpaidInlineAd, vpaidInlineParsedXML, vastVpaidInlineXML} from '../../../../../fixtures';
-import VideoAdContainer from '../../../../adContainer/VideoAdContainer';
-import initAd from '../initAd';
-import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd';
+import {
+  vpaidInlineAd,
+  vpaidInlineParsedXML,
+  vastVpaidInlineXML
+} from '../../../../../fixtures'
+import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
+import initAd from '../initAd'
+import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd'
 
-jest.mock('../loadCreative');
-jest.mock('../handshake');
+jest.mock('../loadCreative')
+jest.mock('../handshake')
 
 describe('initAd', () => {
-  let vpaidChain;
-  let videoAdContainer;
-  let origScreen;
+  let vpaidChain
+  let videoAdContainer
+  let origScreen
 
   beforeEach(() => {
     vpaidChain = [
@@ -20,31 +24,31 @@ describe('initAd', () => {
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastVpaidInlineXML
       }
-    ];
-    videoAdContainer = new VideoAdContainer(document.createElement('DIV'));
-    origScreen = window.screen;
+    ]
+    videoAdContainer = new VideoAdContainer(document.createElement('DIV'))
+    origScreen = window.screen
     Object.defineProperty(window, 'screen', {
       value: {
         height: 800,
         width: 1200
       },
       writable: true
-    });
-  });
+    })
+  })
 
   afterEach(() => {
     Object.defineProperty(window, 'screen', {
       value: origScreen,
       writable: true
-    });
-  });
+    })
+  })
 
   test('must init the creative', async () => {
-    const mockCreativeAd = new MockVpaidCreativeAd();
+    const mockCreativeAd = new MockVpaidCreativeAd()
 
-    await initAd(mockCreativeAd, videoAdContainer, vpaidChain);
+    await initAd(mockCreativeAd, videoAdContainer, vpaidChain)
 
-    expect(mockCreativeAd.initAd).toHaveBeenCalledTimes(1);
+    expect(mockCreativeAd.initAd).toHaveBeenCalledTimes(1)
     expect(mockCreativeAd.initAd).toHaveBeenCalledWith(
       0,
       0,
@@ -59,11 +63,11 @@ describe('initAd', () => {
         videoSlot: videoAdContainer.videoElement,
         videoSlotCanAutoPlay: false
       }
-    );
+    )
 
-    const {slot} = mockCreativeAd.initAd.mock.calls[0][5];
+    const {slot} = mockCreativeAd.initAd.mock.calls[0][5]
 
-    expect(slot).toBeInstanceOf(HTMLDivElement);
+    expect(slot).toBeInstanceOf(HTMLDivElement)
     expect(slot.style).toEqual(
       expect.objectContaining({
         border: '0px',
@@ -76,6 +80,6 @@ describe('initAd', () => {
         top: '0px',
         width: '0px'
       })
-    );
-  });
-});
+    )
+  })
+})

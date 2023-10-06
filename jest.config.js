@@ -1,6 +1,6 @@
-/* eslint-disable import/unambiguous, import/no-commonjs */
 module.exports = {
   preset: 'ts-jest',
+  testEnvironment: 'jsdom',
   collectCoverage: true,
   collectCoverageFrom: [
     '**/src/**/*.js',
@@ -15,9 +15,9 @@ module.exports = {
   coverageDirectory: './coverage/',
   coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testEnvironment: './GlobalJsDomEnv.js',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testRegex: '__tests__/.*\\.spec\\.(jsx?|tsx?)$',
   testURL: 'http://localhost',
   transformIgnorePatterns: ['node_modules']
-};
+}

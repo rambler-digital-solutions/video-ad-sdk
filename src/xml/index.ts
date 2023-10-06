@@ -1,4 +1,5 @@
-import xml2js from './helpers/xml2js';
+import xml2js from './helpers/xml2js'
+import {ParsedXML} from '../types'
 import {
   get,
   getAll,
@@ -6,9 +7,9 @@ import {
   getText,
   getAttributes,
   getAttribute
-} from './helpers/xmlSelectors';
+} from './helpers/xmlSelectors'
 
-const parser = new DOMParser();
+const parser = new DOMParser()
 
 /**
  * Parses the passed xml text.
@@ -17,13 +18,6 @@ const parser = new DOMParser();
  * @param xmlText XML text to be parsed.
  * @returns Returns the parsed xml document as a js object.
  */
-export const parseXml = (xmlText: string) => xml2js(parser, xmlText);
+export const parseXml = (xmlText: string): ParsedXML => xml2js(parser, xmlText)
 
-export {
-  get,
-  getAll,
-  getFirstChild,
-  getText,
-  getAttributes,
-  getAttribute
-};
+export {get, getAll, getFirstChild, getText, getAttributes, getAttribute}

@@ -1,21 +1,24 @@
-import {linearEvents} from '../tracker';
-import {getViewable} from '../vastSelectors';
+import {linearEvents} from '../tracker'
+import {getViewable} from '../vastSelectors'
 import {VastChain, VastIcon} from '../types'
 import {VideoAdContainer} from '../adContainer'
-import {finish} from './adUnitEvents';
-import {onElementVisibilityChange, onElementResize} from './helpers/dom/elementObservers';
-import preventManualProgress from './helpers/dom/preventManualProgress';
-import Emitter, {Listener} from './helpers/Emitter';
-import retrieveIcons from './helpers/icons/retrieveIcons';
-import addIcons, {AddedIcons} from './helpers/icons/addIcons';
-import viewmode from './helpers/vpaid/viewmode';
-import safeCallback from './helpers/safeCallback';
+import {finish} from './adUnitEvents'
+import {
+  onElementVisibilityChange,
+  onElementResize
+} from './helpers/dom/elementObservers'
+import preventManualProgress from './helpers/dom/preventManualProgress'
+import Emitter, {Listener} from './helpers/Emitter'
+import retrieveIcons from './helpers/icons/retrieveIcons'
+import addIcons, {AddedIcons} from './helpers/icons/addIcons'
+import viewmode from './helpers/vpaid/viewmode'
+import safeCallback from './helpers/safeCallback'
 import AdUnitError from './helpers/adUnitError'
 
-const {start, viewable, notViewable, viewUndetermined, iconClick, iconView} = linearEvents;
+const {start, viewable, notViewable, viewUndetermined, iconClick, iconView} =
+  linearEvents
 
-// eslint-disable-next-line id-match
-export const _protected = Symbol('_protected');
+export const _protected = Symbol('_protected')
 
 interface Size {
   width: number
@@ -66,46 +69,46 @@ class VideoAdUnit extends Emitter {
   protected [_protected]: Protected = {
     finish: () => {
       if (!this.isFinished()) {
-        this[_protected].finished = true;
-        this[_protected].onFinishCallbacks.forEach((callback) => callback());
+        this[_protected].finished = true
+        this[_protected].onFinishCallbacks.forEach((callback) => callback())
 
         this.emit(finish, {
           adUnit: this,
           type: finish
-        });
+        })
       }
     },
     finished: false,
     handleViewableImpression: (event) => {
-      this[_protected].viewable = Boolean(event);
+      this[_protected].viewable = Boolean(event)
 
       this.emit(event, {
         adUnit: this,
         type: event
-      });
+      })
     },
     onErrorCallbacks: [],
     onFinishCallbacks: [],
     started: false,
     throwIfCalled: () => {
-      throw new Error('VideoAdUnit method must be implemented on child class');
+      throw new Error('VideoAdUnit method must be implemented on child class')
     },
     throwIfFinished: () => {
       if (this.isFinished()) {
-        throw new Error('VideoAdUnit is finished');
+        throw new Error('VideoAdUnit is finished')
       }
     },
     viewable: false
-  };
+  }
 
   /** Ad unit type */
-  public type: string | null = null;
+  public type: string | null = null
 
   /** If an error occurs it will contain the reference to the error otherwise it will be bull */
-  public error: AdUnitError | null = null;
+  public error: AdUnitError | null = null
 
   /** If an error occurs it will contain the Vast Error code of the error */
-  public errorCode: number | null = null;
+  public errorCode: number | null = null
 
   public vastChain: VastChain
   public videoAdContainer: VideoAdContainer
@@ -120,134 +123,155 @@ class VideoAdUnit extends Emitter {
    * @param videoAdContainer container instance to place the ad
    * @param options Options Map. The allowed properties are:
    */
-  public constructor (vastChain: VastChain, videoAdContainer: VideoAdContainer, {viewability = false, responsive = false, logger = console, pauseOnAdClick = true}: VideoAdUnitOptions = {}) {
-    super(logger);
+  public constructor(
+    vastChain: VastChain,
+    videoAdContainer: VideoAdContainer,
+    {
+      viewability = false,
+      responsive = false,
+      logger = console,
+      pauseOnAdClick = true
+    }: VideoAdUnitOptions = {}
+  ) {
+    super(logger)
 
-    const {onFinishCallbacks, handleViewableImpression} = this[_protected];
+    const {onFinishCallbacks, handleViewableImpression} = this[_protected]
 
     /** Reference to the {@link VastChain} used to load the ad. */
-    this.vastChain = vastChain;
+    this.vastChain = vastChain
 
     /** Reference to the {@link VideoAdContainer} that contains the ad. */
-    this.videoAdContainer = videoAdContainer;
+    this.videoAdContainer = videoAdContainer
 
     /** Array of {@link VastIcon} definitions to display from the passed {@link VastChain} or null if there are no icons.*/
-    this.icons = retrieveIcons(vastChain);
+    this.icons = retrieveIcons(vastChain)
 
-    this.pauseOnAdClick = pauseOnAdClick;
+    this.pauseOnAdClick = pauseOnAdClick
 
-    onFinishCallbacks.push(preventManualProgress(this.videoAdContainer.videoElement));
+    onFinishCallbacks.push(
+      preventManualProgress(this.videoAdContainer.videoElement)
+    )
 
     if (this.icons) {
-      const {drawIcons, hasPendingIconRedraws, removeIcons} = addIcons(this.icons, {
-        logger,
-        onIconClick: (icon) =>
-          this.emit(iconClick, {
-            adUnit: this,
-            data: icon,
-            type: iconClick
-          }),
-        onIconView: (icon) =>
-          this.emit(iconView, {
-            adUnit: this,
-            data: icon,
-            type: iconView
-          }),
-        videoAdContainer
-      });
+      const {drawIcons, hasPendingIconRedraws, removeIcons} = addIcons(
+        this.icons,
+        {
+          logger,
+          onIconClick: (icon) =>
+            this.emit(iconClick, {
+              adUnit: this,
+              data: icon,
+              type: iconClick
+            }),
+          onIconView: (icon) =>
+            this.emit(iconView, {
+              adUnit: this,
+              data: icon,
+              type: iconView
+            }),
+          videoAdContainer
+        }
+      )
 
-      this[_protected].drawIcons = drawIcons;
-      this[_protected].removeIcons = removeIcons;
-      this[_protected].hasPendingIconRedraws = hasPendingIconRedraws;
+      this[_protected].drawIcons = drawIcons
+      this[_protected].removeIcons = removeIcons
+      this[_protected].hasPendingIconRedraws = hasPendingIconRedraws
 
-      onFinishCallbacks.push(removeIcons);
+      onFinishCallbacks.push(removeIcons)
     }
 
-    const viewableImpression = vastChain.some(({ad}) => ad && getViewable(ad));
+    const viewableImpression = vastChain.some(({ad}) => ad && getViewable(ad))
 
     if (viewableImpression) {
       this.once(start, () => {
-        let timeoutId: number;
+        let timeoutId: number
 
         const unsubscribe = onElementVisibilityChange(
           this.videoAdContainer.element,
           (visible) => {
             if (this.isFinished() || this[_protected].viewable) {
-              return;
+              return
             }
 
             if (typeof visible !== 'boolean') {
-              handleViewableImpression(viewUndetermined);
+              handleViewableImpression(viewUndetermined)
 
-              return;
+              return
             }
 
             if (visible) {
-              timeoutId = window.setTimeout(handleViewableImpression, 2000, viewable);
+              timeoutId = window.setTimeout(
+                handleViewableImpression,
+                2000,
+                viewable
+              )
             } else {
-              clearTimeout(timeoutId);
+              clearTimeout(timeoutId)
             }
           },
           {viewabilityOffset: 0.5}
-        );
+        )
 
         onFinishCallbacks.push(() => {
-          unsubscribe();
-          clearTimeout(timeoutId);
+          unsubscribe()
+          clearTimeout(timeoutId)
 
           if (!this[_protected].viewable) {
-            handleViewableImpression(notViewable);
+            handleViewableImpression(notViewable)
           }
-        });
-      });
+        })
+      })
     }
 
     if (viewability) {
       this.once(start, () => {
-        const unsubscribe = onElementVisibilityChange(this.videoAdContainer.element, (visible) => {
-          if (this.isFinished()) {
-            return;
-          }
+        const unsubscribe = onElementVisibilityChange(
+          this.videoAdContainer.element,
+          (visible) => {
+            if (this.isFinished()) {
+              return
+            }
 
-          if (typeof visible === 'boolean') {
-            if (visible) {
-              this.resume();
-            } else {
-              this.pause();
+            if (typeof visible === 'boolean') {
+              if (visible) {
+                this.resume()
+              } else {
+                this.pause()
+              }
             }
           }
-        });
+        )
 
-        onFinishCallbacks.push(unsubscribe);
-      });
+        onFinishCallbacks.push(unsubscribe)
+      })
     }
 
     if (responsive) {
       this.once(start, () => {
-        const {element} = this.videoAdContainer;
+        const {element} = this.videoAdContainer
 
         this[_protected].size = {
           height: element.clientHeight,
           viewmode: viewmode(element.clientWidth, element.clientHeight),
           width: element.clientWidth
-        };
+        }
 
         const unsubscribe = onElementResize(element, () => {
           if (this.isFinished()) {
-            return;
+            return
           }
 
-          const prevSize = this[_protected].size;
-          const height = element.clientHeight;
-          const width = element.clientWidth;
+          const prevSize = this[_protected].size
+          const height = element.clientHeight
+          const width = element.clientWidth
 
           if (height !== prevSize?.height || width !== prevSize?.width) {
-            this.resize(width, height, viewmode(width, height));
+            this.resize(width, height, viewmode(width, height))
           }
-        });
+        })
 
-        onFinishCallbacks.push(unsubscribe);
-      });
+        onFinishCallbacks.push(unsubscribe)
+      })
     }
   }
 
@@ -257,8 +281,8 @@ class VideoAdUnit extends Emitter {
    * @throws if called twice.
    * @throws if ad unit is finished.
    */
-  public start (): void {
-    this[_protected].throwIfCalled();
+  public start(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -267,8 +291,8 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  public resume (): void {
-    this[_protected].throwIfCalled();
+  public resume(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -277,8 +301,8 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  public pause (): void {
-    this[_protected].throwIfCalled();
+  public pause(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -287,8 +311,8 @@ class VideoAdUnit extends Emitter {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  public skip (): void {
-    this[_protected].throwIfCalled();
+  public skip(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -299,8 +323,8 @@ class VideoAdUnit extends Emitter {
    *
    * @param volume must be a value between 0 and 1;
    */
-  public setVolume (_volume: number): void {
-    this[_protected].throwIfCalled();
+  public setVolume(_volume: number): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -311,8 +335,8 @@ class VideoAdUnit extends Emitter {
    *
    * @returns the volume of the ad unit.
    */
-  public getVolume (): void {
-    this[_protected].throwIfCalled();
+  public getVolume(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -320,8 +344,8 @@ class VideoAdUnit extends Emitter {
    *
    * @throws if ad unit is finished.
    */
-  public cancel (): void {
-    this[_protected].throwIfCalled();
+  public cancel(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -329,15 +353,15 @@ class VideoAdUnit extends Emitter {
    *
    * @returns the duration of the ad unit.
    */
-  public duration (): void {
-    this[_protected].throwIfCalled();
+  public duration(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
    * Returns true if the ad is paused and false otherwise
    */
-  public paused (): void {
-    this[_protected].throwIfCalled();
+  public paused(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -345,8 +369,8 @@ class VideoAdUnit extends Emitter {
    *
    * @returns the current time of the ad unit.
    */
-  public currentTime (): void {
-    this[_protected].throwIfCalled();
+  public currentTime(): void {
+    this[_protected].throwIfCalled()
   }
 
   /**
@@ -356,12 +380,12 @@ class VideoAdUnit extends Emitter {
    *
    * @param callback will be called once the ad unit finished
    */
-  public onFinish (callback: Listener): void {
+  public onFinish(callback: Listener): void {
     if (typeof callback !== 'function') {
-      throw new TypeError('Expected a callback function');
+      throw new TypeError('Expected a callback function')
     }
 
-    this[_protected].onFinishCallbacks.push(safeCallback(callback, this.logger));
+    this[_protected].onFinishCallbacks.push(safeCallback(callback, this.logger))
   }
 
   /**
@@ -371,26 +395,26 @@ class VideoAdUnit extends Emitter {
    *
    * @param callback will be called on ad unit error passing the Error instance  and an object with the adUnit and the  {@link VastChain}.
    */
-  public onError (callback: Listener): void {
+  public onError(callback: Listener): void {
     if (typeof callback !== 'function') {
-      throw new TypeError('Expected a callback function');
+      throw new TypeError('Expected a callback function')
     }
 
-    this[_protected].onErrorCallbacks.push(safeCallback(callback, this.logger));
+    this[_protected].onErrorCallbacks.push(safeCallback(callback, this.logger))
   }
 
   /**
    * @returns true if the ad unit is finished and false otherwise
    */
-  public isFinished (): boolean {
-    return this[_protected].finished;
+  public isFinished(): boolean {
+    return this[_protected].finished
   }
 
   /**
    * @returns true if the ad unit has started and false otherwise
    */
-  public isStarted (): boolean {
-    return this[_protected].started;
+  public isStarted(): boolean {
+    return this[_protected].started
   }
 
   /**
@@ -401,18 +425,22 @@ class VideoAdUnit extends Emitter {
    *
    * @returns Promise that resolves once the unit was resized
    */
-  public async resize (width: number, height: number, mode: string): Promise<void> {
+  public async resize(
+    width: number,
+    height: number,
+    mode: string
+  ): Promise<void> {
     this[_protected].size = {
       height,
       viewmode: mode,
       width
-    };
+    }
 
     if (this.isStarted() && !this.isFinished() && this.icons) {
-      await this[_protected].removeIcons?.();
-      await this[_protected].drawIcons?.();
+      await this[_protected].removeIcons?.()
+      await this[_protected].drawIcons?.()
     }
   }
 }
 
-export default VideoAdUnit;
+export default VideoAdUnit

@@ -1,1 +1,1 @@
-export default window.IntersectionObserver;
+export default window.IntersectionObserver

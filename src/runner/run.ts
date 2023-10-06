@@ -1,22 +1,22 @@
-import {trackError, ErrorCode} from '../tracker';
-import {createVideoAdContainer, VideoAdContainer} from '../adContainer';
-import {VastAdUnit, VpaidAdUnit} from '../adUnit';
-import {VastChain, PixelTracker} from '../types';
-import startVideoAd, {StartVideoAdOptions} from './helpers/startVideoAd';
+import {trackError, ErrorCode} from '../tracker'
+import {createVideoAdContainer, VideoAdContainer} from '../adContainer'
+import {VastAdUnit, VpaidAdUnit} from '../adUnit'
+import {VastChain, PixelTracker} from '../types'
+import startVideoAd, {StartVideoAdOptions} from './helpers/startVideoAd'
 
 export interface RunOptions extends StartVideoAdOptions {
   /**
    * Optional videoElement that will be used to play the ad.
    */
-  videoElement?: HTMLVideoElement;
+  videoElement?: HTMLVideoElement
   /**
    * Timeout number in milliseconds. If set, the video ad will time out if it doesn't start within the specified time.
    */
-  timeout?: number;
+  timeout?: number
   /**
    * If provided it will be used to track the VAST events instead of the default {@link PixelTracker}.
    */
-  tracker?: PixelTracker;
+  tracker?: PixelTracker
 }
 
 /**
@@ -33,61 +33,59 @@ const run = async (
   placeholder: HTMLElement,
   options: RunOptions
 ): Promise<VastAdUnit | VpaidAdUnit> => {
-  let videoAdContainer: VideoAdContainer | undefined;
+  let videoAdContainer: VideoAdContainer | undefined
 
   try {
-    const {timeout} = options;
+    const {timeout} = options
 
-    videoAdContainer = createVideoAdContainer(
-      placeholder,
-      options.videoElement
-    );
-    let adUnitPromise = startVideoAd(vastChain, videoAdContainer, options);
+    videoAdContainer = createVideoAdContainer(placeholder, options.videoElement)
+
+    let adUnitPromise = startVideoAd(vastChain, videoAdContainer, options)
 
     if (typeof timeout === 'number') {
-      let timedOut = false;
-      let timeoutId: number;
+      let timedOut = false
+      let timeoutId: number
       const timeoutPromise = new Promise<never>((_resolve, reject) => {
         timeoutId = window.setTimeout(() => {
-          const {tracker} = options;
+          const {tracker} = options
 
           trackError(vastChain, {
             errorCode: ErrorCode.VAST_MEDIA_LOAD_TIMEOUT,
             tracker
-          });
-          timedOut = true;
-          reject(new Error('Timeout while starting the ad'));
-        }, options.timeout);
-      });
+          })
+          timedOut = true
+          reject(new Error('Timeout while starting the ad'))
+        }, options.timeout)
+      })
 
       adUnitPromise = Promise.race([
         adUnitPromise.then((newAdUnit) => {
           if (timedOut) {
             if (newAdUnit.isStarted()) {
-              newAdUnit.cancel();
+              newAdUnit.cancel()
             }
           } else {
-            clearTimeout(timeoutId);
+            clearTimeout(timeoutId)
           }
 
-          return newAdUnit;
+          return newAdUnit
         }),
         timeoutPromise
-      ]);
+      ])
     }
 
-    const adUnit = await adUnitPromise;
+    const adUnit = await adUnitPromise
 
     adUnit.onFinish(() => {
-      videoAdContainer?.destroy();
-    });
+      videoAdContainer?.destroy()
+    })
 
-    return adUnit;
+    return adUnit
   } catch (error) {
-    videoAdContainer?.destroy();
+    videoAdContainer?.destroy()
 
-    throw error;
+    throw error
   }
-};
+}
 
-export default run;
+export default run

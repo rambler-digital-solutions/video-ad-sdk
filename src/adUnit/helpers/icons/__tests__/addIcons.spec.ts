@@ -1,51 +1,53 @@
-import createVideoAdContainer from '../../../../adContainer/createVideoAdContainer';
-import addIcons from '../addIcons';
-import createResource from '../../resources/createResource';
-import canBeRendered from '../canBeRendered';
+import createVideoAdContainer from '../../../../adContainer/createVideoAdContainer'
+import addIcons from '../addIcons'
+import createResource from '../../resources/createResource'
+import canBeRendered from '../canBeRendered'
 
-jest.mock('../../resources/createResource');
-jest.mock('../canBeRendered');
+jest.mock('../../resources/createResource')
+jest.mock('../canBeRendered')
 
-const waitFor = (element, eventName) => new Promise((resolve) => element.addEventListener(eventName, resolve));
+const waitFor = (element: HTMLElement, eventName: string): Promise<Event> =>
+  new Promise<Event>((resolve) => element.addEventListener(eventName, resolve))
 
-let videoAdContainer;
-let logger;
+let videoAdContainer
+let logger
 
 beforeEach(async () => {
-  videoAdContainer = await createVideoAdContainer(document.createElement('DIV'));
-  logger = {error: jest.fn()};
-  const {videoElement} = videoAdContainer;
+  videoAdContainer = await createVideoAdContainer(document.createElement('DIV'))
+  logger = {error: jest.fn()}
+
+  const {videoElement} = videoAdContainer
 
   Object.defineProperty(videoElement, 'currentTime', {
     value: 0,
     writable: true
-  });
+  })
 
   Object.defineProperty(videoElement, 'duration', {
     value: 10,
     writable: true
-  });
+  })
 
   createResource.mockImplementation(() => {
-    const resourceElement = document.createElement('IMG');
+    const resourceElement = document.createElement('IMG')
 
-    resourceElement.classList.add('mock-icon-element');
+    resourceElement.classList.add('mock-icon-element')
 
-    resourceElement.width = 100;
-    resourceElement.height = 100;
+    resourceElement.width = 100
+    resourceElement.height = 100
 
-    setTimeout(() => resourceElement.dispatchEvent(new Event('load')));
+    setTimeout(() => resourceElement.dispatchEvent(new Event('load')))
 
-    return resourceElement;
-  });
+    return resourceElement
+  })
 
-  canBeRendered.mockImplementation(() => true);
-});
+  canBeRendered.mockImplementation(() => true)
+})
 
 afterEach(() => {
-  videoAdContainer = null;
-  logger = null;
-});
+  videoAdContainer = null
+  logger = null
+})
 
 test('addIcons must add the icons to the video ad container', async () => {
   const icons = [
@@ -61,19 +63,19 @@ test('addIcons must add the icons to the video ad container', async () => {
       xPosition: 'left',
       yPosition: 'top'
     }
-  ];
-  const {element} = videoAdContainer;
+  ]
+  const {element} = videoAdContainer
 
   const {drawIcons} = addIcons(icons, {
     logger,
     videoAdContainer
-  });
+  })
 
-  drawIcons();
-  await waitFor(element, 'iconsDrawn');
+  drawIcons()
+  await waitFor(element, 'iconsDrawn')
 
-  icons.forEach((icon) => expect(element.contains(icon.element)).toBe(true));
-});
+  icons.forEach((icon) => expect(element.contains(icon.element)).toBe(true))
+})
 
 test('addIcons must not add the the icons whose offset is not meet yet', async () => {
   const icons = [
@@ -90,30 +92,30 @@ test('addIcons must not add the the icons whose offset is not meet yet', async (
       xPosition: 'left',
       yPosition: 'top'
     }
-  ];
-  const {element, videoElement} = videoAdContainer;
+  ]
+  const {element, videoElement} = videoAdContainer
 
   const {drawIcons} = addIcons(icons, {
     logger,
     videoAdContainer
-  });
+  })
 
-  drawIcons();
+  drawIcons()
 
-  await waitFor(element, 'iconsDrawn');
+  await waitFor(element, 'iconsDrawn')
 
-  expect(element.contains(icons[0].element)).toBe(false);
-  expect(element.contains(icons[1].element)).toBe(true);
+  expect(element.contains(icons[0].element)).toBe(false)
+  expect(element.contains(icons[1].element)).toBe(true)
 
-  videoElement.currentTime = 5;
+  videoElement.currentTime = 5
 
-  drawIcons();
+  drawIcons()
 
-  await waitFor(element, 'iconsDrawn');
+  await waitFor(element, 'iconsDrawn')
 
-  expect(element.contains(icons[0].element)).toBe(true);
-  expect(element.contains(icons[1].element)).toBe(true);
-});
+  expect(element.contains(icons[0].element)).toBe(true)
+  expect(element.contains(icons[1].element)).toBe(true)
+})
 
 test('addIcons must remove the icons once the duration is met', async () => {
   const icons = [
@@ -130,30 +132,30 @@ test('addIcons must remove the icons once the duration is met', async () => {
       xPosition: 'left',
       yPosition: 'top'
     }
-  ];
-  const {element, videoElement} = videoAdContainer;
+  ]
+  const {element, videoElement} = videoAdContainer
 
   const {drawIcons} = addIcons(icons, {
     logger,
     videoAdContainer
-  });
+  })
 
-  drawIcons();
+  drawIcons()
 
-  await waitFor(element, 'iconsDrawn');
+  await waitFor(element, 'iconsDrawn')
 
-  expect(element.contains(icons[0].element)).toBe(true);
-  expect(element.contains(icons[1].element)).toBe(true);
+  expect(element.contains(icons[0].element)).toBe(true)
+  expect(element.contains(icons[1].element)).toBe(true)
 
-  videoElement.currentTime = 5.1;
+  videoElement.currentTime = 5.1
 
-  drawIcons();
+  drawIcons()
 
-  await waitFor(element, 'iconsDrawn');
+  await waitFor(element, 'iconsDrawn')
 
-  expect(element.contains(icons[0].element)).toBe(false);
-  expect(element.contains(icons[1].element)).toBe(true);
-});
+  expect(element.contains(icons[0].element)).toBe(false)
+  expect(element.contains(icons[1].element)).toBe(true)
+})
 
 test('addIcons must return a remove function', async () => {
   const icons = [
@@ -169,27 +171,24 @@ test('addIcons must return a remove function', async () => {
       xPosition: 'left',
       yPosition: 'top'
     }
-  ];
-  const {element} = videoAdContainer;
+  ]
+  const {element} = videoAdContainer
 
-  const {
-    drawIcons,
-    removeIcons
-  } = addIcons(icons, {
+  const {drawIcons, removeIcons} = addIcons(icons, {
     logger,
     videoAdContainer
-  });
+  })
 
-  await drawIcons();
+  await drawIcons()
 
-  expect(element.contains(icons[0].element)).toBe(true);
-  expect(element.contains(icons[1].element)).toBe(true);
+  expect(element.contains(icons[0].element)).toBe(true)
+  expect(element.contains(icons[1].element)).toBe(true)
 
-  await removeIcons();
+  await removeIcons()
 
-  expect(element.contains(icons[0].element)).toBe(false);
-  expect(element.contains(icons[1].element)).toBe(false);
-});
+  expect(element.contains(icons[0].element)).toBe(false)
+  expect(element.contains(icons[1].element)).toBe(false)
+})
 
 test('addIcons must call onIconView hook the moment the icon gets added to the page', async () => {
   const icons = [
@@ -206,29 +205,29 @@ test('addIcons must call onIconView hook the moment the icon gets added to the p
       xPosition: 'left',
       yPosition: 'top'
     }
-  ];
-  const {element, videoElement} = videoAdContainer;
-  const onIconView = jest.fn();
+  ]
+  const {element, videoElement} = videoAdContainer
+  const onIconView = jest.fn()
 
   const {drawIcons} = addIcons(icons, {
     logger,
     onIconView,
     videoAdContainer
-  });
+  })
 
-  drawIcons();
-  await waitFor(element, 'iconsDrawn');
+  drawIcons()
+  await waitFor(element, 'iconsDrawn')
 
-  expect(onIconView).toHaveBeenCalledTimes(1);
-  expect(onIconView).toHaveBeenCalledWith(icons[1]);
+  expect(onIconView).toHaveBeenCalledTimes(1)
+  expect(onIconView).toHaveBeenCalledWith(icons[1])
 
-  videoElement.currentTime = 5;
+  videoElement.currentTime = 5
 
-  drawIcons();
+  drawIcons()
 
-  await waitFor(element, 'iconsDrawn');
+  await waitFor(element, 'iconsDrawn')
 
-  expect(onIconView).toHaveBeenCalledTimes(2);
-  expect(onIconView).toHaveBeenCalledWith(icons[0]);
-  expect(onIconView).toHaveBeenCalledWith(icons[1]);
-});
+  expect(onIconView).toHaveBeenCalledTimes(2)
+  expect(onIconView).toHaveBeenCalledWith(icons[0])
+  expect(onIconView).toHaveBeenCalledWith(icons[1])
+})

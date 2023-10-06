@@ -1,18 +1,18 @@
-import {getVASTAdTagURI, isWrapper} from '../vastSelectors';
-import {RequestNextAdOptions, VastChain} from '../types';
-import requestAd from './requestAd';
-import getNextAd from './helpers/getNextAd';
-import {markAdAsRequested} from './helpers/adUtils';
+import {getVASTAdTagURI, isWrapper} from '../vastSelectors'
+import {RequestNextAdOptions, VastChain} from '../types'
+import requestAd from './requestAd'
+import getNextAd from './helpers/getNextAd'
+import {markAdAsRequested} from './helpers/adUtils'
 
 const validateChain = (vastChain: VastChain): void => {
   if (!Array.isArray(vastChain)) {
-    throw new TypeError('Invalid VAST chain');
+    throw new TypeError('Invalid VAST chain')
   }
 
   if (vastChain.length === 0) {
-    throw new Error('No next ad to request');
+    throw new Error('No next ad to request')
   }
-};
+}
 
 /**
  * Requests the next ad in the VAST Chain.
@@ -26,31 +26,27 @@ const requestNextAd = (
   vastChain: VastChain,
   options: RequestNextAdOptions
 ): Promise<VastChain> => {
-  validateChain(vastChain);
+  validateChain(vastChain)
 
-  const vastResponse = vastChain[0];
-  const nextAd = getNextAd(vastResponse, options);
+  const vastResponse = vastChain[0]
+  const nextAd = getNextAd(vastResponse, options)
 
   if (nextAd) {
     const newVastResponse = Object.assign({}, vastResponse, {
       ad: nextAd
-    });
-    const newVastChain = [newVastResponse, ...vastChain.slice(1)];
+    })
+    const newVastChain = [newVastResponse, ...vastChain.slice(1)]
 
-    markAdAsRequested(nextAd);
+    markAdAsRequested(nextAd)
 
     if (isWrapper(nextAd)) {
-      return requestAd(
-        getVASTAdTagURI(nextAd) as string,
-        options,
-        newVastChain
-      );
+      return requestAd(getVASTAdTagURI(nextAd) as string, options, newVastChain)
     }
 
-    return Promise.resolve(newVastChain);
+    return Promise.resolve(newVastChain)
   }
 
-  return requestNextAd(vastChain.slice(1), options);
-};
+  return requestNextAd(vastChain.slice(1), options)
+}
 
-export default requestNextAd;
+export default requestNextAd

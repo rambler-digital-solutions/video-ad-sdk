@@ -1,5 +1,5 @@
-import {VpaidCreativeAdUnit} from '../../../types';
-import waitFor from './waitFor';
+import {VpaidCreativeAdUnit} from '../../../types'
+import waitFor from './waitFor'
 
 const callAndWait = (
   creativeAd: VpaidCreativeAdUnit,
@@ -7,12 +7,12 @@ const callAndWait = (
   event: string,
   ...args: any[]
 ): Promise<void> => {
-  const waitPromise = waitFor(creativeAd, event, 5000);
-  const creativeMethod: any = creativeAd[method];
+  const waitPromise = waitFor(creativeAd, event, 5000)
+  const creativeMethod: any = creativeAd[method]
 
-  creativeMethod?.apply(creativeAd, args);
+  creativeMethod?.apply(creativeAd, args)
 
-  return waitPromise;
-};
+  return waitPromise
+}
 
-export default callAndWait;
+export default callAndWait

@@ -1,9 +1,9 @@
-declare module 'sane-domparser-error';
+declare module 'sane-domparser-error'
 
 /**
  * See https://stackoverflow.com/a/51390763/1470607
  */
-type Falsy = false | 0 | '' | null | undefined;
+type Falsy = false | 0 | '' | null | undefined
 
 interface Array<T> {
   /**
@@ -14,17 +14,17 @@ interface Array<T> {
   filter<S extends T>(
     predicate: BooleanConstructor,
     thisArg?: any
-  ): Exclude<S, Falsy>[];
+  ): Exclude<S, Falsy>[]
 }
 
 interface Window {
-  MozMutationObserver?: MutationObserver;
-  WebKitMutationObserver?: MutationObserver;
-  MSStream?: ReadableStream;
+  MozMutationObserver?: MutationObserver
+  WebKitMutationObserver?: MutationObserver
+  MSStream?: ReadableStream
 }
 
 interface Document {
-  mozFullScreenElement?: Element;
-  msFullscreenElement?: Element;
-  webkitFullscreenElement?: Element;
+  mozFullScreenElement?: Element
+  msFullscreenElement?: Element
+  webkitFullscreenElement?: Element
 }

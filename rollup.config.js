@@ -1,15 +1,13 @@
-/* eslint-disable filenames/match-exported, sort-keys */
-import path from 'path';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import typescript from '@rollup/plugin-typescript';
-import {terser} from 'rollup-plugin-terser';
-import {sizeSnapshot} from 'rollup-plugin-size-snapshot';
-import sourcemaps from 'rollup-plugin-sourcemaps';
-import pkg from './package.json';
+import path from 'path'
+import resolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
+import typescript from '@rollup/plugin-typescript'
+import {terser} from 'rollup-plugin-terser'
+import {sizeSnapshot} from 'rollup-plugin-size-snapshot'
+import sourcemaps from 'rollup-plugin-sourcemaps'
+import pkg from './package.json'
 
-// eslint-disable-next-line no-process-env
-const production = process.env.NODE_ENV === 'production';
+const production = process.env.NODE_ENV === 'production'
 
 const plugins = [
   sourcemaps(),
@@ -19,22 +17,25 @@ const plugins = [
   }),
   commonjs(),
   sizeSnapshot()
-];
+]
+
+const input = './src/index.ts'
 
 // NOTE: don't include external dependencies into esm/cjm bundles
-const external = (id) => !id.startsWith('.') && !path.isAbsolute(id);
+const external = (id) => !id.startsWith('.') && !path.isAbsolute(id)
 
 // NOTE: see https://github.com/rollup/rollup/issues/408 to understand why we silences `THIS_IS_UNDEFINED` warnings
 const onwarn = (warning, warn) => {
   if (warning.code === 'THIS_IS_UNDEFINED') {
-    return;
+    return
   }
-  warn(warning);
-};
+
+  warn(warning)
+}
 
 const config = [
   {
-    input: './src/index.ts',
+    input,
     onwarn,
     output: {
       sourcemap: true,
@@ -45,7 +46,7 @@ const config = [
     plugins: [resolve(), ...plugins, production && terser()]
   },
   {
-    input: './src/index.ts',
+    input,
     onwarn,
     output: {
       sourcemap: true,
@@ -56,7 +57,7 @@ const config = [
     external
   },
   {
-    input: './src/index.ts',
+    input,
     onwarn,
     output: {
       sourcemap: true,
@@ -66,6 +67,6 @@ const config = [
     plugins,
     external
   }
-];
+]
 
-export default config;
+export default config

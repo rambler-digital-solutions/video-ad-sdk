@@ -1,4 +1,4 @@
-const supported = 'srcdoc' in document.createElement('iframe');
-const supportsSrcdoc = (): boolean => supported;
+const supported = 'srcdoc' in document.createElement('iframe')
+const supportsSrcdoc = (): boolean => supported
 
-export default supportsSrcdoc;
+export default supportsSrcdoc

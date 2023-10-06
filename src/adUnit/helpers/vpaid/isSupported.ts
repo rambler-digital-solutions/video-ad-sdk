@@ -15,8 +15,9 @@ export const SUPPORTED_MIMETYPES = [
   'text/livescript',
   'application/ecmascript',
   'application/x-ecmascript'
-];
+]
 
-const isSupported = ({type}: MediaFile): boolean => SUPPORTED_MIMETYPES.some((mimetype) => mimetype === type);
+const isSupported = ({type}: MediaFile): boolean =>
+  SUPPORTED_MIMETYPES.some((mimetype) => mimetype === type)
 
-export default isSupported;
+export default isSupported

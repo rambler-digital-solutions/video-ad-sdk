@@ -1,57 +1,55 @@
-import {linearEvents} from '../../../../../tracker';
-import {volumeChanged} from '../../../../adUnitEvents';
-import onVolumeChange from '../onVolumeChange';
+import {linearEvents} from '../../../../../tracker'
+import {volumeChanged} from '../../../../adUnitEvents'
+import onVolumeChange from '../onVolumeChange'
 
-const {
-  mute,
-  unmute
-} = linearEvents;
+const {mute, unmute} = linearEvents
 
 test('onVolumechange must call the callback with mute if the video was unmute and it became mute and the other way around', () => {
-  const callback = jest.fn();
-  const videoElement = document.createElement('VIDEO');
+  const callback = jest.fn()
+  const videoElement = document.createElement('VIDEO')
 
-  videoElement.muted = false;
-  const disconnect = onVolumeChange({videoElement}, callback);
+  videoElement.muted = false
 
-  videoElement.muted = true;
+  const disconnect = onVolumeChange({videoElement}, callback)
 
-  expect(callback).toHaveBeenCalledTimes(2);
-  expect(callback).toHaveBeenCalledWith(volumeChanged);
-  expect(callback).toHaveBeenCalledWith(mute);
+  videoElement.muted = true
 
-  callback.mockClear();
-  videoElement.muted = false;
+  expect(callback).toHaveBeenCalledTimes(2)
+  expect(callback).toHaveBeenCalledWith(volumeChanged)
+  expect(callback).toHaveBeenCalledWith(mute)
 
-  expect(callback).toHaveBeenCalledTimes(2);
-  expect(callback).toHaveBeenCalledWith(volumeChanged);
-  expect(callback).toHaveBeenCalledWith(unmute);
+  callback.mockClear()
+  videoElement.muted = false
 
-  callback.mockClear();
-  videoElement.volume = 0.6;
-  expect(callback).toHaveBeenCalledTimes(1);
-  expect(callback).toHaveBeenCalledWith(volumeChanged);
+  expect(callback).toHaveBeenCalledTimes(2)
+  expect(callback).toHaveBeenCalledWith(volumeChanged)
+  expect(callback).toHaveBeenCalledWith(unmute)
 
-  callback.mockClear();
-  videoElement.volume = 0;
-  videoElement.muted = false;
+  callback.mockClear()
+  videoElement.volume = 0.6
+  expect(callback).toHaveBeenCalledTimes(1)
+  expect(callback).toHaveBeenCalledWith(volumeChanged)
 
-  expect(callback).toHaveBeenCalledTimes(2);
-  expect(callback).toHaveBeenCalledWith(volumeChanged);
-  expect(callback).toHaveBeenCalledWith(mute);
+  callback.mockClear()
+  videoElement.volume = 0
+  videoElement.muted = false
 
-  callback.mockClear();
-  videoElement.muted = false;
-  videoElement.volume = 0.5;
+  expect(callback).toHaveBeenCalledTimes(2)
+  expect(callback).toHaveBeenCalledWith(volumeChanged)
+  expect(callback).toHaveBeenCalledWith(mute)
 
-  expect(callback).toHaveBeenCalledTimes(2);
-  expect(callback).toHaveBeenCalledWith(volumeChanged);
-  expect(callback).toHaveBeenCalledWith(unmute);
+  callback.mockClear()
+  videoElement.muted = false
+  videoElement.volume = 0.5
 
-  disconnect();
-  callback.mockClear();
-  videoElement.muted = true;
-  videoElement.volume = 0;
-  videoElement.dispatchEvent(new Event('volumechange'));
-  expect(callback).toHaveBeenCalledTimes(0);
-});
+  expect(callback).toHaveBeenCalledTimes(2)
+  expect(callback).toHaveBeenCalledWith(volumeChanged)
+  expect(callback).toHaveBeenCalledWith(unmute)
+
+  disconnect()
+  callback.mockClear()
+  videoElement.muted = true
+  videoElement.volume = 0
+  videoElement.dispatchEvent(new Event('volumechange'))
+  expect(callback).toHaveBeenCalledTimes(0)
+})

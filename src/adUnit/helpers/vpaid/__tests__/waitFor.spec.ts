@@ -1,72 +1,67 @@
-/* eslint-disable global-require, import/unambiguous */
-import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd';
+import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd'
+import waitFor from '../waitFor'
 
-jest.useFakeTimers();
+jest.useFakeTimers()
 
 describe('waitFor', () => {
   test('must resolve once the event is fired', async () => {
-    const waitFor = require('../waitFor').default;
-    const creativeAd = new MockVpaidCreativeAd();
-    const callback = jest.fn();
+    const creativeAd = new MockVpaidCreativeAd()
+    const callback = jest.fn()
 
-    const promise = waitFor(creativeAd, 'adLoaded', 1000);
+    const promise = waitFor(creativeAd, 'adLoaded', 1000)
 
-    // eslint-disable-next-line promise/catch-or-return, promise/prefer-await-to-then
-    promise.then(callback);
+    promise.then(callback)
 
-    expect(callback).not.toHaveBeenCalled();
-    expect(setTimeout).toHaveBeenCalledTimes(1);
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
+    expect(callback).not.toHaveBeenCalled()
+    expect(setTimeout).toHaveBeenCalledTimes(1)
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000)
 
-    creativeAd.emit('adLoaded');
+    creativeAd.emit('adLoaded')
 
-    await promise;
+    await promise
 
-    expect(clearTimeout).toHaveBeenCalled();
-    expect(callback).toHaveBeenCalledTimes(1);
-  });
+    expect(clearTimeout).toHaveBeenCalled()
+    expect(callback).toHaveBeenCalledTimes(1)
+  })
 
   test('must reject with an error if it times out', async () => {
-    const waitFor = require('../waitFor').default;
-    const creativeAd = new MockVpaidCreativeAd();
-    const callback = jest.fn();
+    const creativeAd = new MockVpaidCreativeAd()
+    const callback = jest.fn()
 
-    const promise = waitFor(creativeAd, 'adLoaded', 2000);
+    const promise = waitFor(creativeAd, 'adLoaded', 2000)
 
-    // eslint-disable-next-line promise/catch-or-return, promise/prefer-await-to-then
-    promise.then(callback);
+    promise.then(callback)
 
-    expect(callback).not.toHaveBeenCalled();
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000);
+    expect(callback).not.toHaveBeenCalled()
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
 
-    jest.runOnlyPendingTimers();
+    jest.runOnlyPendingTimers()
 
     try {
-      await promise;
+      await promise
     } catch (error) {
-      expect(error.message).toBe('Timeout waiting for event \'adLoaded\'');
-      expect(callback).not.toHaveBeenCalled();
+      expect(error.message).toBe("Timeout waiting for event 'adLoaded'")
+      expect(callback).not.toHaveBeenCalled()
     }
-  });
+  })
 
   test('must not call setTimeout if no time is passed', async () => {
-    setTimeout.mockClear();
-    clearTimeout.mockClear();
-    const waitFor = require('../waitFor').default;
-    const creativeAd = new MockVpaidCreativeAd();
-    const callback = jest.fn();
-    const promise = waitFor(creativeAd, 'adLoaded');
+    setTimeout.mockClear()
+    clearTimeout.mockClear()
 
-    // eslint-disable-next-line promise/catch-or-return, promise/prefer-await-to-then
-    promise.then(callback);
+    const creativeAd = new MockVpaidCreativeAd()
+    const callback = jest.fn()
+    const promise = waitFor(creativeAd, 'adLoaded')
 
-    expect(setTimeout).not.toHaveBeenCalled();
+    promise.then(callback)
 
-    creativeAd.emit('adLoaded');
+    expect(setTimeout).not.toHaveBeenCalled()
 
-    await promise;
+    creativeAd.emit('adLoaded')
 
-    expect(clearTimeout).not.toHaveBeenCalled();
-    expect(callback).toHaveBeenCalledTimes(1);
-  });
-});
+    await promise
+
+    expect(clearTimeout).not.toHaveBeenCalled()
+    expect(callback).toHaveBeenCalledTimes(1)
+  })
+})

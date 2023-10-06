@@ -6,44 +6,44 @@ import {
   VideoAdUnitOptions,
   VpaidAdUnit,
   VpaidAdUnitOptions
-} from '../../adUnit';
-import {VideoAdContainer} from '../../adContainer';
+} from '../../adUnit'
+import {VideoAdContainer} from '../../adContainer'
 import {ErrorCode} from '../../tracker'
-import {getInteractiveFiles, getMediaFiles} from '../../vastSelectors';
-import canPlay from '../../adUnit/helpers/media/canPlay';
-import {start, closeLinear} from '../../tracker/linearEvents';
-import {adStopped, adUserClose} from '../../adUnit/helpers/vpaid/api';
-import VastError from '../../vastRequest/helpers/vastError';
-import {VastChain, ParsedAd} from '../../types';
+import {getInteractiveFiles, getMediaFiles} from '../../vastSelectors'
+import canPlay from '../../adUnit/helpers/media/canPlay'
+import {start, closeLinear} from '../../tracker/linearEvents'
+import {adStopped, adUserClose} from '../../adUnit/helpers/vpaid/api'
+import VastError from '../../vastRequest/helpers/vastError'
+import {VastChain, ParsedAd} from '../../types'
 
 const validate = (
   vastChain: VastChain,
   videoAdContainer: VideoAdContainer
 ): void => {
   if (!Array.isArray(vastChain) || vastChain.length === 0) {
-    throw new TypeError('Invalid vastChain');
+    throw new TypeError('Invalid vastChain')
   }
 
   if (!(videoAdContainer instanceof VideoAdContainer)) {
-    throw new TypeError('Invalid VideoAdContainer');
+    throw new TypeError('Invalid VideoAdContainer')
   }
-};
+}
 
 const hasVpaidCreative = (ad: ParsedAd): boolean =>
-  Boolean(getInteractiveFiles(ad));
+  Boolean(getInteractiveFiles(ad))
 
 const hasVastCreative = (
   ad: ParsedAd,
   videoElement: HTMLVideoElement
 ): boolean => {
-  const mediaFiles = getMediaFiles(ad);
+  const mediaFiles = getMediaFiles(ad)
 
   if (mediaFiles) {
-    return mediaFiles.some((mediaFile) => canPlay(videoElement, mediaFile));
+    return mediaFiles.some((mediaFile) => canPlay(videoElement, mediaFile))
   }
 
-  return false;
-};
+  return false
+}
 
 interface StartAdUnitOptions<T extends VideoAdUnit> {
   /**
@@ -51,7 +51,7 @@ interface StartAdUnitOptions<T extends VideoAdUnit> {
    *
    * @param adUnit the ad unit instance.
    */
-  onAdReady(adUnit: T): void;
+  onAdReady(adUnit: T): void
 }
 
 const startAdUnit = <T extends VideoAdUnit, R extends VideoAdUnitOptions>(
@@ -60,39 +60,41 @@ const startAdUnit = <T extends VideoAdUnit, R extends VideoAdUnitOptions>(
 ): Promise<T> =>
   new Promise<T>((resolve, reject) => {
     const createRejectHandler = (event: string) => () =>
-      reject(new Error(`Ad unit start rejected due to event '${event}'`));
+      reject(new Error(`Ad unit start rejected due to event '${event}'`))
 
-    adUnit.onError(reject);
-    adUnit.on(start, () => resolve(adUnit));
-    adUnit.on(adUserClose, createRejectHandler(adUserClose));
-    adUnit.on(closeLinear, createRejectHandler(closeLinear));
-    adUnit.on(adStopped, createRejectHandler(adStopped));
+    adUnit.onError(reject)
+    adUnit.on(start, () => resolve(adUnit))
+    adUnit.on(adUserClose, createRejectHandler(adUserClose))
+    adUnit.on(closeLinear, createRejectHandler(closeLinear))
+    adUnit.on(adStopped, createRejectHandler(adStopped))
 
-    onAdReady(adUnit);
-    adUnit.start();
-  });
+    onAdReady(adUnit)
+    adUnit.start()
+  })
 
 const tryToStartVpaidAd = (
   vastChain: VastChain,
   videoAdContainer: VideoAdContainer,
   options: VpaidAdUnitOptions & StartAdUnitOptions<VpaidAdUnit>
 ): Promise<VpaidAdUnit> => {
-  const inlineAd = vastChain[0].ad;
+  const inlineAd = vastChain[0].ad
 
   if (!inlineAd || !hasVpaidCreative(inlineAd)) {
-    const error = new VastError('No valid creative found in the passed VAST chain');
+    const error = new VastError(
+      'No valid creative found in the passed VAST chain'
+    )
 
-    error.code = ErrorCode.VAST_MEDIA_FILE_NOT_FOUND;
-    throw error;
+    error.code = ErrorCode.VAST_MEDIA_FILE_NOT_FOUND
+    throw error
   }
 
   const adUnit = createVideoAdUnit(vastChain, videoAdContainer, {
     ...options,
     type: 'VPAID'
-  });
+  })
 
-  return startAdUnit<VpaidAdUnit, VpaidAdUnitOptions>(adUnit, options);
-};
+  return startAdUnit<VpaidAdUnit, VpaidAdUnitOptions>(adUnit, options)
+}
 
 const startVastAd = (
   vastChain: VastChain,
@@ -102,32 +104,33 @@ const startVastAd = (
   const adUnit = createVideoAdUnit(vastChain, videoAdContainer, {
     ...options,
     type: 'VAST'
-  });
+  })
 
-  return startAdUnit(adUnit, options);
-};
+  return startAdUnit(adUnit, options)
+}
 
 const startVideoAd = async (
   vastChain: VastChain,
   videoAdContainer: VideoAdContainer,
   options: StartVideoAdOptions
 ): Promise<VastAdUnit | VpaidAdUnit> => {
-  validate(vastChain, videoAdContainer);
+  validate(vastChain, videoAdContainer)
+
   try {
-    return await tryToStartVpaidAd(vastChain, videoAdContainer, options);
+    return await tryToStartVpaidAd(vastChain, videoAdContainer, options)
   } catch (error) {
-    const inlineAd = vastChain[0].ad;
+    const inlineAd = vastChain[0].ad
 
     if (inlineAd && hasVastCreative(inlineAd, videoAdContainer.videoElement)) {
-      return startVastAd(vastChain, videoAdContainer, options);
+      return startVastAd(vastChain, videoAdContainer, options)
     }
 
-    throw error;
+    throw error
   }
-};
+}
 
 export type StartVideoAdOptions = VpaidAdUnitOptions &
   VastAdUnitOptions &
-  StartAdUnitOptions<VastAdUnit | VpaidAdUnit>;
+  StartAdUnitOptions<VastAdUnit | VpaidAdUnit>
 
-export default startVideoAd;
+export default startVideoAd

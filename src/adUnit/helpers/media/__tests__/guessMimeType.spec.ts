@@ -1,5 +1,4 @@
-/* eslint-disable id-match */
-import guessMimeType from '../guessMimeType';
+import guessMimeType from '../guessMimeType'
 
 test('guessMimeType must guess the mime of the passed source', () => {
   const mimeMap = {
@@ -16,9 +15,9 @@ test('guessMimeType must guess the mime of the passed source', () => {
     unknown: 'video/unknown',
     webm: 'video/webm',
     wmv: 'video/x-ms-wmv'
-  };
+  }
 
   Object.keys(mimeMap).forEach((ext) => {
-    expect(guessMimeType(`/some/source.${ext}`)).toBe(mimeMap[ext]);
-  });
-});
+    expect(guessMimeType(`/some/source.${ext}`)).toBe(mimeMap[ext])
+  })
+})

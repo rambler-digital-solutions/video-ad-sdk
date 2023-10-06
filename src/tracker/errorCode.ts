@@ -23,4 +23,5 @@ export enum ErrorCode {
   VPAID_ERROR = 901
 }
 
-export const isVastErrorCode = (code: number): boolean => Object.values(ErrorCode).includes(code);
+export const isVastErrorCode = (code: number): boolean =>
+  Object.values(ErrorCode).includes(code)

@@ -1,5 +1,5 @@
 class FetchError extends Error {
-  response?: Response;
+  response?: Response
 
   public constructor(message: string) {
     super(message)
@@ -14,18 +14,18 @@ const fetch = async (
 ): Promise<Response> => {
   const defaults = {
     credentials: 'include'
-  };
-  const fetchOptions = Object.assign({}, defaults, options);
-  const response = await window.fetch(endpoint, fetchOptions);
+  }
+  const fetchOptions = Object.assign({}, defaults, options)
+  const response = await window.fetch(endpoint, fetchOptions)
 
   if (response.status >= 400) {
-    const error = new FetchError(response.statusText);
+    const error = new FetchError(response.statusText)
 
-    error.response = response;
-    throw error;
+    error.response = response
+    throw error
   }
 
-  return response;
-};
+  return response
+}
 
-export default fetch;
+export default fetch

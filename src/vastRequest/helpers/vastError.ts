@@ -8,4 +8,4 @@ class VastError extends Error {
   }
 }
 
-export default VastError;
+export default VastError

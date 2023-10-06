@@ -1,12 +1,15 @@
 {
-  "parser": "@typescript-eslint/parser",
-  "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
-  "rules": {
-    "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/no-unused-vars": ["error", {"argsIgnorePattern": "^_"}],
-    "@typescript-eslint/explicit-function-return-type": [
-      "error",
-      {"allowExpressions": true}
-    ]
-  }
+  "extends": [
+    "@rambler-tech/eslint-config",
+    "@rambler-tech/eslint-config/ts",
+    "prettier"
+  ],
+  "overrides": [
+    {
+      "files": "*.spec.ts",
+      "rules": {
+        "sonarjs/no-duplicate-string": "off"
+      }
+    }
+  ]
 }

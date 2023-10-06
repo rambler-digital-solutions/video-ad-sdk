@@ -1,20 +1,21 @@
-import {METHODS} from '../api';
-import isValidVpaidCreative from '../isValidVpaidCreative';
+import {METHODS} from '../api'
+import isValidVpaidCreative from '../isValidVpaidCreative'
 
-const createVpaidCreative = () => METHODS.reduce((acc, key) => {
-  acc[key] = () => {};
+const createVpaidCreative = (): any =>
+  METHODS.reduce((acc, key) => {
+    acc[key] = () => {}
 
-  return acc;
-}, {});
+    return acc
+  }, {})
 
-test('isValidVpaidCreative must return false if doesn\'t implement the vpaid interface', () => {
+test("isValidVpaidCreative must return false if doesn't implement the vpaid interface", () => {
   for (const method of METHODS) {
-    const creative = createVpaidCreative();
+    const creative = createVpaidCreative()
 
-    delete creative[method];
+    delete creative[method]
 
-    expect(isValidVpaidCreative(creative)).toBe(false);
+    expect(isValidVpaidCreative(creative)).toBe(false)
   }
 
-  expect(isValidVpaidCreative(createVpaidCreative())).toBe(true);
-});
+  expect(isValidVpaidCreative(createVpaidCreative())).toBe(true)
+})

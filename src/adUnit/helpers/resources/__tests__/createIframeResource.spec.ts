@@ -1,4 +1,4 @@
-import createIframeResource from '../createIframeResource';
+import createIframeResource from '../createIframeResource'
 
 test('createIframeResource must return an iframe', () => {
   const payload = {
@@ -7,27 +7,27 @@ test('createIframeResource must return an iframe', () => {
       width: 100
     },
     document
-  };
-  const src = 'http://test.example.com/iframeResource';
-  const resource = createIframeResource(src, payload);
+  }
+  const src = 'http://test.example.com/iframeResource'
+  const resource = createIframeResource(src, payload)
 
-  expect(resource).toBeInstanceOf(HTMLIFrameElement);
-  expect(resource.src).toBe(src);
-  expect(resource.width).toBe('100');
-  expect(resource.height).toBe('100');
-  expect(resource.sandbox).toBe('allow-forms allow-popups allow-scripts');
-});
+  expect(resource).toBeInstanceOf(HTMLIFrameElement)
+  expect(resource.src).toBe(src)
+  expect(resource.width).toBe('100')
+  expect(resource.height).toBe('100')
+  expect(resource.sandbox).toBe('allow-forms allow-popups allow-scripts')
+})
 
 test('createIframeResource must not set the width and height if not passed', () => {
   const payload = {
     data: {},
     document
-  };
-  const src = 'http://test.example.com/iframeResource';
-  const resource = createIframeResource(src, payload);
+  }
+  const src = 'http://test.example.com/iframeResource'
+  const resource = createIframeResource(src, payload)
 
-  expect(resource).toBeInstanceOf(HTMLIFrameElement);
-  expect(resource.src).toBe(src);
-  expect(resource.width).toBe('');
-  expect(resource.height).toBe('');
-});
+  expect(resource).toBeInstanceOf(HTMLIFrameElement)
+  expect(resource.src).toBe(src)
+  expect(resource.width).toBe('')
+  expect(resource.height).toBe('')
+})

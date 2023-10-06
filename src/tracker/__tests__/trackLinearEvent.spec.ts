@@ -1,6 +1,12 @@
-import {getFirstAd} from '../../vastSelectors';
-import {wrapperParsedXML, inlineAd, inlineParsedXML, vastInlineXML, vastPodXML} from '../../../fixtures';
-import trackLinearEvent from '../trackLinearEvent';
+import {getFirstAd} from '../../vastSelectors'
+import {
+  wrapperParsedXML,
+  inlineAd,
+  inlineParsedXML,
+  vastInlineXML,
+  vastPodXML
+} from '../../../fixtures'
+import trackLinearEvent from '../trackLinearEvent'
 import {
   clickThrough,
   closeLinear,
@@ -27,12 +33,12 @@ import {
   unmute,
   error,
   creativeView
-} from '../linearEvents';
-import pixelTracker from '../helpers/pixelTracker';
-import trackError from '../helpers/trackError';
-import {ErrorCode} from '../errors';
+} from '../linearEvents'
+import pixelTracker from '../helpers/pixelTracker'
+import trackError from '../helpers/trackError'
+import {ErrorCode} from '../errorCode'
 
-jest.mock('../helpers/trackError', () => jest.fn());
+jest.mock('../helpers/trackError', () => jest.fn())
 
 const vastChain = [
   {
@@ -50,76 +56,83 @@ const vastChain = [
     requestTag: 'http://adtag.test.example.com',
     XML: vastPodXML
   }
-];
+]
 
 afterEach(() => {
-  jest.clearAllMocks();
-  jest.resetAllMocks();
-});
+  jest.clearAllMocks()
+  jest.resetAllMocks()
+})
 
 test('trackLinearEvent must track the error linear event with the default pixelTracker', () => {
-  const data = {};
-  const errorCode = ErrorCode.UNKNOWN_ERROR;
+  const data = {}
+  const errorCode = ErrorCode.UNKNOWN_ERROR
 
   trackLinearEvent(error, vastChain, {
     data,
     errorCode
-  });
+  })
 
-  expect(trackError).toHaveBeenCalledTimes(1);
+  expect(trackError).toHaveBeenCalledTimes(1)
   expect(trackError).toHaveBeenCalledWith(vastChain, {
     data: {errorCode},
     errorCode,
     tracker: pixelTracker
-  });
-});
+  })
+})
 
 test('trackLinearEvent must be possible to pass a custom tracker to the linear trackers', () => {
-  const data = {};
-  const customTracker = () => {};
+  const data = {}
+  const customTracker = (): void => {}
 
   trackLinearEvent(error, vastChain, {
     data,
     tracker: customTracker
-  });
+  })
 
-  expect(trackError).toHaveBeenCalledTimes(1);
+  expect(trackError).toHaveBeenCalledTimes(1)
   expect(trackError).toHaveBeenCalledWith(vastChain, {
     data,
     errorCode: undefined,
     tracker: customTracker
-  });
-});
+  })
+})
 
-test('trackLinearEvent must log an error if the the event can\'t be tracked', () => {
-  const data = {};
+test("trackLinearEvent must log an error if the the event can't be tracked", () => {
+  const data = {}
   const logger = {
     error: jest.fn()
-  };
+  }
 
   trackLinearEvent('wrongEvent', vastChain, {
     data,
     logger
-  });
+  })
 
-  expect(logger.error).toHaveBeenCalledWith('Event \'wrongEvent\' cannot be tracked');
-});
+  expect(logger.error).toHaveBeenCalledWith(
+    "Event 'wrongEvent' cannot be tracked"
+  )
+})
 
 test(`trackLinearEvent must track ${clickThrough} linear event with the default pixelTracker`, () => {
-  const data = {};
-  const tracker = jest.fn();
+  const data = {}
+  const tracker = jest.fn()
 
   trackLinearEvent(clickThrough, vastChain, {
     data,
     tracker
-  });
+  })
 
-  expect(tracker).toHaveBeenCalledTimes(4);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/customclick', {});
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/clicktracking', {});
-});
-
-[
+  expect(tracker).toHaveBeenCalledTimes(4)
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/customclick',
+    {}
+  )
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/clicktracking',
+    {}
+  )
+})
+;[
   start,
   closeLinear,
   complete,
@@ -138,114 +151,150 @@ test(`trackLinearEvent must track ${clickThrough} linear event with the default 
   creativeView
 ].forEach((event) => {
   test(`trackLinearEvent must track ${event} linear event with the default pixelTracker`, () => {
-    const data = {};
-    const tracker = jest.fn();
+    const data = {}
+    const tracker = jest.fn()
 
     trackLinearEvent(event, vastChain, {
       data,
       tracker
-    });
+    })
 
-    expect(tracker).toHaveBeenCalledWith(`https://test.example.com/${event}`, {});
-    expect(tracker).toHaveBeenCalledWith(`https://test.example.com/${event}2`, {});
-  });
-});
+    expect(tracker).toHaveBeenCalledWith(
+      `https://test.example.com/${event}`,
+      {}
+    )
+    expect(tracker).toHaveBeenCalledWith(
+      `https://test.example.com/${event}2`,
+      {}
+    )
+  })
+})
 
 test('trackLinearEvent must track impression linear event with the default pixelTracker', () => {
-  const data = {};
-  const tracker = jest.fn();
+  const data = {}
+  const tracker = jest.fn()
 
   trackLinearEvent(impression, vastChain, {
     data,
     tracker
-  });
+  })
 
-  expect(tracker).toHaveBeenCalledTimes(2);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/impression', {});
-});
+  expect(tracker).toHaveBeenCalledTimes(2)
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/impression',
+    {}
+  )
+})
 
 test('trackLinearEvent must track viewable linear event with the default pixelTracker', () => {
-  const data = {};
-  const tracker = jest.fn();
+  const data = {}
+  const tracker = jest.fn()
 
   trackLinearEvent(viewable, vastChain, {
     data,
     tracker
-  });
+  })
 
-  expect(tracker).toHaveBeenCalledTimes(1);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/viewable', {});
-});
+  expect(tracker).toHaveBeenCalledTimes(1)
+  expect(tracker).toHaveBeenCalledWith('https://test.example.com/viewable', {})
+})
 
 test('trackLinearEvent must track notViewable linear event with the default pixelTracker', () => {
-  const data = {};
-  const tracker = jest.fn();
+  const data = {}
+  const tracker = jest.fn()
 
   trackLinearEvent(notViewable, vastChain, {
     data,
     tracker
-  });
+  })
 
-  expect(tracker).toHaveBeenCalledTimes(1);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/notViewable', {});
-});
+  expect(tracker).toHaveBeenCalledTimes(1)
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/notViewable',
+    {}
+  )
+})
 
 test('trackLinearEvent must track viewUndetermined linear event with the default pixelTracker', () => {
-  const data = {};
-  const tracker = jest.fn();
+  const data = {}
+  const tracker = jest.fn()
 
   trackLinearEvent(viewUndetermined, vastChain, {
     data,
     tracker
-  });
+  })
 
-  expect(tracker).toHaveBeenCalledTimes(1);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/notDetermined', {});
-});
+  expect(tracker).toHaveBeenCalledTimes(1)
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/notDetermined',
+    {}
+  )
+})
 
 test('trackLinearEvent must track iconClicks', () => {
   const data = {
-    iconClickTracking: ['https://test.example.com/iconClick', 'https://test.example.com/iconClick2']
-  };
-  const tracker = jest.fn();
+    iconClickTracking: [
+      'https://test.example.com/iconClick',
+      'https://test.example.com/iconClick2'
+    ]
+  }
+  const tracker = jest.fn()
 
   trackLinearEvent(iconClick, vastChain, {
     data,
     tracker
-  });
+  })
 
-  expect(tracker).toHaveBeenCalledTimes(2);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/iconClick', data);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/iconClick2', data);
-});
+  expect(tracker).toHaveBeenCalledTimes(2)
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/iconClick',
+    data
+  )
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/iconClick2',
+    data
+  )
+})
 
 test('trackLinearEvent must track iconViews', () => {
   const data = {
-    iconViewTracking: ['https://test.example.com/iconView', 'https://test.example.com/iconView2']
-  };
-  const tracker = jest.fn();
+    iconViewTracking: [
+      'https://test.example.com/iconView',
+      'https://test.example.com/iconView2'
+    ]
+  }
+  const tracker = jest.fn()
 
   trackLinearEvent(iconView, vastChain, {
     data,
     tracker
-  });
+  })
 
-  expect(tracker).toHaveBeenCalledTimes(2);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/iconView', data);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/iconView2', data);
-});
+  expect(tracker).toHaveBeenCalledTimes(2)
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/iconView',
+    data
+  )
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/iconView2',
+    data
+  )
+})
 
 test('trackLinearEvent must track progress', () => {
   const data = {
     progressUri: 'https://test.example.com/progress'
-  };
-  const tracker = jest.fn();
+  }
+  const tracker = jest.fn()
 
   trackLinearEvent(progress, vastChain, {
     data,
     tracker
-  });
+  })
 
-  expect(tracker).toHaveBeenCalledTimes(1);
-  expect(tracker).toHaveBeenCalledWith('https://test.example.com/progress', data);
-});
+  expect(tracker).toHaveBeenCalledTimes(1)
+  expect(tracker).toHaveBeenCalledWith(
+    'https://test.example.com/progress',
+    data
+  )
+})

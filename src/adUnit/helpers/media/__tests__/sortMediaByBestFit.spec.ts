@@ -1,6 +1,6 @@
-import sortMediaByBestFit from '../sortMediaByBestFit';
+import sortMediaByBestFit from '../sortMediaByBestFit'
 
-let mediafiles;
+let mediafiles
 
 beforeEach(() => {
   mediafiles = [
@@ -44,16 +44,16 @@ beforeEach(() => {
       height: 480,
       width: 270
     }
-  ];
-});
+  ]
+})
 
 test('sortMediaByBestFit must sort the mediaFiles by best fit into the horizontally oriented screen', () => {
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 480,
     width: 854
-  });
+  })
 
-  expect(sortedMediaFiles).not.toBe(mediafiles);
+  expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
     {
       height: 480,
@@ -95,16 +95,16 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit into the horizonta
       height: 480,
       width: 270
     }
-  ]);
-});
+  ])
+})
 
 test('sortMediaByBestFit must sort the mediaFiles by best fit into the vertically oriented screen', () => {
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 854,
     width: 480
-  });
+  })
 
-  expect(sortedMediaFiles).not.toBe(mediafiles);
+  expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
     {
       height: 854,
@@ -146,8 +146,8 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit into the verticall
       height: 1080,
       width: 1920
     }
-  ]);
-});
+  ])
+})
 
 test('sortMediaByBestFit must sort the mediaFiles by best fit, with vertical non identical values', () => {
   mediafiles = [
@@ -187,13 +187,14 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with vertical non
       height: 480,
       width: 270
     }
-  ];
+  ]
+
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 854,
     width: 480
-  });
+  })
 
-  expect(sortedMediaFiles).not.toBe(mediafiles);
+  expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
     {
       height: 640,
@@ -231,8 +232,8 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with vertical non
       height: 1080,
       width: 1920
     }
-  ]);
-});
+  ])
+})
 
 test('sortMediaByBestFit must sort the mediaFiles by best fit, with horizontally non identical values', () => {
   mediafiles = [
@@ -268,13 +269,14 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with horizontally
       height: 480,
       width: 270
     }
-  ];
+  ]
+
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 480,
     width: 854
-  });
+  })
 
-  expect(sortedMediaFiles).not.toBe(mediafiles);
+  expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
     {
       height: 360,
@@ -308,8 +310,8 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with horizontally
       height: 480,
       width: 270
     }
-  ]);
-});
+  ])
+})
 
 test('sortMediaByBestFit must sort the mediaFiles by best fit, with square video', () => {
   mediafiles = [
@@ -325,13 +327,14 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with square video
       height: 100,
       width: 100
     }
-  ];
+  ]
+
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 220,
     width: 220
-  });
+  })
 
-  expect(sortedMediaFiles).not.toBe(mediafiles);
+  expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
     {
       height: 200,
@@ -346,5 +349,5 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with square video
       height: 100,
       width: 100
     }
-  ]);
-});
+  ])
+})

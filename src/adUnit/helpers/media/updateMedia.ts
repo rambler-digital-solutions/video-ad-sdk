@@ -1,5 +1,5 @@
-import {MediaFile} from '../../../types';
-import once from '../dom/once';
+import {MediaFile} from '../../../types'
+import once from '../dom/once'
 
 const updateMedia = (
   videoElement: HTMLVideoElement,
@@ -9,27 +9,27 @@ const updateMedia = (
     const state = {
       currentTime: videoElement.currentTime,
       playing: !videoElement.paused
-    };
+    }
 
     if (state.playing) {
-      videoElement.pause();
+      videoElement.pause()
     }
 
     if (mediaFile.src) {
-      videoElement.src = mediaFile.src;
+      videoElement.src = mediaFile.src
     }
 
-    videoElement.load();
+    videoElement.load()
 
     once(videoElement, 'loadeddata', () => {
-      videoElement.currentTime = state.currentTime;
+      videoElement.currentTime = state.currentTime
 
       if (state.playing) {
-        videoElement.play();
+        videoElement.play()
       }
 
-      resolve();
-    });
-  });
+      resolve()
+    })
+  })
 
-export default updateMedia;
+export default updateMedia

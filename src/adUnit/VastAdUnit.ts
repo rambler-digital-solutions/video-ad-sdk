@@ -1,21 +1,21 @@
-import {linearEvents, ErrorCode, isVastErrorCode} from '../tracker';
-import {getSkipOffset} from '../vastSelectors';
+import {linearEvents, ErrorCode, isVastErrorCode} from '../tracker'
+import {getSkipOffset} from '../vastSelectors'
 import {VastChain, Hooks, MacroData} from '../types'
 import {VideoAdContainer} from '../adContainer'
-import findBestMedia from './helpers/media/findBestMedia';
-import once from './helpers/dom/once';
-import setupMetricHandlers from './helpers/metrics/setupMetricHandlers';
-import updateMedia from './helpers/media/updateMedia';
+import findBestMedia from './helpers/media/findBestMedia'
+import once from './helpers/dom/once'
+import setupMetricHandlers from './helpers/metrics/setupMetricHandlers'
+import updateMedia from './helpers/media/updateMedia'
 import AdUnitError from './helpers/adUnitError'
-import VideoAdUnit, {_protected, VideoAdUnitOptions} from './VideoAdUnit';
+import VideoAdUnit, {_protected, VideoAdUnitOptions} from './VideoAdUnit'
 
-const {complete, error: errorEvt, skip} = linearEvents;
+const {complete, error: errorEvt, skip} = linearEvents
 
-// eslint-disable-next-line id-match
-const _private = Symbol('_private');
+const _private = Symbol('_private')
 
 interface Private {
   handleMetric(event: string, data?: MacroData | AdUnitError): void
+  drawIcons(): Promise<void>
 }
 
 export interface VastAdUnitOptions extends VideoAdUnitOptions {
@@ -32,42 +32,64 @@ class VastAdUnit extends VideoAdUnit {
   private [_private]: Private = {
     handleMetric: (event, data) => {
       switch (event) {
-      case complete: {
-        this[_protected].finish();
-        break;
-      }
-      case errorEvt: {
-        if (data instanceof Error) {
-          this.error = data;
-          this.errorCode = this.error?.code && isVastErrorCode(this.error.code) ? this.error.code : ErrorCode.VAST_PROBLEM_DISPLAYING_MEDIA_FILE;
+        case complete: {
+          this[_protected].finish()
+          break
         }
-        this[_protected].onErrorCallbacks.forEach((callback) =>
-          callback(this.error, {
-            adUnit: this,
-            vastChain: this.vastChain
-          })
-        );
-        this[_protected].finish();
-        break;
-      }
-      case skip: {
-        this.cancel();
-        break;
-      }
+
+        case errorEvt: {
+          if (data instanceof Error) {
+            this.error = data
+            this.errorCode =
+              this.error?.code && isVastErrorCode(this.error.code)
+                ? this.error.code
+                : ErrorCode.VAST_PROBLEM_DISPLAYING_MEDIA_FILE
+          }
+
+          this[_protected].onErrorCallbacks.forEach((callback) =>
+            callback(this.error, {
+              adUnit: this,
+              vastChain: this.vastChain
+            })
+          )
+          this[_protected].finish()
+          break
+        }
+
+        case skip: {
+          this.cancel()
+          break
+        }
       }
 
       this.emit(event, {
         adUnit: this,
         data,
         type: event
-      });
-    }
-  };
+      })
+    },
+    drawIcons: async (): Promise<void> => {
+      if (this.isFinished()) {
+        return
+      }
 
-  public assetUri: string | null = null;
+      await this[_protected].drawIcons?.()
+
+      if (
+        this[_protected].hasPendingIconRedraws?.() &&
+        !this.isFinished()
+      ) {
+        const {videoElement} = this.videoAdContainer
+
+        once(videoElement, 'timeupdate', this[_private].drawIcons)
+      }
+    }
+  }
+
+  public assetUri: string | null = null
 
   /** Ad unit type. Will be `VAST` for VastAdUnit */
-  public type = 'VAST';
+  public type = 'VAST'
 
   private hooks: Hooks
 
@@ -78,13 +100,17 @@ class VastAdUnit extends VideoAdUnit {
    * @param videoAdContainer - container instance to place the ad
    * @param options Options Map
    */
-  public constructor (vastChain: VastChain, videoAdContainer: VideoAdContainer, options: VastAdUnitOptions = {}) {
-    super(vastChain, videoAdContainer, options);
+  public constructor(
+    vastChain: VastChain,
+    videoAdContainer: VideoAdContainer,
+    options: VastAdUnitOptions = {}
+  ) {
+    super(vastChain, videoAdContainer, options)
 
-    const {onFinishCallbacks} = this[_protected];
-    const {handleMetric} = this[_private];
+    const {onFinishCallbacks} = this[_protected]
+    const {handleMetric} = this[_private]
 
-    this.hooks = options.hooks || {};
+    this.hooks = options.hooks || {}
 
     const removeMetricHandlers = setupMetricHandlers(
       {
@@ -94,9 +120,9 @@ class VastAdUnit extends VideoAdUnit {
         videoAdContainer: this.videoAdContainer
       },
       handleMetric
-    );
+    )
 
-    onFinishCallbacks.push(removeMetricHandlers);
+    onFinishCallbacks.push(removeMetricHandlers)
   }
 
   /**
@@ -105,48 +131,37 @@ class VastAdUnit extends VideoAdUnit {
    * @throws if called twice.
    * @throws if ad unit is finished.
    */
-  public async start (): Promise<void> {
-    this[_protected].throwIfFinished();
+  public async start(): Promise<void> {
+    this[_protected].throwIfFinished()
 
     if (this.isStarted()) {
-      throw new AdUnitError('VastAdUnit already started');
+      throw new AdUnitError('VastAdUnit already started')
     }
 
-    const inlineAd = this.vastChain[0].ad;
-    const {videoElement, element} = this.videoAdContainer;
-    const media = inlineAd && findBestMedia(inlineAd, videoElement, element, this.hooks);
+    const inlineAd = this.vastChain[0].ad
+    const {videoElement, element} = this.videoAdContainer
+    const media =
+      inlineAd && findBestMedia(inlineAd, videoElement, element, this.hooks)
 
-    if (Boolean(media)) {
+    if (media) {
       if (this.icons) {
-        const drawIcons = async (): Promise<void> => {
-          if (this.isFinished()) {
-            return;
-          }
-
-          await this[_protected].drawIcons?.();
-
-          if (this[_protected].hasPendingIconRedraws?.() && !this.isFinished()) {
-            once(videoElement, 'timeupdate', drawIcons);
-          }
-        };
-
-        await drawIcons();
+        await this[_private].drawIcons()
       }
 
       if (media?.src) {
-        videoElement.src = media.src;
-        this.assetUri = media.src;
+        videoElement.src = media.src
+        this.assetUri = media.src
       }
 
-      videoElement.play();
+      videoElement.play()
     } else {
-      const adUnitError = new AdUnitError('Can\'t find a suitable media to play');
+      const adUnitError = new AdUnitError("Can't find a suitable media to play")
 
-      adUnitError.code = ErrorCode.VAST_LINEAR_ASSET_MISMATCH;
-      this[_private].handleMetric(errorEvt, adUnitError);
+      adUnitError.code = ErrorCode.VAST_LINEAR_ASSET_MISMATCH
+      this[_private].handleMetric(errorEvt, adUnitError)
     }
 
-    this[_protected].started = true;
+    this[_protected].started = true
   }
 
   /**
@@ -155,8 +170,8 @@ class VastAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  public resume (): void {
-    this.videoAdContainer.videoElement.play();
+  public resume(): void {
+    this.videoAdContainer.videoElement.play()
   }
 
   /**
@@ -165,8 +180,8 @@ class VastAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  public pause (): void {
-    this.videoAdContainer.videoElement.pause();
+  public pause(): void {
+    this.videoAdContainer.videoElement.pause()
   }
 
   /**
@@ -175,21 +190,21 @@ class VastAdUnit extends VideoAdUnit {
    * @throws if ad unit is not started.
    * @throws if ad unit is finished.
    */
-  public skip (): void {
-    const inlineAd = this.vastChain[0].ad;
-    const skipoffset = inlineAd && getSkipOffset(inlineAd);
-    const currentTimeMs = this.currentTime() * 1000;
+  public skip(): void {
+    const inlineAd = this.vastChain[0].ad
+    const skipoffset = inlineAd && getSkipOffset(inlineAd)
+    const currentTimeMs = this.currentTime() * 1000
 
     if (skipoffset && currentTimeMs >= skipoffset) {
-      this[_private].handleMetric(skip);
+      this[_private].handleMetric(skip)
     }
   }
 
   /**
    * Returns true if the ad is paused and false otherwise
    */
-  public paused (): boolean {
-    return this.videoAdContainer.videoElement.paused;
+  public paused(): boolean {
+    return this.videoAdContainer.videoElement.paused
   }
 
   /**
@@ -200,8 +215,8 @@ class VastAdUnit extends VideoAdUnit {
    *
    * @param volume must be a value between 0 and 1;
    */
-  public setVolume (volume: number): void {
-    this.videoAdContainer.videoElement.volume = volume;
+  public setVolume(volume: number): void {
+    this.videoAdContainer.videoElement.volume = volume
   }
 
   /**
@@ -212,8 +227,8 @@ class VastAdUnit extends VideoAdUnit {
    *
    * @returns the volume of the ad unit.
    */
-  public getVolume (): number {
-    return this.videoAdContainer.videoElement.volume;
+  public getVolume(): number {
+    return this.videoAdContainer.videoElement.volume
   }
 
   /**
@@ -221,12 +236,12 @@ class VastAdUnit extends VideoAdUnit {
    *
    * @throws if ad unit is finished.
    */
-  public cancel (): void {
-    this[_protected].throwIfFinished();
+  public cancel(): void {
+    this[_protected].throwIfFinished()
 
-    this.videoAdContainer.videoElement.pause();
+    this.videoAdContainer.videoElement.pause()
 
-    this[_protected].finish();
+    this[_protected].finish()
   }
 
   /**
@@ -234,12 +249,12 @@ class VastAdUnit extends VideoAdUnit {
    *
    * @returns the duration of the ad unit.
    */
-  public duration (): number {
+  public duration(): number {
     if (!this.isStarted()) {
-      return 0;
+      return 0
     }
 
-    return this.videoAdContainer.videoElement.duration;
+    return this.videoAdContainer.videoElement.duration
   }
 
   /**
@@ -247,12 +262,12 @@ class VastAdUnit extends VideoAdUnit {
    *
    * @returns the current time of the ad unit.
    */
-  public currentTime (): number {
+  public currentTime(): number {
     if (!this.isStarted()) {
-      return 0;
+      return 0
     }
 
-    return this.videoAdContainer.videoElement.currentTime;
+    return this.videoAdContainer.videoElement.currentTime
   }
 
   /**
@@ -263,19 +278,24 @@ class VastAdUnit extends VideoAdUnit {
    * @param viewmode fullscreen | normal | thumbnail
    * @returns Promise that resolves once the unit was resized
    */
-  public async resize (width: number, height: number, viewmode: string): Promise<void> {
-    await super.resize(width, height, viewmode);
+  public async resize(
+    width: number,
+    height: number,
+    viewmode: string
+  ): Promise<void> {
+    await super.resize(width, height, viewmode)
 
     if (this.isStarted() && !this.isFinished()) {
-      const inlineAd = this.vastChain[0].ad;
-      const {videoElement, element} = this.videoAdContainer;
-      const media = inlineAd && findBestMedia(inlineAd, videoElement, element, this.hooks);
+      const inlineAd = this.vastChain[0].ad
+      const {videoElement, element} = this.videoAdContainer
+      const media =
+        inlineAd && findBestMedia(inlineAd, videoElement, element, this.hooks)
 
       if (media && videoElement.src !== media.src) {
-        updateMedia(videoElement, media);
+        updateMedia(videoElement, media)
       }
     }
   }
 }
 
-export default VastAdUnit;
+export default VastAdUnit

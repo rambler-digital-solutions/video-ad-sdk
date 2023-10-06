@@ -5,20 +5,20 @@ import {
   getViewable,
   getNotViewable,
   getViewUndetermined,
-  getLinearTrackingEvents,
-} from '../vastSelectors';
+  getLinearTrackingEvents
+} from '../vastSelectors'
 import {
   ParsedAd,
   VastChain,
   VastTrackingEvent,
   VastEventTrackerOptions
-} from '../types';
-import pixelTracker from './helpers/pixelTracker';
-import trackError from './helpers/trackError';
-import trackIconView from './helpers/trackIconView';
-import trackIconClick from './helpers/trackIconClick';
-import trackProgress from './helpers/trackProgress';
-import createVastEventTracker from './helpers/createVastEventTracker';
+} from '../types'
+import pixelTracker from './helpers/pixelTracker'
+import trackError from './helpers/trackError'
+import trackIconView from './helpers/trackIconView'
+import trackIconClick from './helpers/trackIconClick'
+import trackProgress from './helpers/trackProgress'
+import createVastEventTracker from './helpers/createVastEventTracker'
 import {
   clickThrough,
   closeLinear,
@@ -46,31 +46,31 @@ import {
   thirdQuartile,
   unmute,
   creativeView
-} from './linearEvents';
+} from './linearEvents'
 
-type TrackingEventSelector = (ad: ParsedAd) => string[] | null;
+type TrackingEventSelector = (ad: ParsedAd) => string[] | null
 
 const eventSelector =
   (...selectors: TrackingEventSelector[]) =>
   (ad: ParsedAd) => {
-    const trackingURIs: VastTrackingEvent[] = [];
+    const trackingURIs: VastTrackingEvent[] = []
 
     if (selectors.length > 0) {
       selectors.forEach((getElements) => {
-        const elements = getElements(ad);
+        const elements = getElements(ad)
 
         /* istanbul ignore else */
         if (Array.isArray(elements) && elements.length > 0) {
-          trackingURIs.push(...elements.map((uri) => ({uri})));
+          trackingURIs.push(...elements.map((uri) => ({uri})))
         }
-      });
+      })
     }
 
-    return trackingURIs;
-  };
+    return trackingURIs
+  }
 
 const linearTrackingEventSelector = (event: string) => (ad: ParsedAd) =>
-  getLinearTrackingEvents(ad, event);
+  getLinearTrackingEvents(ad, event)
 
 const linearTrackers = {
   [clickThrough]: createVastEventTracker(
@@ -115,7 +115,7 @@ const linearTrackers = {
   [unmute]: createVastEventTracker(linearTrackingEventSelector(unmute)),
   [viewable]: createVastEventTracker(eventSelector(getViewable)),
   [viewUndetermined]: createVastEventTracker(eventSelector(getViewUndetermined))
-};
+}
 
 /**
  * Tracks the passed linear event.
@@ -134,7 +134,7 @@ const trackLinearEvent = (
     logger = console
   }: VastEventTrackerOptions
 ): void => {
-  const linearTracker = linearTrackers[event];
+  const linearTracker = linearTrackers[event]
 
   if (linearTracker) {
     linearTracker(vastChain, {
@@ -144,10 +144,10 @@ const trackLinearEvent = (
       },
       errorCode,
       tracker
-    });
+    })
   } else {
-    logger.error(`Event '${event}' cannot be tracked`);
+    logger.error(`Event '${event}' cannot be tracked`)
   }
-};
+}
 
-export default trackLinearEvent;
+export default trackLinearEvent

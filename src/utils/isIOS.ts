@@ -1,3 +1,4 @@
-const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isIOS = (): boolean =>
+  /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
 
-export default isIOS;
+export default isIOS

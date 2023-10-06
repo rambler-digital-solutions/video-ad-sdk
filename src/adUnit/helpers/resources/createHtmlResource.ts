@@ -1,37 +1,37 @@
-import {VastIcon} from '../../../types';
-import fetchHtml from '../fetch/fetchHtml';
+import {VastIcon} from '../../../types'
+import fetchHtml from '../fetch/fetchHtml'
 
 interface HtmlResourceOptions {
-  document: Document;
-  data: VastIcon;
+  document: Document
+  data: VastIcon
 }
 
 const createHtmlResource = (
   src: string,
   {document, data}: HtmlResourceOptions
 ): HTMLDivElement => {
-  const {height, width} = data;
-  const divElement = document.createElement('div');
+  const {height, width} = data
+  const divElement = document.createElement('div')
 
   if (width) {
-    divElement.style.width = `${width}px`;
+    divElement.style.width = `${width}px`
   }
 
   if (height) {
-    divElement.style.height = `${height}px`;
+    divElement.style.height = `${height}px`
   }
 
   fetchHtml(src)
     .then((html) => {
-      divElement.innerHTML = html;
+      divElement.innerHTML = html
 
-      divElement.dispatchEvent(new CustomEvent('load'));
+      divElement.dispatchEvent(new CustomEvent('load'))
     })
     .catch(() => {
-      divElement.dispatchEvent(new CustomEvent('error'));
-    });
+      divElement.dispatchEvent(new CustomEvent('error'))
+    })
 
-  return divElement;
-};
+  return divElement
+}
 
-export default createHtmlResource;
+export default createHtmlResource

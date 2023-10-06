@@ -1,6 +1,6 @@
 export interface Listener {
-  (...args: any[]): void;
-  _?: this;
+  (...args: any[]): void
+  _?: this
 }
 
 /**
@@ -9,12 +9,12 @@ export interface Listener {
  * @param logger Optional logger instance. Must comply to the [Console interface]{@link https://developer.mozilla.org/es/docs/Web/API/Console}.
  */
 class Emitter {
-  public logger: Console;
-  private events: Record<string, Listener[]>;
+  public logger: Console
+  private events: Record<string, Listener[]>
 
   constructor(logger?: Console) {
-    this.events = {};
-    this.logger = logger || console;
+    this.events = {}
+    this.logger = logger || console
   }
 
   /**
@@ -25,12 +25,12 @@ class Emitter {
    * @returns The Emitter instance.
    */
   on(eventName: string, listener: Listener): this {
-    const events = this.events;
-    const eventListeners = events[eventName] || (events[eventName] = []);
+    const events = this.events
+    const eventListeners = events[eventName] || (events[eventName] = [])
 
-    eventListeners.push(listener);
+    eventListeners.push(listener)
 
-    return this;
+    return this
   }
 
   /**
@@ -41,14 +41,14 @@ class Emitter {
    * @returns The Emitter instance.
    */
   removeListener(eventName: string, listener: Listener): this {
-    const events = this.events;
-    const eventListeners = events[eventName] || (events[eventName] = []);
+    const events = this.events
+    const eventListeners = events[eventName] || (events[eventName] = [])
 
     events[eventName] = eventListeners.filter(
       (eListener) => eListener !== listener && eListener._ !== listener
-    );
+    )
 
-    return this;
+    return this
   }
 
   /**
@@ -59,12 +59,12 @@ class Emitter {
    */
   removeAllListeners(eventName: string): this {
     if (eventName) {
-      delete this.events[eventName];
+      delete this.events[eventName]
     } else {
-      this.events = {};
+      this.events = {}
     }
 
-    return this;
+    return this
   }
 
   /**
@@ -77,13 +77,13 @@ class Emitter {
    */
   once(eventName: string, listener: Listener): this {
     const handler: Listener = (...args) => {
-      this.removeListener(eventName, handler);
-      listener(...args);
-    };
+      this.removeListener(eventName, handler)
+      listener(...args)
+    }
 
-    handler._ = listener;
+    handler._ = listener
 
-    return this.on(eventName, handler);
+    return this.on(eventName, handler)
   }
 
   /**
@@ -94,22 +94,22 @@ class Emitter {
    * @returns Returns true if the event had listeners, false otherwise.
    */
   emit(eventName: string, ...args: any[]): boolean {
-    const events = this.events;
-    const eventListeners = events[eventName] || (events[eventName] = []);
-    const hasListeners = eventListeners.length > 0;
+    const events = this.events
+    const eventListeners = events[eventName] || (events[eventName] = [])
+    const hasListeners = eventListeners.length > 0
 
     eventListeners.forEach((handler) => {
       try {
-        handler(...args);
+        handler(...args)
       } catch (error) {
         if (error instanceof Error) {
-          this.logger.error(error, error.stack);
+          this.logger.error(error, error.stack)
         }
       }
-    });
+    })
 
-    return hasListeners;
+    return hasListeners
   }
 }
 
-export default Emitter;
+export default Emitter

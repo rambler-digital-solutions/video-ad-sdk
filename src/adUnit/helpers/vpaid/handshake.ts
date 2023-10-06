@@ -1,30 +1,36 @@
 import {VpaidCreativeAdUnit} from '../../../types'
-import {handshakeVersion} from './api';
+import {handshakeVersion} from './api'
 
 const major = (version: string): number => {
-  const parts = version.split('.');
+  const parts = version.split('.')
 
-  return parseInt(parts[0], 10);
-};
+  return parseInt(parts[0], 10)
+}
 
-const isSupported = (supportedVersion: string, creativeVersion: string): boolean => {
-  const creativeMajorNum = major(creativeVersion);
+const isSupported = (
+  supportedVersion: string,
+  creativeVersion: string
+): boolean => {
+  const creativeMajorNum = major(creativeVersion)
 
   if (creativeMajorNum < 1) {
-    return false;
+    return false
   }
 
-  return creativeMajorNum <= major(supportedVersion);
-};
+  return creativeMajorNum <= major(supportedVersion)
+}
 
-const handshake = (creativeAd: VpaidCreativeAdUnit, supportedVersion: string): string => {
-  const creativeVersion = creativeAd[handshakeVersion](supportedVersion);
+const handshake = (
+  creativeAd: VpaidCreativeAdUnit,
+  supportedVersion: string
+): string => {
+  const creativeVersion = creativeAd[handshakeVersion](supportedVersion)
 
   if (!isSupported(supportedVersion, creativeVersion)) {
-    throw new Error(`Creative Version '${creativeVersion}' not supported`);
+    throw new Error(`Creative Version '${creativeVersion}' not supported`)
   }
 
-  return creativeVersion;
-};
+  return creativeVersion
+}
 
-export default handshake;
+export default handshake

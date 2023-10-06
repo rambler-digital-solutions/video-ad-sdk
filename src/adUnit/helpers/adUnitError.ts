@@ -8,4 +8,4 @@ class AdUnitError extends Error {
   }
 }
 
-export default AdUnitError;
+export default AdUnitError

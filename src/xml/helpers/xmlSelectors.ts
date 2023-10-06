@@ -1,6 +1,6 @@
-import {ParsedXML, Attributes} from '../../types';
+import {ParsedXML, Attributes} from '../../types'
 
-const getChildren = (element: ParsedXML): ParsedXML[] => element.elements ?? [];
+const getChildren = (element: ParsedXML): ParsedXML[] => element.elements ?? []
 
 const findChildByName = (
   element: ParsedXML,
@@ -8,7 +8,7 @@ const findChildByName = (
 ): ParsedXML | null =>
   getChildren(element).find(
     ({name = ''}) => name.toUpperCase() === childName.toUpperCase()
-  ) ?? null;
+  ) ?? null
 
 const filterChildrenByName = (
   element: ParsedXML,
@@ -16,7 +16,7 @@ const filterChildrenByName = (
 ): ParsedXML[] =>
   getChildren(element).filter(
     ({name = ''}) => name.toUpperCase() === childrenName.toUpperCase()
-  );
+  )
 
 /**
  * Get the first child element from the passed parsed xml element.
@@ -25,7 +25,7 @@ const filterChildrenByName = (
  * @param childName Child element name
  * @returns The first child element with the passed name or undefined if not found.
  */
-export const get = findChildByName;
+export const get = findChildByName
 
 /**
  * Get all the children elements of the passed parsed xml element filtered by the passed child name if passed.
@@ -36,11 +36,11 @@ export const get = findChildByName;
  */
 export const getAll = (element: ParsedXML, childName?: string): ParsedXML[] => {
   if (typeof childName === 'string') {
-    return filterChildrenByName(element, childName);
+    return filterChildrenByName(element, childName)
   }
 
-  return getChildren(element);
-};
+  return getChildren(element)
+}
 
 /**
  * Get the first child element from the passed parsed xml element.
@@ -48,7 +48,7 @@ export const getAll = (element: ParsedXML, childName?: string): ParsedXML[] => {
  * @returns The first child element or undefined if there are non.
  */
 export const getFirstChild = (element: ParsedXML): ParsedXML | null =>
-  getChildren(element)[0] || null;
+  getChildren(element)[0] || null
 
 /**
  * Get the text value of the passed parsed xml element or null if there is non.
@@ -56,10 +56,10 @@ export const getFirstChild = (element: ParsedXML): ParsedXML | null =>
  * @returns Text of the element or null.
  */
 export const getText = (element: ParsedXML): string | null => {
-  const firstChild = element && getFirstChild(element);
+  const firstChild = element && getFirstChild(element)
 
-  return (firstChild && firstChild.text) || null;
-};
+  return (firstChild && firstChild.text) || null
+}
 
 /**
  * Get all the attributes of the passed parsed xml element.
@@ -67,7 +67,7 @@ export const getText = (element: ParsedXML): string | null => {
  * @returns Object with the element attributes.
  */
 export const getAttributes = (element: ParsedXML): Attributes =>
-  element.attributes ?? {};
+  element.attributes ?? {}
 
 /**
  * Get the attribute with the passed name of the passed parsed xml element.
@@ -77,4 +77,4 @@ export const getAttributes = (element: ParsedXML): Attributes =>
 export const getAttribute = (
   element: ParsedXML,
   attributeName: string
-): string | null => getAttributes(element)[attributeName] || null;
+): string | null => getAttributes(element)[attributeName] || null

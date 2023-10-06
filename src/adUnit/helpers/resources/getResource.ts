@@ -1,10 +1,10 @@
-import {VastIcon} from '../../../types';
+import {VastIcon} from '../../../types'
 
 const getResource = ({
   staticResource,
   htmlResource,
   iFrameResource
 }: VastIcon = {}): string =>
-  staticResource || htmlResource || iFrameResource || '';
+  staticResource || htmlResource || iFrameResource || ''
 
-export default getResource;
+export default getResource

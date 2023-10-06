@@ -1,38 +1,38 @@
-import {ExecutionContext} from '../types';
-import loadScript, {LoadScriptOptions} from './helpers/loadScript';
-import createAdVideoElement from './helpers/createAdVideoElement';
-import createAdContainer from './helpers/createAdContainer';
-import createIframe from './helpers/createIframe';
-import createSlot from './helpers/createSlot';
-import getContentDocument from './helpers/getContentDocument';
-import unique from './helpers/unique';
+import {ExecutionContext} from '../types'
+import loadScript, {LoadScriptOptions} from './helpers/loadScript'
+import createAdVideoElement from './helpers/createAdVideoElement'
+import createAdContainer from './helpers/createAdContainer'
+import createIframe from './helpers/createIframe'
+import createSlot from './helpers/createSlot'
+import getContentDocument from './helpers/getContentDocument'
+import unique from './helpers/unique'
 
-const nextId = unique('videoAdContainer');
-const hidden = Symbol('hidden');
+const nextId = unique('videoAdContainer')
+const hidden = Symbol('hidden')
 
 interface Hidden {
-  destroyed: boolean;
-  id: string;
-  iframe: HTMLIFrameElement | null;
-  readyPromise: Promise<any> | null;
+  destroyed: boolean
+  id: string
+  iframe: HTMLIFrameElement | null
+  readyPromise: Promise<any> | null
 }
 
 /**
  * This class provides everything necessary to contain and create a video ad within a given placeholder Element.
  */
 class VideoAdContainer {
-  public element: HTMLElement;
-  public slotElement: HTMLElement | null;
-  public videoElement: HTMLVideoElement;
-  public executionContext: ExecutionContext | null;
-  public isOriginalVideoElement: boolean;
+  public element: HTMLElement
+  public slotElement: HTMLElement | null
+  public videoElement: HTMLVideoElement
+  public executionContext: ExecutionContext | null
+  public isOriginalVideoElement: boolean
 
   private [hidden]: Hidden = {
     destroyed: false,
     id: nextId(),
     iframe: null,
     readyPromise: null
-  };
+  }
 
   /**
    * Creates a VideoAdContainer.
@@ -45,23 +45,23 @@ class VideoAdContainer {
     videoElement?: HTMLVideoElement
   ) {
     if (!(placeholder instanceof Element)) {
-      throw new TypeError('placeholder is not an Element');
+      throw new TypeError('placeholder is not an Element')
     }
 
-    this.element = createAdContainer();
-    this.slotElement = null;
-    this.executionContext = null;
+    this.element = createAdContainer()
+    this.slotElement = null
+    this.executionContext = null
 
-    this.isOriginalVideoElement = Boolean(videoElement);
+    this.isOriginalVideoElement = Boolean(videoElement)
 
     if (videoElement) {
-      this.videoElement = videoElement;
+      this.videoElement = videoElement
     } else {
-      this.videoElement = createAdVideoElement();
-      this.element.appendChild(this.videoElement);
+      this.videoElement = createAdVideoElement()
+      this.element.appendChild(this.videoElement)
     }
 
-    placeholder.appendChild(this.element);
+    placeholder.appendChild(this.element)
   }
 
   /**
@@ -75,23 +75,23 @@ class VideoAdContainer {
     options: Omit<LoadScriptOptions, 'placeholder'> = {}
   ): Promise<HTMLScriptElement> {
     if (this.isDestroyed()) {
-      throw new Error('VideoAdContainer has been destroyed');
+      throw new Error('VideoAdContainer has been destroyed')
     }
 
-    let {iframe} = this[hidden];
+    let {iframe} = this[hidden]
 
     if (!iframe) {
-      iframe = await createIframe(this.element, this[hidden].id);
-      this[hidden].iframe = iframe;
-      this.executionContext = iframe.contentWindow as ExecutionContext;
+      iframe = await createIframe(this.element, this[hidden].id)
+      this[hidden].iframe = iframe
+      this.executionContext = iframe.contentWindow as ExecutionContext
     }
 
-    const placeholder = getContentDocument(iframe)?.body;
+    const placeholder = getContentDocument(iframe)?.body
 
     return loadScript(src, {
       placeholder,
       ...options
-    });
+    })
   }
 
   /**
@@ -102,11 +102,11 @@ class VideoAdContainer {
    */
   public addSlot(width: number, height: number): void {
     if (this.isDestroyed()) {
-      throw new Error('VideoAdContainer has been destroyed');
+      throw new Error('VideoAdContainer has been destroyed')
     }
 
     if (!this.slotElement) {
-      this.slotElement = createSlot(this.element, width, height);
+      this.slotElement = createSlot(this.element, width, height)
     }
   }
 
@@ -119,15 +119,15 @@ class VideoAdContainer {
     //       immediately hides and remove the iframe from dom after timeout
     const removePromise = new Promise<void>((resolve) => {
       setTimeout(() => {
-        this.element.parentNode?.removeChild(this.element);
-        resolve();
-      }, 1000);
-    });
+        this.element.parentNode?.removeChild(this.element)
+        resolve()
+      }, 1000)
+    })
 
-    this.element.style.zIndex = '-9999';
-    this[hidden].destroyed = true;
+    this.element.style.zIndex = '-9999'
+    this[hidden].destroyed = true
 
-    return removePromise;
+    return removePromise
   }
 
   /**
@@ -136,8 +136,8 @@ class VideoAdContainer {
    * @returns true if the container is destroyed and false otherwise.
    */
   public isDestroyed(): boolean {
-    return this[hidden].destroyed;
+    return this[hidden].destroyed
   }
 }
 
-export default VideoAdContainer;
+export default VideoAdContainer

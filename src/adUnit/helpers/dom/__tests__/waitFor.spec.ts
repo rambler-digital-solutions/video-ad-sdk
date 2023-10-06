@@ -1,29 +1,24 @@
-import waitFor from '../waitFor';
+import waitFor from '../waitFor'
 
 test('waitFor promise must resolve once the event occurs on the passed element', () => {
-  const element = document.createElement('DIV');
-  const eventName = 'test';
-  const event = new Event(eventName);
+  const element = document.createElement('DIV')
+  const eventName = 'test'
+  const event = new Event(eventName)
 
-  element.dispatchEvent(event);
+  element.dispatchEvent(event)
 
-  expect(waitFor(element, eventName).promise).resolves.toEqual([
-    event
-  ]);
-});
+  expect(waitFor(element, eventName).promise).resolves.toEqual([event])
+})
 
 test('waitFor cancel must reject the promise', () => {
-  const element = document.createElement('DIV');
-  const eventName = 'test';
-  const event = new Event(eventName);
+  const element = document.createElement('DIV')
+  const eventName = 'test'
+  const event = new Event(eventName)
 
-  const {
-    cancel,
-    promise
-  } = waitFor(element, eventName);
+  const {cancel, promise} = waitFor(element, eventName)
 
-  cancel();
-  element.dispatchEvent(event);
+  cancel()
+  element.dispatchEvent(event)
 
-  expect(promise).rejects.toBeInstanceOf(Error);
-});
+  expect(promise).rejects.toBeInstanceOf(Error)
+})

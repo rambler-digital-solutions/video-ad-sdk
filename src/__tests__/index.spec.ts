@@ -4,26 +4,25 @@ import {
   requestAd,
   requestNextAd,
   vastSelectors
-} from '../index';
-import * as selectors from '../vastSelectors';
+} from '../index'
+import * as selectors from '../vastSelectors'
 
 test('must publish `requestAd`', () => {
-  expect(requestAd).toBeInstanceOf(Function);
-});
+  expect(requestAd).toBeInstanceOf(Function)
+})
 
 test('must publish `requestNextAd`', () => {
-  expect(requestNextAd).toBeInstanceOf(Function);
-});
+  expect(requestNextAd).toBeInstanceOf(Function)
+})
 
 test('must publish `run`', () => {
-  expect(run).toBeInstanceOf(Function);
-});
+  expect(run).toBeInstanceOf(Function)
+})
 
 test('must publish `runWaterfall`', () => {
-  expect(runWaterfall).toBeInstanceOf(Function);
-});
+  expect(runWaterfall).toBeInstanceOf(Function)
+})
 
 test('must publish `vastSelectors`', () => {
-  expect(vastSelectors).toEqual(selectors);
-});
-
+  expect(vastSelectors).toEqual(selectors)
+})

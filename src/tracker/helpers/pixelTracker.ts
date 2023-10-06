@@ -1,5 +1,5 @@
-import {PixelTracker} from '../../types';
-import parseMacro from './parseMacro';
+import {PixelTracker} from '../../types'
+import parseMacro from './parseMacro'
 
 /**
  * Creates a tracking image with the passed URL macro.
@@ -9,11 +9,11 @@ import parseMacro from './parseMacro';
  * @returns Image element whose source is the parsed URL Macro.
  */
 const pixelTracker: PixelTracker = (urlMacro, data) => {
-  const img = new Image();
+  const img = new Image()
 
-  img.src = parseMacro(urlMacro, data);
+  img.src = parseMacro(urlMacro, data)
 
-  return img;
-};
+  return img
+}
 
-export default pixelTracker;
+export default pixelTracker

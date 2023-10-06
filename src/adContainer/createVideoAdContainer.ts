@@ -1,4 +1,4 @@
-import VideoAdContainer from './VideoAdContainer';
+import VideoAdContainer from './VideoAdContainer'
 
 /**
  * VideoAdContainer factory method. Returns a VideoAdContainer instance that will contain the video ad.
@@ -14,10 +14,10 @@ const createVideoAdContainer = (
   videoElement?: HTMLVideoElement
 ): VideoAdContainer => {
   if (!placeholder) {
-    throw new TypeError('placeholder is required');
+    throw new TypeError('placeholder is required')
   }
 
-  return new VideoAdContainer(placeholder, videoElement);
-};
+  return new VideoAdContainer(placeholder, videoElement)
+}
 
-export default createVideoAdContainer;
+export default createVideoAdContainer

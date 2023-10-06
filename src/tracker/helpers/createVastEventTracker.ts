@@ -1,9 +1,14 @@
-import {ParsedAd, VastChain, VastTrackingEvent, VastEventTrackerOptions} from '../../types';
-import pixelTracker from './pixelTracker';
+import {
+  ParsedAd,
+  VastChain,
+  VastTrackingEvent,
+  VastEventTrackerOptions
+} from '../../types'
+import pixelTracker from './pixelTracker'
 
 type TrackingEventSelector = (
   ad: ParsedAd
-) => VastTrackingEvent[] | string | null;
+) => VastTrackingEvent[] | string | null
 
 const createVastEventTracker =
   (trackingEventSelector: TrackingEventSelector) =>
@@ -12,21 +17,22 @@ const createVastEventTracker =
     {data = {}, tracker = pixelTracker}: VastEventTrackerOptions
   ): void => {
     vastChain.forEach(({ad}) => {
-      const value = ad && trackingEventSelector(ad);
+      const value = ad && trackingEventSelector(ad)
 
       if (!value) {
-        return;
+        return
       }
 
       if (value && typeof value === 'string') {
-        tracker(value, data);
-        return;
+        tracker(value, data)
+
+        return
       }
 
       if (Array.isArray(value)) {
-        value.map(({uri}) => uri && tracker(uri, data));
+        value.map(({uri}) => uri && tracker(uri, data))
       }
-    });
-  };
+    })
+  }
 
-export default createVastEventTracker;
+export default createVastEventTracker

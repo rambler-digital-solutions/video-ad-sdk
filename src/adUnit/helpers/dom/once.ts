@@ -1,4 +1,4 @@
-import {Cancel} from '../../../types';
+import {Cancel} from '../../../types'
 
 const once = <T extends (...args: any) => any>(
   element: HTMLElement,
@@ -6,16 +6,16 @@ const once = <T extends (...args: any) => any>(
   listener: T
 ): Cancel => {
   const handler = (...args: unknown[]): void => {
-    element.removeEventListener(eventName, handler);
+    element.removeEventListener(eventName, handler)
 
-    return listener(...args);
-  };
+    return listener(...args)
+  }
 
-  element.addEventListener(eventName, handler);
+  element.addEventListener(eventName, handler)
 
   return () => {
-    element.removeEventListener(eventName, handler);
-  };
-};
+    element.removeEventListener(eventName, handler)
+  }
+}
 
-export default once;
+export default once

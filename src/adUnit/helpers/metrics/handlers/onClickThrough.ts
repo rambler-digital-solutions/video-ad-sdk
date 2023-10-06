@@ -1,65 +1,65 @@
-import {linearEvents} from '../../../../tracker';
-import {VideoAdContainer} from '../../../../adContainer';
-import {MetricHandlerData, Cancel} from '../../../../types';
+import {linearEvents} from '../../../../tracker'
+import {VideoAdContainer} from '../../../../adContainer'
+import {MetricHandlerData, Cancel} from '../../../../types'
 
-const {clickThrough} = linearEvents;
+const {clickThrough} = linearEvents
 
-const createDefaultClickControl = (): HTMLElement=> {
-  const anchor = document.createElement('a');
+const createDefaultClickControl = (): HTMLElement => {
+  const anchor = document.createElement('a')
 
-  anchor.classList.add('mol-vast-clickthrough');
-  anchor.style.width = '100%';
-  anchor.style.height = '100%';
-  anchor.style.position = 'absolute';
-  anchor.style.left = '0';
-  anchor.style.top = '0';
+  anchor.classList.add('mol-vast-clickthrough')
+  anchor.style.width = '100%'
+  anchor.style.height = '100%'
+  anchor.style.position = 'absolute'
+  anchor.style.left = '0'
+  anchor.style.top = '0'
 
-  return anchor;
-};
+  return anchor
+}
 
 const onClickThrough = (
   {videoElement, element}: VideoAdContainer,
   callback: (event: string) => void,
-  {clickThroughUrl, pauseOnAdClick = true, createClickControl = createDefaultClickControl}: MetricHandlerData = {}
+  {
+    clickThroughUrl,
+    pauseOnAdClick = true,
+    createClickControl = createDefaultClickControl
+  }: MetricHandlerData = {}
 ): Cancel => {
-  const placeholder = element || videoElement.parentNode;
+  const placeholder = element || videoElement.parentNode
   const anchor = createClickControl()
-  const isVirtual = !document.body.contains(anchor);
+  const isVirtual = !document.body.contains(anchor)
 
   if (isVirtual) {
-    placeholder.appendChild(anchor);
+    placeholder.appendChild(anchor)
   }
 
   if (clickThroughUrl && anchor instanceof HTMLAnchorElement) {
-    anchor.href = clickThroughUrl;
-    anchor.target = '_blank';
+    anchor.href = clickThroughUrl
+    anchor.target = '_blank'
   }
 
   anchor.onclick = (event) => {
-    if (Event.prototype.stopPropagation !== undefined) {
-      event.stopPropagation();
-    }
+    event.stopPropagation()
 
     if (videoElement.paused && pauseOnAdClick) {
-      if (Event.prototype.preventDefault !== undefined) {
-        event.preventDefault();
-      }
+      event.preventDefault()
 
-      videoElement.play();
+      videoElement.play()
     } else {
       if (pauseOnAdClick) {
-        videoElement.pause();
+        videoElement.pause()
       }
 
-      callback(clickThrough);
+      callback(clickThrough)
     }
-  };
+  }
 
   return () => {
     if (isVirtual) {
-      placeholder.removeChild(anchor);
+      placeholder.removeChild(anchor)
     }
-  };
-};
+  }
+}
 
-export default onClickThrough;
+export default onClickThrough

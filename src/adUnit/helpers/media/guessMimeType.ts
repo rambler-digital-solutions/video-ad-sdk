@@ -11,13 +11,13 @@ const mimeMap: Record<string, string> = {
   ts: 'video/MP2T',
   webm: 'video/webm',
   wmv: 'video/x-ms-wmv'
-};
+}
 
 const guessMimeType = (src: string): string => {
-  const match = src.match(/\.([^./?]+)(\?[^/]+)?$/i);
-  const ext = match && match[1];
+  const match = src.match(/\.([^./?]+)(\?[^/]+)?$/i)
+  const ext = match && match[1]
 
-  return ext && mimeMap[ext] || 'video/' + ext;
-};
+  return (ext && mimeMap[ext]) || 'video/' + ext
+}
 
-export default guessMimeType;
+export default guessMimeType

@@ -1,20 +1,11 @@
 {
+  "extends": "@rambler-tech/ts-config/base",
   "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
-    "moduleResolution": "node",
     "baseUrl": "src",
-    "allowJs": true,
-    "strict": true,
-    "sourceMap": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noEmitOnError": true,
-    "lib": ["dom", "esnext"]
+    "outDir": "dist",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"],
+  "include": ["src", "demo"],
   "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }

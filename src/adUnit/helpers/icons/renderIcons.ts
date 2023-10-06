@@ -1,43 +1,43 @@
-import {VastIcon, RenderedVastIcon} from '../../../types';
-import {VideoAdContainer} from '../../../adContainer';
-import renderIcon from './renderIcon';
-import canBeShown from './canBeShown';
+import {VastIcon, RenderedVastIcon} from '../../../types'
+import {VideoAdContainer} from '../../../adContainer'
+import renderIcon from './renderIcon'
+import canBeShown from './canBeShown'
 
 interface RenderIconsOptions {
-  videoAdContainer: VideoAdContainer;
-  logger?: Console;
-  onIconClick?(icon: VastIcon): void;
+  videoAdContainer: VideoAdContainer
+  logger?: Console
+  onIconClick?(icon: VastIcon): void
 }
 
 const renderIcons = (
   icons: VastIcon[],
   {onIconClick, videoAdContainer, logger = console}: RenderIconsOptions
 ): Promise<VastIcon[]> => {
-  const {element, videoElement} = videoAdContainer;
-  const drawnIcons: RenderedVastIcon[] = [];
+  const {element, videoElement} = videoAdContainer
+  const drawnIcons: RenderedVastIcon[] = []
 
   const {iconsToShow, otherIcons} = icons.reduce<{
-    iconsToShow: VastIcon[];
-    otherIcons: VastIcon[];
+    iconsToShow: VastIcon[]
+    otherIcons: VastIcon[]
   }>(
     (accumulator, icon) => {
       if (canBeShown(icon, videoElement)) {
-        accumulator.iconsToShow.push(icon);
+        accumulator.iconsToShow.push(icon)
       } else {
-        accumulator.otherIcons.push(icon);
+        accumulator.otherIcons.push(icon)
       }
 
-      return accumulator;
+      return accumulator
     },
     {
       iconsToShow: [],
       otherIcons: []
     }
-  );
+  )
 
   otherIcons.forEach(({element: iconElement}) => {
-    iconElement?.parentNode?.removeChild(iconElement);
-  });
+    iconElement?.parentNode?.removeChild(iconElement)
+  })
 
   return iconsToShow
     .reduce<Promise<void>>(
@@ -52,12 +52,12 @@ const renderIcons = (
             })
           )
           .then((renderedIcon) => {
-            drawnIcons.push(renderedIcon);
+            drawnIcons.push(renderedIcon)
           })
           .catch((error) => logger.log(error)),
       Promise.resolve()
     )
-    .then(() => drawnIcons);
-};
+    .then(() => drawnIcons)
+}
 
-export default renderIcons;
+export default renderIcons

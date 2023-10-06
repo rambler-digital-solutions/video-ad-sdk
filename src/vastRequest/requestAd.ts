@@ -1,4 +1,4 @@
-import {parseXml} from '../xml';
+import {parseXml} from '../xml'
 import {isVastErrorCode, ErrorCode} from '../tracker'
 import {
   getWrapperOptions,
@@ -7,7 +7,7 @@ import {
   hasAdPod,
   isInline,
   isWrapper
-} from '../vastSelectors';
+} from '../vastSelectors'
 import {
   VastChain,
   VastResponse,
@@ -15,72 +15,73 @@ import {
   ParsedAd,
   ParsedXML,
   RequestAdOptions
-} from '../types';
-import fetch from './helpers/fetch';
-import VastError from './helpers/vastError';
-import {markAdAsRequested} from './helpers/adUtils';
+} from '../types'
+import fetch from './helpers/fetch'
+import VastError from './helpers/vastError'
+import {markAdAsRequested} from './helpers/adUtils'
 
 const validateChain = (
   vastChain: VastChain,
   {wrapperLimit = 5}: RequestAdOptions
 ): void => {
   if (vastChain.length > wrapperLimit) {
-    const error = new VastError('Wrapper Limit reached');
+    const error = new VastError('Wrapper Limit reached')
 
-    error.code = ErrorCode.VAST_TOO_MANY_REDIRECTS;
-    throw error;
+    error.code = ErrorCode.VAST_TOO_MANY_REDIRECTS
+    throw error
   }
-};
+}
 
 interface FetchAdResponse {
-  response: Response;
-  XML: string;
+  response: Response
+  XML: string
 }
 
 const fetchAdXML = async (
   adTag: string,
   options: RequestInit
 ): Promise<FetchAdResponse> => {
-  let response;
+  let response
 
   try {
-    response = await fetch(adTag, options);
-    const XML = await response.text();
+    response = await fetch(adTag, options)
 
-    return {response, XML};
+    const XML = await response.text()
+
+    return {response, XML}
   } catch (error: any) {
-    error.code = ErrorCode.VAST_NONLINEAR_LOADING_FAILED;
-    error.response ??= response;
+    error.code = ErrorCode.VAST_NONLINEAR_LOADING_FAILED
+    error.response ??= response
 
-    throw error;
+    throw error
   }
-};
+}
 
 const parseVastXml = (xml: string): ParsedXML => {
   try {
-    return parseXml(xml);
+    return parseXml(xml)
   } catch (error: any) {
-    error.code = ErrorCode.VAST_XML_PARSING_ERROR;
-    throw error;
+    error.code = ErrorCode.VAST_XML_PARSING_ERROR
+    throw error
   }
-};
+}
 
 const getAd = (parsedXML: ParsedXML): ParsedAd => {
   try {
-    const ad = getFirstAd(parsedXML);
+    const ad = getFirstAd(parsedXML)
 
     if (ad) {
-      markAdAsRequested(ad);
+      markAdAsRequested(ad)
 
-      return ad;
+      return ad
     }
 
-    throw new Error('No Ad');
+    throw new Error('No Ad')
   } catch (error: any) {
-    error.code = ErrorCode.VAST_NO_ADS_AFTER_WRAPPER;
-    throw error;
+    error.code = ErrorCode.VAST_NO_ADS_AFTER_WRAPPER
+    throw error
   }
-};
+}
 
 const validateResponse = (
   {ad, parsedXML}: VastResponse,
@@ -92,42 +93,42 @@ const validateResponse = (
   if (!isWrapper(ad) && !isInline(ad)) {
     const error = new VastError(
       'Invalid VAST, ad contains neither Wrapper nor Inline'
-    );
+    )
 
-    error.code = ErrorCode.VAST_SCHEMA_VALIDATION_ERROR;
-    throw error;
+    error.code = ErrorCode.VAST_SCHEMA_VALIDATION_ERROR
+    throw error
   }
 
   if (hasAdPod(parsedXML) && !allowMultipleAds) {
-    const error = new VastError('Multiple ads are not allowed');
+    const error = new VastError('Multiple ads are not allowed')
 
-    error.code = ErrorCode.VAST_UNEXPECTED_MEDIA_FILE;
-    throw error;
+    error.code = ErrorCode.VAST_UNEXPECTED_MEDIA_FILE
+    throw error
   }
 
   if (isWrapper(ad) && !followAdditionalWrappers) {
-    const error = new VastError('To follow additional wrappers is not allowed');
+    const error = new VastError('To follow additional wrappers is not allowed')
 
-    error.code = ErrorCode.VAST_UNEXPECTED_AD_TYPE;
-    throw error;
+    error.code = ErrorCode.VAST_UNEXPECTED_AD_TYPE
+    throw error
   }
-};
+}
 
 const getOptions = (
   vastChain: VastChain,
   options: RequestAdOptions
 ): RequestAdOptions & WrapperOptions => {
-  const parentAd = vastChain[0];
+  const parentAd = vastChain[0]
   const parentAdIsWrapper =
-    Boolean(parentAd) && parentAd.ad && isWrapper(parentAd.ad);
+    Boolean(parentAd) && parentAd.ad && isWrapper(parentAd.ad)
   const wrapperOptions =
-    parentAdIsWrapper && parentAd.ad ? getWrapperOptions(parentAd.ad) : {};
+    parentAdIsWrapper && parentAd.ad ? getWrapperOptions(parentAd.ad) : {}
 
   return {
     ...wrapperOptions,
     ...options
-  };
-};
+  }
+}
 
 /**
  * Request the ad using the passed ad tag and returns an array with the [VAST responses]{@link VastResponse} needed to get an inline ad.
@@ -149,44 +150,45 @@ const requestAd = async (
     parsedXML: null,
     requestTag: adTag,
     XML: null
-  };
-  let epoch: number | undefined;
-  let timeout: number | undefined;
+  }
+  let epoch: number | undefined
+  let timeout: number | undefined
 
   try {
-    const resultOptions = getOptions(vastChain, options);
-    validateChain(vastChain, resultOptions);
+    const resultOptions = getOptions(vastChain, options)
 
-    let fetchPromise = fetchAdXML(adTag, resultOptions);
+    validateChain(vastChain, resultOptions)
+
+    let fetchPromise = fetchAdXML(adTag, resultOptions)
 
     if (typeof resultOptions.timeout === 'number') {
-      timeout = resultOptions.timeout;
-      epoch = Date.now();
+      timeout = resultOptions.timeout
+      epoch = Date.now()
       fetchPromise = Promise.race<FetchAdResponse>([
         fetchPromise,
         new Promise<never>((_resolve, reject) => {
           setTimeout(() => {
-            const error = new VastError('RequestAd timeout');
+            const error = new VastError('RequestAd timeout')
 
-            error.code = ErrorCode.VAST_LOAD_TIMEOUT;
-            reject(error);
-          }, timeout);
+            error.code = ErrorCode.VAST_LOAD_TIMEOUT
+            reject(error)
+          }, timeout)
         })
-      ]);
+      ])
     }
 
-    const {response, XML} = await fetchPromise;
+    const {response, XML} = await fetchPromise
 
-    vastAdResponse.response = response;
-    vastAdResponse.XML = XML;
-    vastAdResponse.parsedXML = parseVastXml(vastAdResponse.XML);
-    vastAdResponse.ad = getAd(vastAdResponse.parsedXML);
+    vastAdResponse.response = response
+    vastAdResponse.XML = XML
+    vastAdResponse.parsedXML = parseVastXml(vastAdResponse.XML)
+    vastAdResponse.ad = getAd(vastAdResponse.parsedXML)
 
-    validateResponse(vastAdResponse, resultOptions);
+    validateResponse(vastAdResponse, resultOptions)
 
     if (vastAdResponse.ad && isWrapper(vastAdResponse.ad)) {
       if (epoch && timeout) {
-        timeout -= Date.now() - epoch;
+        timeout -= Date.now() - epoch
       }
 
       return requestAd(
@@ -196,22 +198,22 @@ const requestAd = async (
           timeout
         },
         [vastAdResponse, ...vastChain]
-      );
+      )
     }
 
-    return [vastAdResponse, ...vastChain];
+    return [vastAdResponse, ...vastChain]
   } catch (error: any) {
     /* istanbul ignore if */
     if (!isVastErrorCode(error.code)) {
-      error.code = ErrorCode.UNKNOWN_ERROR;
+      error.code = ErrorCode.UNKNOWN_ERROR
     }
 
-    vastAdResponse.errorCode = error.code;
-    vastAdResponse.error = error;
-    vastAdResponse.response ??= error.response;
+    vastAdResponse.errorCode = error.code
+    vastAdResponse.error = error
+    vastAdResponse.response ??= error.response
 
-    return [vastAdResponse, ...vastChain];
+    return [vastAdResponse, ...vastChain]
   }
-};
+}
 
-export default requestAd;
+export default requestAd

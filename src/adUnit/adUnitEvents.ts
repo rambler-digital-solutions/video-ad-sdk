@@ -3,27 +3,26 @@
  *
  * @event VideoAdUnit#volumeChanged
  */
-export const volumeChanged = 'volumeChanged';
+export const volumeChanged = 'volumeChanged'
 
 /**
  * Fires when the adUnit's has finished.
  *
  * @event VideoAdUnit#finish
  */
-export const finish = 'finish';
+export const finish = 'finish'
 
 /**
  * fires on ad progress.
  *
  * @event VideoAdUnit#adProgress
  */
-export const adProgress = 'adProgress';
+export const adProgress = 'adProgress'
 
 const adUnitEvents = {
   adProgress,
   finish,
   volumeChanged
-};
+}
 
-export default adUnitEvents;
-
+export default adUnitEvents

@@ -1,5 +1,9 @@
-const createSlot = (placeholder: HTMLElement, width: number, height: number): HTMLElement => {
-  const slot = document.createElement('DIV');
+const createSlot = (
+  placeholder: HTMLElement,
+  width: number,
+  height: number
+): HTMLElement => {
+  const slot = document.createElement('DIV')
 
   Object.assign(slot.style, {
     border: '0px',
@@ -11,11 +15,11 @@ const createSlot = (placeholder: HTMLElement, width: number, height: number): HT
     position: 'absolute',
     top: '0px',
     width: `${width}px`
-  });
+  })
 
-  placeholder.appendChild(slot);
+  placeholder.appendChild(slot)
 
-  return slot;
-};
+  return slot
+}
 
-export default createSlot;
+export default createSlot

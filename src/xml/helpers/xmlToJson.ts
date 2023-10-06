@@ -1,61 +1,79 @@
-import {NodeType, ParsedXML} from '../../types'
+import {NodeType, ParsedXML, Attributes} from '../../types'
 
-const nodeType = (node: Node): NodeType => {
-  if (node.nodeType === 1) {
-    return NodeType.ELEMENT;
+const getNodeType = (node: Node): NodeType => {
+  switch (node.nodeType) {
+    case 1:
+      return NodeType.ELEMENT
+    case 3:
+    case 4:
+      return NodeType.TEXT
+    case 9:
+      return NodeType.DOCUMENT
+    default:
+      throw new Error('Unsupported element type')
+  }
+}
+
+const getNodeAttributes = (node: Element): Attributes | null =>
+  node.attributes.length === 0
+    ? null
+    : Object.fromEntries(
+        Array.from(node.attributes).map((attribute) => [
+          attribute.nodeName,
+          attribute.nodeValue
+        ])
+      )
+
+const getNodeText = (node: Text | CDATASection): string | undefined =>
+  node.nodeValue?.replace('<![CDATA[', '').replace(']]>', '').trim()
+
+const getNodeChildren = (node: Document | ChildNode): ParsedXML[] | null => {
+  if (!node.hasChildNodes()) {
+    return null
   }
 
-  if (node.nodeType === 3 || node.nodeType === 4) {
-    return NodeType.TEXT;
+  const childNodes = Array.from(node.childNodes).filter((childNode) =>
+    [1, 3, 4].includes(childNode.nodeType)
+  )
+  const elements: ParsedXML[] = []
+
+  for (const childNode of childNodes) {
+    const childElement = xmlToJson(childNode)
+
+    if (!(childNode instanceof Text) || (childElement.text?.length ?? 0) > 0) {
+      elements.push(childElement)
+    }
   }
 
-  if (node.nodeType === 9) {
-    return NodeType.DOCUMENT;
-  }
-
-  throw new Error('Unsupported element type');
-};
+  return elements
+}
 
 const xmlToJson = (node: Document | ChildNode): ParsedXML => {
-  const type = nodeType(node);
+  const type = getNodeType(node)
 
   const element: ParsedXML = {
     type
-  };
+  }
 
   if (node instanceof Element) {
-    element.name = node.nodeName.toLowerCase();
+    const attributes = getNodeAttributes(node)
 
-    if (node.attributes.length > 0) {
-      element.attributes = {};
-      for (const attribute of Array.from(node.attributes)) {
-        element.attributes[attribute.nodeName] = attribute.nodeValue;
-      }
+    if (attributes) {
+      element.attributes = attributes
     }
+
+    element.name = node.nodeName.toLowerCase()
   } else if (node instanceof Text || node instanceof CDATASection) {
-    element.text = node.nodeValue
-      ?.replace('<![CDATA[', '')
-      .replace(']]>', '')
-      .trim();
+    element.text = getNodeText(node)
   }
 
-  // do children
-  if (node.hasChildNodes()) {
-    const childNodes = Array.from(node.childNodes).filter((childNode) => [1, 3, 4].includes(childNode.nodeType));
-    const elements: ParsedXML[] = [];
+  const children = getNodeChildren(node)
 
-    element.elements = elements;
-
-    for (const childNode of childNodes) {
-      const childElement = xmlToJson(childNode);
-
-      if (!(childNode instanceof Text) || (childElement.text?.length ?? 0) > 0) {
-        elements.push(childElement);
-      }
-    }
+  if (children) {
+    element.elements = children
   }
 
-  return element;
-};
+  return element
+}
 
-export default xmlToJson;
+export default xmlToJson

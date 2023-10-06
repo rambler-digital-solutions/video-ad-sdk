@@ -5,15 +5,15 @@ export interface Deferred<T> {
 }
 
 const defer = <T>(): Deferred<T> => {
-  const deferred = {} as Deferred<T>;
+  const deferred = {} as Deferred<T>
   const promise = new Promise<T>((resolve, reject) => {
-    deferred.resolve = resolve;
-    deferred.reject = reject;
-  });
+    deferred.resolve = resolve
+    deferred.reject = reject
+  })
 
-  deferred.promise = promise;
+  deferred.promise = promise
 
-  return deferred;
-};
+  return deferred
+}
 
-export default defer;
+export default defer

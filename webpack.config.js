@@ -1,21 +1,22 @@
-/* eslint-disable import/unambiguous, import/no-commonjs, sort-keys */
+/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const {name: pkgName} = require('./package.json')
 
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const {name: pkgName} = require('./package.json');
-
-// eslint-disable-next-line no-process-env
-const devMode = process.env.NODE_ENV !== 'production';
+const devMode = process.env.NODE_ENV !== 'production'
 
 module.exports = {
   entry: {demo: './demo/index'},
   devtool: 'source-map',
   devServer: {
     publicPath: '/',
-    contentBase: [path.join(__dirname, 'node_modules'), path.join(__dirname, 'ghPage')],
+    contentBase: [
+      path.join(__dirname, 'node_modules'),
+      path.join(__dirname, 'ghPage')
+    ],
     compress: true,
     https: true,
     port: 9000,
@@ -33,7 +34,9 @@ module.exports = {
   module: {
     rules: [
       {
-        exclude: devMode ? /node_modules\/(?!video-ad-sdk).*/ : /node_modules\/.*/,
+        exclude: devMode
+          ? /node_modules\/(?!video-ad-sdk).*/
+          : /node_modules\/.*/,
         loader: 'ts-loader',
         test: /\.ts/
       },
@@ -77,7 +80,9 @@ module.exports = {
     extensions: ['.js'],
     modules: ['node_modules'],
     alias: {
-      'video-ad-sdk': devMode ? path.resolve(__dirname, 'src/index.js') : path.resolve(__dirname, 'dist/main.esm.js')
+      'video-ad-sdk': devMode
+        ? path.resolve(__dirname, 'src/index.js')
+        : path.resolve(__dirname, 'dist/main.esm.js')
     }
   }
-};
+}
