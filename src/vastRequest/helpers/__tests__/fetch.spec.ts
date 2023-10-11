@@ -1,7 +1,7 @@
 import fetch from '../fetch'
 
 test("fetch must add credentials 'include' to the request options", async () => {
-  const successResponse = {status: 200}
+  const successResponse = new Response(null, {status: 200})
 
   global.fetch = jest.fn(() => Promise.resolve(successResponse))
 
@@ -15,10 +15,10 @@ test("fetch must add credentials 'include' to the request options", async () => 
 })
 
 test("fetch must throw an error if the response's status is above 399", async () => {
-  const forbiddenResponse = {
+  const forbiddenResponse = new Response(null, {
     status: 403,
     statusText: 'forbidden request'
-  }
+  })
 
   global.fetch = jest.fn(() => Promise.resolve(forbiddenResponse))
 
@@ -26,7 +26,7 @@ test("fetch must throw an error if the response's status is above 399", async ()
     await fetch('http://example.com')
 
     throw new Error('should have thrown already')
-  } catch (error) {
+  } catch (error: any) {
     expect(error.message).toBe(forbiddenResponse.statusText)
     expect(error.response).toEqual(forbiddenResponse)
   }

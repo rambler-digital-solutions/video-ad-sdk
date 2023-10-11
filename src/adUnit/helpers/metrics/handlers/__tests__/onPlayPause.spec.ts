@@ -5,8 +5,8 @@ const {pause, resume} = linearEvents
 
 test('onPlayPause must call the callback with start at the video start with pause when paused and with resume then the video gets resumed', () => {
   const callback = jest.fn()
-  const videoElement = document.createElement('VIDEO')
-  const disconnect = onPlayPause({videoElement}, callback)
+  const videoElement = document.createElement('video')
+  const disconnect = onPlayPause({videoElement} as any, callback)
 
   videoElement.dispatchEvent(new Event('play'))
   expect(callback).toHaveBeenCalledTimes(0)

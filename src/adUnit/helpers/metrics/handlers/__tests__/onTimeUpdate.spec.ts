@@ -5,10 +5,10 @@ import {adProgress} from '../../../../adUnitEvents'
 const {complete, firstQuartile, midpoint, start, thirdQuartile} = linearEvents
 
 describe('onTimeUpdate', () => {
-  let videoElement
+  let videoElement: HTMLVideoElement
 
   beforeEach(() => {
-    videoElement = document.createElement('VIDEO')
+    videoElement = document.createElement('video')
     Object.defineProperty(videoElement, 'duration', {
       value: 100,
       writable: true
@@ -20,12 +20,12 @@ describe('onTimeUpdate', () => {
   })
 
   afterEach(() => {
-    videoElement = null
+    ;(videoElement as any) = null
   })
 
   test('must call the callback with start, firstQuartile, midpoint, thirdQuartile and complete at the right order', () => {
     const callback = jest.fn()
-    const disconnect = onTimeUpdate({videoElement}, callback)
+    const disconnect = onTimeUpdate({videoElement} as any, callback)
 
     videoElement.currentTime = 1
     videoElement.dispatchEvent(new Event('timeupdate'))
@@ -108,7 +108,7 @@ describe('onTimeUpdate', () => {
 
   test('must rely on the ended event as a fallback for the timeupdate event for the complete event', () => {
     const callback = jest.fn()
-    const disconnect = onTimeUpdate({videoElement}, callback)
+    const disconnect = onTimeUpdate({videoElement} as any, callback)
 
     videoElement.currentTime = 1
     videoElement.dispatchEvent(new Event('timeupdate'))
@@ -139,7 +139,7 @@ describe('onTimeUpdate', () => {
   test('must not not call the cb with`complete` if already called', () => {
     const callback = jest.fn()
 
-    onTimeUpdate({videoElement}, callback)
+    onTimeUpdate({videoElement} as any, callback)
 
     videoElement.currentTime = 1
     videoElement.dispatchEvent(new Event('timeupdate'))

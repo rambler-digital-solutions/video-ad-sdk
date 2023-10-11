@@ -1,9 +1,9 @@
 import canBeShown from '../canBeShown'
 
-let videoElement
+let videoElement: HTMLVideoElement
 
 beforeEach(() => {
-  videoElement = document.createElement('VIDEO')
+  videoElement = document.createElement('video')
 
   Object.defineProperty(videoElement, 'currentTime', {
     value: 0,
@@ -17,7 +17,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  videoElement = null
+  ;(videoElement as any) = null
 })
 
 test('canBeShown must return true if the icon has no offset nor duration', () => {
@@ -58,7 +58,7 @@ test('canBeShown must return false if the current time is less than the duration
 
   expect(canBeShown(icon, videoElement)).toBe(false)
 
-  icon.offset = undefined
+  delete (icon as any).offset
   videoElement.currentTime = 2
 
   expect(canBeShown(icon, videoElement)).toBe(true)

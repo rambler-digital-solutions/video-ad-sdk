@@ -3,19 +3,16 @@ import loadScript from '../helpers/loadScript'
 import getContentDocument from '../helpers/getContentDocument'
 import supportsSrcdoc from '../helpers/supportsSrcdoc'
 
-let placeholder
+let placeholder: HTMLElement
 
 jest.mock('../helpers/supportsSrcdoc')
-jest.mock('../helpers/loadScript.js')
+jest.mock('../helpers/loadScript')
 
 describe('VideoAdContainer', () => {
   beforeEach(() => {
-    jsdom.reconfigure({
-      url: 'https://www.example.com/'
-    })
-    placeholder = document.createElement('DIV')
+    placeholder = document.createElement('div')
     document.body.appendChild(placeholder)
-    supportsSrcdoc.mockReturnValue(false)
+    ;(supportsSrcdoc as jest.Mock).mockReturnValue(false)
   })
 
   afterEach(() => {
@@ -23,12 +20,11 @@ describe('VideoAdContainer', () => {
   })
 
   test("must complain if you don't pass a placeholder element", () => {
-    expect(() => new VideoAdContainer()).toThrowError(TypeError)
+    expect(() => new VideoAdContainer(undefined as unknown as HTMLElement)).toThrowError(TypeError)
   })
 
   test('must use the passed videoElement', () => {
-    const videoElement = document.createElement('VIDEO')
-
+    const videoElement = document.createElement('video')
     const videoAdContainer = new VideoAdContainer(placeholder, videoElement)
 
     expect(videoAdContainer.videoElement).toBe(videoElement)
@@ -59,19 +55,19 @@ describe('VideoAdContainer', () => {
 
   describe('addScript', () => {
     test('must create an iframe and add the scripts to it', async () => {
-      loadScript.mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
+      (loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
       const src = 'http://example.com/resource'
-      const scriptOpts = {foo: 'bar'}
+      const scriptOpts: any = {foo: 'bar'}
       const videoAdContainer = new VideoAdContainer(placeholder)
 
       const adContainerElement = videoAdContainer.element
 
-      expect(adContainerElement.querySelector('IFRAME')).toBeNull()
+      expect(adContainerElement.querySelector('iframe')).toBeNull()
 
       const script = await videoAdContainer.addScript(src, scriptOpts)
-      const iframe = adContainerElement.querySelector('IFRAME')
-      const iframeBody = getContentDocument(iframe).body
+      const iframe = adContainerElement.querySelector('iframe') as HTMLIFrameElement
+      const iframeBody = getContentDocument(iframe)?.body
 
       expect(script).toBe('SCRIPT_MOCK')
 
@@ -87,7 +83,7 @@ describe('VideoAdContainer', () => {
     })
 
     test('must reuse the iframe to add scripts', async () => {
-      loadScript.mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
+      (loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
       const src = 'http://example.com/resource'
       const videoAdContainer = new VideoAdContainer(placeholder)
@@ -103,18 +99,18 @@ describe('VideoAdContainer', () => {
     })
 
     test('must set the execution context', async () => {
-      loadScript.mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
+      (loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
       const src = 'http://example.com/resource'
       const videoAdContainer = new VideoAdContainer(placeholder)
 
-      expect(videoAdContainer.executionContext).toBeNull()
+      expect(videoAdContainer.executionContext).toBeUndefined()
 
       const adContainerElement = videoAdContainer.element
 
       await videoAdContainer.addScript(src)
 
-      const iframe = adContainerElement.querySelector('IFRAME')
+      const iframe = adContainerElement.querySelector('iframe') as HTMLIFrameElement
 
       expect(videoAdContainer.executionContext).toBe(iframe.contentWindow)
     })
@@ -127,10 +123,10 @@ describe('VideoAdContainer', () => {
     videoAdContainer.addSlot(300, 200)
 
     expect(videoAdContainer.slotElement).toBeInstanceOf(Element)
-    expect(videoAdContainer.slotElement.tagName).toBe('DIV')
-    expect(videoAdContainer.slotElement.style.width).toBe('300px')
-    expect(videoAdContainer.slotElement.style.height).toBe('200px')
-    expect(videoAdContainer.slotElement.parentNode).toBe(adContainerElement)
+    expect(videoAdContainer.slotElement?.tagName).toBe('DIV')
+    expect(videoAdContainer.slotElement?.style.width).toBe('300px')
+    expect(videoAdContainer.slotElement?.style.height).toBe('200px')
+    expect(videoAdContainer.slotElement?.parentNode).toBe(adContainerElement)
   })
 
   test('destroy must remove the adContainer from the placeHolder', async () => {
@@ -158,7 +154,7 @@ describe('VideoAdContainer', () => {
 
     try {
       await videoAdContainer.addScript(src, {})
-    } catch (error) {
+    } catch (error: any) {
       expect(error.message).toBe('VideoAdContainer has been destroyed')
     }
   })
@@ -187,7 +183,7 @@ describe('VideoAdContainer', () => {
 
       const videoAdContainer = new VideoAdContainer(
         placeholder,
-        document.createElement('VIDEO')
+        document.createElement('video')
       )
 
       expect(videoAdContainer.isOriginalVideoElement).toBe(true)

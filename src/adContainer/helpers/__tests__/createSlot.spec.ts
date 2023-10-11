@@ -7,6 +7,6 @@ describe('createSlot', () => {
     expect(slot).toBeInstanceOf(HTMLDivElement)
     expect(slot).toMatchSnapshot()
 
-    slot.parentElement.removeChild(slot)
+    slot.parentElement?.removeChild(slot)
   })
 })

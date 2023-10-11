@@ -1,4 +1,5 @@
 import createVideoAdContainer from '../../../../adContainer/createVideoAdContainer'
+import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
 import addIcons from '../addIcons'
 import createResource from '../../resources/createResource'
 import canBeRendered from '../canBeRendered'
@@ -9,11 +10,11 @@ jest.mock('../canBeRendered')
 const waitFor = (element: HTMLElement, eventName: string): Promise<Event> =>
   new Promise<Event>((resolve) => element.addEventListener(eventName, resolve))
 
-let videoAdContainer
-let logger
+let videoAdContainer: VideoAdContainer
+let logger: any
 
 beforeEach(async () => {
-  videoAdContainer = await createVideoAdContainer(document.createElement('DIV'))
+  videoAdContainer = createVideoAdContainer(document.createElement('div'))
   logger = {error: jest.fn()}
 
   const {videoElement} = videoAdContainer
@@ -28,8 +29,8 @@ beforeEach(async () => {
     writable: true
   })
 
-  createResource.mockImplementation(() => {
-    const resourceElement = document.createElement('IMG')
+  ;(createResource as jest.Mock).mockImplementation(() => {
+    const resourceElement = document.createElement('img')
 
     resourceElement.classList.add('mock-icon-element')
 
@@ -41,16 +42,16 @@ beforeEach(async () => {
     return resourceElement
   })
 
-  canBeRendered.mockImplementation(() => true)
+  ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 })
 
 afterEach(() => {
-  videoAdContainer = null
+  ;(videoAdContainer as any) = null
   logger = null
 })
 
 test('addIcons must add the icons to the video ad container', async () => {
-  const icons = [
+  const icons: any[] = [
     {
       height: 20,
       width: 20,
@@ -78,7 +79,7 @@ test('addIcons must add the icons to the video ad container', async () => {
 })
 
 test('addIcons must not add the the icons whose offset is not meet yet', async () => {
-  const icons = [
+  const icons: any[] = [
     {
       height: 20,
       offset: 5000,
@@ -118,7 +119,7 @@ test('addIcons must not add the the icons whose offset is not meet yet', async (
 })
 
 test('addIcons must remove the icons once the duration is met', async () => {
-  const icons = [
+  const icons: any[] = [
     {
       duration: 5000,
       height: 20,
@@ -158,7 +159,7 @@ test('addIcons must remove the icons once the duration is met', async () => {
 })
 
 test('addIcons must return a remove function', async () => {
-  const icons = [
+  const icons: any[] = [
     {
       height: 20,
       width: 20,
@@ -191,7 +192,7 @@ test('addIcons must return a remove function', async () => {
 })
 
 test('addIcons must call onIconView hook the moment the icon gets added to the page', async () => {
-  const icons = [
+  const icons: any[] = [
     {
       height: 20,
       offset: 5000,

@@ -59,7 +59,7 @@ const compareBySequence = (itemA: ParsedXML, itemB: ParsedXML): number => {
  * @param parsedVast Parsed VAST xml.
  * @returns Array of ads or empty array.
  */
-export const getAds = (parsedVast: ParsedVast | null): ParsedAd[] => {
+export const getAds = (parsedVast?: ParsedVast): ParsedAd[] => {
   const vastElement = parsedVast && get(parsedVast, 'VAST')
   const ads = vastElement && getAll(vastElement, 'Ad')
 
@@ -74,39 +74,32 @@ export const getAds = (parsedVast: ParsedVast | null): ParsedAd[] => {
  * Gets the Error URI of the passed parsed VAST xml.
  *
  * @param parsedVast Parsed VAST xml.
- * @returns array of the Vast Error URI or `null` otherwise.
+ * @returns array of the Vast Error URI
  */
 export const getVastErrorURI = (
-  parsedVast: ParsedVast | null
-): VastMacro[] | null => {
+  parsedVast?: ParsedVast
+): Optional<VastMacro[]> => {
   const vastElement = parsedVast && get(parsedVast, 'VAST')
+  const errors = vastElement && getAll(vastElement, 'Error')
 
-  if (vastElement) {
-    const errors = getAll(vastElement, 'Error')
-
-    if (errors && errors.length > 0) {
-      return errors.map((error) => getText(error) ?? '').filter(Boolean)
-    }
+  if (errors && errors.length > 0) {
+    return errors.map((error) => getText(error) ?? '').filter(Boolean)
   }
-
-  return null
 }
 
 /**
  * Gets the sequence of the pod ad.
  *
  * @param ad Parsed ad definition object.
- * @returns The pod ad sequence number or `null`.
+ * @returns The pod ad sequence number.
  */
-export const getPodAdSequence = (ad: ParsedAd): number | null => {
+export const getPodAdSequence = (ad: ParsedAd): Optional<number> => {
   const sequenceString = getAttribute(ad, 'sequence')
   const sequence = sequenceString && parseInt(sequenceString, 10)
 
   if (typeof sequence === 'number' && !isNaN(sequence)) {
     return sequence
   }
-
-  return null
 }
 
 /**
@@ -123,7 +116,7 @@ export const isPodAd = (ad: ParsedAd): boolean => Boolean(getPodAdSequence(ad))
  * @param parsedVast Parsed VAST xml.
  * @returns Returns true if there is an ad pod in the array and false otherwise.
  */
-export const hasAdPod = (parsedVast: ParsedVast | null): boolean => {
+export const hasAdPod = (parsedVast?: ParsedVast): boolean => {
   const ads = getAds(parsedVast)
 
   return Array.isArray(ads) && ads.filter(isPodAd).length > 1
@@ -142,9 +135,9 @@ export const isAdPod = (vastChain: VastChain = []): boolean =>
  * Selects the first ad of the passed VAST. If the passed VAST response contains an ad pod it will return the first ad in the ad pod sequence.
  *
  * @param parsedVast Parsed VAST xml.
- * @returns First ad of the VAST xml or `null`.
+ * @returns First ad of the VAST xml.
  */
-export const getFirstAd = (parsedVast: ParsedVast | null): ParsedAd | null => {
+export const getFirstAd = (parsedVast?: ParsedVast): Optional<ParsedAd> => {
   const ads = getAds(parsedVast)
 
   if (Array.isArray(ads) && ads.length > 0) {
@@ -154,8 +147,6 @@ export const getFirstAd = (parsedVast: ParsedVast | null): ParsedAd | null => {
 
     return ads[0]
   }
-
-  return null
 }
 
 /**
@@ -164,7 +155,7 @@ export const getFirstAd = (parsedVast: ParsedVast | null): ParsedAd | null => {
  * @param ad VAST ad object.
  * @returns `true` if the ad contains a wrapper and `false` otherwise.
  */
-export const isWrapper = (ad: ParsedAd | null): boolean =>
+export const isWrapper = (ad?: ParsedAd): boolean =>
   Boolean(get(ad || ({} as ParsedXML), 'Wrapper'))
 
 /**
@@ -173,25 +164,21 @@ export const isWrapper = (ad: ParsedAd | null): boolean =>
  * @param ad VAST ad object.
  * @returns Returns `true` if the ad contains an Inline or `false` otherwise.
  */
-export const isInline = (ad: ParsedAd | null): boolean =>
+export const isInline = (ad?: ParsedAd): boolean =>
   Boolean(get(ad || ({} as ParsedXML), 'Inline'))
 
 /**
  * Returns the VASTAdTagURI from the wrapper ad.
  *
  * @param ad VAST ad object.
- * @returns Returns the VASTAdTagURI from the wrapper ad or `null` otherwise.
+ * @returns Returns the VASTAdTagURI from the wrapper ad.
  */
-export const getVASTAdTagURI = (ad: ParsedAd): string | null => {
+export const getVASTAdTagURI = (ad: ParsedAd): Optional<string> => {
   const wrapperElement = get(ad, 'Wrapper')
   const vastAdTagURIElement =
     wrapperElement && get(wrapperElement, 'VastAdTagUri')
 
-  if (vastAdTagURIElement) {
-    return getText(vastAdTagURIElement) || null
-  }
-
-  return null
+  return vastAdTagURIElement && getText(vastAdTagURIElement)
 }
 
 /**
@@ -230,29 +217,24 @@ export const getWrapperOptions = (ad: ParsedAd): WrapperOptions => {
  * Gets the Error URI of the passed ad.
  *
  * @param ad VAST ad object.
- * @returns array of the Vast ad Error URI or `null` otherwise.
+ * @returns array of the Vast ad Error URI.
  */
-export const getAdErrorURI = (ad: ParsedAd): string[] | null => {
+export const getAdErrorURI = (ad: ParsedAd): Optional<string[]> => {
   const adTypeElement = ad && getFirstChild(ad)
+  const errors = adTypeElement && getAll(adTypeElement, 'Error')
 
-  if (adTypeElement) {
-    const errors = getAll(adTypeElement, 'Error')
-
-    if (errors && errors.length > 0) {
-      return errors.map((error) => getText(error) ?? '').filter(Boolean)
-    }
+  if (errors && errors.length > 0) {
+    return errors.map((error) => getText(error) ?? '').filter(Boolean)
   }
-
-  return null
 }
 
 /**
  * Gets array of the Impression URI of the passed ad.
  *
  * @param ad VAST ad object.
- * @returns array of the Vast ad Impression URI or `null` otherwise.
+ * @returns array of the Vast ad Impression URI.
  */
-export const getImpression = (ad: ParsedAd): string[] | null => {
+export const getImpression = (ad: ParsedAd): Optional<string[]> => {
   const adTypeElement = ad && getFirstChild(ad)
   const impressions = adTypeElement && getAll(adTypeElement, 'Impression')
 
@@ -261,17 +243,15 @@ export const getImpression = (ad: ParsedAd): string[] | null => {
       .map((impression: ParsedXML) => getText(impression) ?? '')
       .filter(Boolean)
   }
-
-  return null
 }
 
 /**
  * Gets array of the Viewable URI of the passed ad.
  *
  * @param ad VAST ad object.
- * @returns array of the Vast ad Viewable URI or `null` otherwise.
+ * @returns array of the Vast ad Viewable URI.
  */
-export const getViewable = (ad: ParsedAd): string[] | null => {
+export const getViewable = (ad: ParsedAd): Optional<string[]> => {
   const adTypeElement = ad && getFirstChild(ad)
   const viewableImpression =
     adTypeElement && get(adTypeElement, 'ViewableImpression')
@@ -283,17 +263,15 @@ export const getViewable = (ad: ParsedAd): string[] | null => {
       .map((element) => getText(element) ?? '')
       .filter(Boolean)
   }
-
-  return null
 }
 
 /**
  * Gets array of the NotViewable URI of the passed ad.
  *
  * @param ad VAST ad object.
- * @returns array of the Vast ad NotViewable URI or `null` otherwise.
+ * @returns array of the Vast ad NotViewable URI.
  */
-export const getNotViewable = (ad: ParsedAd): string[] | null => {
+export const getNotViewable = (ad: ParsedAd): Optional<string[]> => {
   const adTypeElement = ad && getFirstChild(ad)
   const viewableImpression =
     adTypeElement && get(adTypeElement, 'ViewableImpression')
@@ -305,17 +283,15 @@ export const getNotViewable = (ad: ParsedAd): string[] | null => {
       .map((element) => getText(element) ?? '')
       .filter(Boolean)
   }
-
-  return null
 }
 
 /**
  * Gets array of the ViewUndetermined URI of the passed ad.
  *
  * @param ad VAST ad object.
- * @returns array of the Vast ad ViewUndetermined URI or `null` otherwise.
+ * @returns array of the Vast ad ViewUndetermined URI.
  */
-export const getViewUndetermined = (ad: ParsedAd): string[] | null => {
+export const getViewUndetermined = (ad: ParsedAd): Optional<string[]> => {
   const adTypeElement = ad && getFirstChild(ad)
   const viewableImpression =
     adTypeElement && get(adTypeElement, 'ViewableImpression')
@@ -327,110 +303,98 @@ export const getViewUndetermined = (ad: ParsedAd): string[] | null => {
       .map((element) => getText(element) ?? '')
       .filter(Boolean)
   }
-
-  return null
 }
 
 /**
  * Gets the ad's MediaFiles.
  *
  * @param ad VAST ad object.
- * @returns array of media files or null
+ * @returns array of media files
  */
-export const getMediaFiles = (ad: ParsedAd): MediaFile[] | null => {
+export const getMediaFiles = (ad: ParsedAd): Optional<MediaFile[]> => {
   const creativeElement = ad && getLinearCreative(ad)
+  const universalAdIdElement = creativeElement && get(creativeElement, 'UniversalAdId')
+  const universalAdId = universalAdIdElement && getText(universalAdIdElement)
+  const linearElement = creativeElement && get(creativeElement, 'Linear')
+  const mediaFilesElement = linearElement && get(linearElement, 'MediaFiles')
+  const mediaFileElements =
+    mediaFilesElement && getAll(mediaFilesElement, 'MediaFile')
 
-  if (creativeElement) {
-    const universalAdIdElement = get(creativeElement, 'UniversalAdId')
-    const universalAdId =
-      (universalAdIdElement && getText(universalAdIdElement)) || null
-    const linearElement = get(creativeElement, 'Linear')
-    const mediaFilesElement = linearElement && get(linearElement, 'MediaFiles')
-    const mediaFileElements =
-      mediaFilesElement && getAll(mediaFilesElement, 'MediaFile')
+  if (mediaFileElements && mediaFileElements.length > 0) {
+    return mediaFileElements.map((mediaFileElement: ParsedXML) => {
+      const src = getText(mediaFileElement)
+      const {
+        apiFramework,
+        bitrate,
+        codec,
+        delivery,
+        height,
+        id,
+        maintainAspectRatio,
+        maxBitrate,
+        minBitrate,
+        scalable,
+        type,
+        width
+      } = getAttributes(mediaFileElement)
 
-    if (mediaFileElements && mediaFileElements.length > 0) {
-      return mediaFileElements.map((mediaFileElement: ParsedXML) => {
-        const src = getText(mediaFileElement)
-        const {
-          apiFramework,
-          bitrate,
-          codec,
-          delivery,
-          height,
-          id,
-          maintainAspectRatio,
-          maxBitrate,
-          minBitrate,
-          scalable,
-          type,
-          width
-        } = getAttributes(mediaFileElement)
-
-        return {
-          apiFramework,
-          bitrate,
-          codec,
-          delivery,
-          height,
-          id,
-          maintainAspectRatio,
-          maxBitrate,
-          minBitrate,
-          scalable,
-          src,
-          type,
-          universalAdId,
-          width
-        }
-      })
-    }
+      return {
+        apiFramework,
+        bitrate,
+        codec,
+        delivery,
+        height,
+        id,
+        maintainAspectRatio,
+        maxBitrate,
+        minBitrate,
+        scalable,
+        src,
+        type,
+        universalAdId,
+        width
+      }
+    })
   }
-
-  return null
 }
 
 /**
  * Gets the ad's InteractiveFiles. That were added with the `InteractiveCreativeFile` tag.
  *
  * @param ad VAST ad object.
- * @returns array of media files or null
+ * @returns array of media files.
  */
 export const getInteractiveCreativeFiles = (
   ad: ParsedAd
-): InteractiveFile[] | null => {
+): Optional<InteractiveFile[]> => {
   const creativeElement = ad && getLinearCreative(ad)
 
-  if (creativeElement) {
-    const linearElement = get(creativeElement, 'Linear')
-    const mediaFilesElement = linearElement && get(linearElement, 'MediaFiles')
-    const interactiveElements =
-      mediaFilesElement && getAll(mediaFilesElement, 'InteractiveCreativeFile')
+  const linearElement = creativeElement && get(creativeElement, 'Linear')
+  const mediaFilesElement = linearElement && get(linearElement, 'MediaFiles')
+  const interactiveElements =
+    mediaFilesElement && getAll(mediaFilesElement, 'InteractiveCreativeFile')
 
-    if (interactiveElements && interactiveElements.length > 0) {
-      return interactiveElements.map((interactiveElement: ParsedXML) => {
-        const {apiFramework, type} = getAttributes(interactiveElement)
-        const src = getText(interactiveElement)
+  if (interactiveElements && interactiveElements.length > 0) {
+    return interactiveElements.map((interactiveElement: ParsedXML) => {
+      const {apiFramework, type} = getAttributes(interactiveElement)
+      const src = getText(interactiveElement)
 
-        return {
-          apiFramework,
-          src,
-          type
-        }
-      })
-    }
+      return {
+        apiFramework,
+        src,
+        type
+      }
+    })
   }
-
-  return null
 }
 
 /**
  * Gets all the ad's InteractiveFiles.
  *
  * @param ad VAST ad object.
- * @returns array of media files or null
+ * @returns array of media files
  */
-export const getInteractiveFiles = (ad: ParsedAd): InteractiveFile[] | null => {
+export const getInteractiveFiles = (ad: ParsedAd): Optional<InteractiveFile[]> => {
   let interactiveFiles = getInteractiveCreativeFiles(ad)
 
   if (interactiveFiles) {
@@ -452,20 +416,13 @@ export const getInteractiveFiles = (ad: ParsedAd): InteractiveFile[] | null => {
       return interactiveFiles
     }
   }
-
-  return null
 }
 
-const getVideoClicksElement = (ad: ParsedAd): ParsedXML | null => {
+const getVideoClicksElement = (ad: ParsedAd): Optional<ParsedXML> => {
   const creativeElement = ad && getLinearCreative(ad)
   const linearElement = creativeElement && get(creativeElement, 'Linear')
-  const videoClicksElement = linearElement && get(linearElement, 'VideoClicks')
 
-  if (videoClicksElement) {
-    return videoClicksElement
-  }
-
-  return null
+  return linearElement && get(linearElement, 'VideoClicks')
 }
 
 /**
@@ -474,16 +431,12 @@ const getVideoClicksElement = (ad: ParsedAd): ParsedXML | null => {
  * @param ad VAST ad object.
  * @returns clickthrough macro
  */
-export const getClickThrough = (ad: ParsedAd): VastMacro | null => {
+export const getClickThrough = (ad: ParsedAd): Optional<VastMacro> => {
   const videoClicksElement = getVideoClicksElement(ad)
   const clickThroughElement =
     videoClicksElement && get(videoClicksElement, 'ClickThrough')
 
-  if (clickThroughElement) {
-    return getText(clickThroughElement)
-  }
-
-  return null
+  return clickThroughElement && getText(clickThroughElement)
 }
 
 /**
@@ -492,7 +445,7 @@ export const getClickThrough = (ad: ParsedAd): VastMacro | null => {
  * @param ad VAST ad object.
  * @returns click tracking macro
  */
-export const getClickTracking = (ad: ParsedAd): VastMacro[] | null => {
+export const getClickTracking = (ad: ParsedAd): Optional<VastMacro[]> => {
   const videoClicksElement = ad && getVideoClicksElement(ad)
   const clickTrackingElements =
     videoClicksElement && getAll(videoClicksElement, 'ClickTracking')
@@ -502,8 +455,6 @@ export const getClickTracking = (ad: ParsedAd): VastMacro[] | null => {
       .map((element) => getText(element) ?? '')
       .filter(Boolean)
   }
-
-  return null
 }
 
 /**
@@ -512,7 +463,7 @@ export const getClickTracking = (ad: ParsedAd): VastMacro[] | null => {
  * @param ad VAST ad object.
  * @returns click tracking macro
  */
-export const getCustomClick = (ad: ParsedAd): VastMacro[] | null => {
+export const getCustomClick = (ad: ParsedAd): Optional<VastMacro[]> => {
   const videoClicksElement = getVideoClicksElement(ad)
   const customClickElements =
     videoClicksElement && getAll(videoClicksElement, 'CustomClick')
@@ -522,36 +473,30 @@ export const getCustomClick = (ad: ParsedAd): VastMacro[] | null => {
       .map((element) => getText(element) ?? '')
       .filter(Boolean)
   }
-
-  return null
 }
 
 /**
  * Gets the skipoffset.
  *
  * @param ad VAST ad object.
- * @returns the time offset in milliseconds or a string with the percentage or null
+ * @returns the time offset in milliseconds or a string with the percentage
  */
-export const getSkipOffset = (ad: ParsedAd): ParsedOffset | null => {
+export const getSkipOffset = (ad: ParsedAd): Optional<ParsedOffset> => {
   const creativeElement = ad && getLinearCreative(ad)
   const linearElement = creativeElement && get(creativeElement, 'Linear')
   const skipoffset = linearElement && getAttribute(linearElement, 'skipoffset')
 
-  if (skipoffset) {
-    return parseOffset(skipoffset)
-  }
-
-  return null
+  return skipoffset && parseOffset(skipoffset)
 }
 
-const getLinearContent = (xml: string): string | null => {
+const getLinearContent = (xml: string): Optional<string> => {
   const linearRegex = /<Linear([\s\S]*)<\/Linear/gm
   const result = linearRegex.exec(xml)
 
-  return result?.[1] ?? null
+  return result?.[1]
 }
 
-const getAdParametersContent = (xml: string): string | null => {
+const getAdParametersContent = (xml: string): Optional<string> => {
   const paramsRegex = /<AdParameters[\s\w="]*>([\s\S]*)<\/AdParameters>/gm
   const result = paramsRegex.exec(xml)
 
@@ -559,10 +504,9 @@ const getAdParametersContent = (xml: string): string | null => {
     result?.[1]
       .replace(/[\n\s]*<!\[CDATA\[[\n\s]*/, '')
       .replace(/[\n\s]*\]\]>[\n\s]*$/, '')
-
       // unescape nested CDATA
       .replace(/\]\]\]\]><!\[CDATA\[>/, ']]>')
-      .trim() || null
+      .trim()
   )
 }
 

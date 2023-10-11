@@ -1,5 +1,6 @@
 import {parseXml} from '../../xml'
 import {ErrorCode} from '../../tracker'
+import {ParsedAd} from '../../types'
 import {getAds, getFirstAd} from '../../vastSelectors'
 import {
   noAdParsedXML,
@@ -18,24 +19,31 @@ import {
 import requestAd from '../requestAd'
 import {markAdAsRequested, unmarkAdAsRequested} from '../helpers/adUtils'
 
-jest.useFakeTimers()
-
 describe('requestAd', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+    jest.spyOn(global, 'setTimeout')
+  })
+
+  afterEach(() => {
+    jest.clearAllTimers()
+  })
+
   test('must return a chain with errorcode 302 if the wrapperLimit is reached', async () => {
     const vastChain = await requestAd(
       'http://adtag.test.example.com',
       {wrapperLimit: 1},
-      [{}, {}]
+      [{}, {}] as any
     )
     const lastVastResponse = vastChain[0]
 
     expect(lastVastResponse).toEqual({
-      ad: null,
+      ad: undefined,
       error: expect.any(Error),
       errorCode: ErrorCode.VAST_TOO_MANY_REDIRECTS,
-      parsedXML: null,
+      parsedXML: undefined,
       requestTag: 'http://adtag.test.example.com',
-      XML: null
+      XML: undefined
     })
   })
 
@@ -47,16 +55,16 @@ describe('requestAd', () => {
       {},
       {},
       {}
-    ])
+    ] as any)
     const lastVastResponse = vastChain[0]
 
     expect(lastVastResponse).toEqual({
-      ad: null,
+      ad: undefined,
       error: expect.any(Error),
       errorCode: ErrorCode.VAST_TOO_MANY_REDIRECTS,
-      parsedXML: null,
+      parsedXML: undefined,
       requestTag: 'http://adtag.test.example.com',
-      XML: null
+      XML: undefined
     })
   })
 
@@ -69,12 +77,12 @@ describe('requestAd', () => {
     const lastVastResponse = vastChain[0]
 
     expect(lastVastResponse).toEqual({
-      ad: null,
+      ad: undefined,
       error: fetchError,
       errorCode: ErrorCode.VAST_NONLINEAR_LOADING_FAILED,
-      parsedXML: null,
+      parsedXML: undefined,
       requestTag: 'http://adtag.test.example.com',
-      XML: null
+      XML: undefined
     })
   })
 
@@ -87,27 +95,26 @@ describe('requestAd', () => {
       }
     }
 
-    global.fetch = jest.fn(() => Promise.resolve(response))
+    global.fetch = jest.fn(() => Promise.resolve(response as unknown as Response))
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
     const lastVastResponse = vastChain[0]
 
     expect(lastVastResponse).toEqual({
-      ad: null,
+      ad: undefined,
       error: noTextError,
       errorCode: ErrorCode.VAST_NONLINEAR_LOADING_FAILED,
-      parsedXML: null,
+      parsedXML: undefined,
       requestTag: 'http://adtag.test.example.com',
       response,
-      XML: null
+      XML: undefined
     })
   })
 
   test('must return a chain with error code 100 if there is a problem parsing the xml', async () => {
-    const response = {
+    const response = new Response('not xml', {
       status: 200,
-      text: () => 'not xml'
-    }
+    })
 
     global.fetch = jest.fn(() => Promise.resolve(response))
 
@@ -115,10 +122,10 @@ describe('requestAd', () => {
     const lastVastResponse = vastChain[0]
 
     expect(lastVastResponse).toEqual({
-      ad: null,
+      ad: undefined,
       error: expect.any(Error),
       errorCode: ErrorCode.VAST_XML_PARSING_ERROR,
-      parsedXML: null,
+      parsedXML: undefined,
       requestTag: 'http://adtag.test.example.com',
       response,
       XML: 'not xml'
@@ -126,10 +133,9 @@ describe('requestAd', () => {
   })
 
   test('must return a chain with error 303 if there is no ad in the VAST response', async () => {
-    const response = {
+    const response = new Response(vastNoAdXML, {
       status: 200,
-      text: () => vastNoAdXML
-    }
+    })
 
     global.fetch = jest.fn(() => Promise.resolve(response))
 
@@ -137,7 +143,7 @@ describe('requestAd', () => {
     const lastVastResponse = vastChain[0]
 
     expect(lastVastResponse).toEqual({
-      ad: null,
+      ad: undefined,
       error: expect.any(Error),
       errorCode: ErrorCode.VAST_NO_ADS_AFTER_WRAPPER,
       parsedXML: noAdParsedXML,
@@ -148,20 +154,20 @@ describe('requestAd', () => {
   })
 
   test('must do do the wrapper chain requests until it finds an inline ad', async () => {
-    const wrapperResponse = {
+    const wrapperResponse = new Response( vastWrapperXML, {
       status: 200,
-      text: () => vastWrapperXML
-    }
+    })
 
-    const inlineResponse = {
+    const middleWrapperResponse = wrapperResponse.clone()
+
+    const inlineResponse = new Response(vastInlineXML, {
       status: 200,
-      text: () => vastInlineXML
-    }
+    })
 
     global.fetch = jest
       .fn()
       .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
-      .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
+      .mockImplementationOnce(() => Promise.resolve(middleWrapperResponse))
       .mockImplementationOnce(() => Promise.resolve(inlineResponse))
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
@@ -172,7 +178,6 @@ describe('requestAd', () => {
     expect(vastChain).toEqual([
       {
         ad: inlineAd,
-        errorCode: null,
         parsedXML: inlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         response: inlineResponse,
@@ -180,15 +185,13 @@ describe('requestAd', () => {
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
-        response: wrapperResponse,
+        response: middleWrapperResponse,
         XML: vastWrapperXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'http://adtag.test.example.com',
         response: wrapperResponse,
@@ -201,10 +204,9 @@ describe('requestAd', () => {
   })
 
   test('must set errorCode 101 if neither wrapper neither inline can be find inside the ad', async () => {
-    const invalidVastResponse = {
+    const invalidVastResponse = new Response(vastInvalidXML, {
       status: 200,
-      text: () => vastInvalidXML
-    }
+    })
 
     global.fetch = jest
       .fn()
@@ -232,24 +234,21 @@ describe('requestAd', () => {
     const startChain = [
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'http://adtag.test.example.com',
         XML: vastWrapperXML
       }
     ]
 
-    const podResponse = {
+    const podResponse = new Response(vastPodXML, {
       status: 200,
-      text: () => vastPodXML
-    }
+    })
 
     global.fetch = jest
       .fn()
@@ -260,7 +259,7 @@ describe('requestAd', () => {
       {allowMultipleAds: false},
       startChain
     )
-    const firstPodAd = getFirstAd(podParsedXML)
+    const firstPodAd = getFirstAd(podParsedXML) as ParsedAd
 
     markAdAsRequested(firstPodAd)
 
@@ -276,14 +275,12 @@ describe('requestAd', () => {
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'http://adtag.test.example.com',
         XML: vastWrapperXML
@@ -297,16 +294,14 @@ describe('requestAd', () => {
       'allowMultipleAds="false"'
     )
     const parsedWrapperXML = parseXml(newWrapperXML)
-    const newWrapperAd = getFirstAd(parsedWrapperXML)
-    const wrapperResponse = {
+    const newWrapperAd = getFirstAd(parsedWrapperXML) as ParsedAd
+    const wrapperResponse = new Response(newWrapperXML, {
       status: 200,
-      text: () => newWrapperXML
-    }
+    })
 
-    const podResponse = {
+    const podResponse = new Response(vastPodXML, {
       status: 200,
-      text: () => vastPodXML
-    }
+    })
 
     global.fetch = jest
       .fn()
@@ -314,7 +309,7 @@ describe('requestAd', () => {
       .mockImplementationOnce(() => Promise.resolve(podResponse))
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
-    const firstPodAd = getFirstAd(podParsedXML)
+    const firstPodAd = getFirstAd(podParsedXML) as ParsedAd
 
     markAdAsRequested(firstPodAd)
     markAdAsRequested(newWrapperAd)
@@ -331,7 +326,6 @@ describe('requestAd', () => {
       },
       {
         ad: newWrapperAd,
-        errorCode: null,
         parsedXML: parsedWrapperXML,
         requestTag: 'http://adtag.test.example.com',
         response: wrapperResponse,
@@ -346,16 +340,14 @@ describe('requestAd', () => {
       'followAdditionalWrappers="false"'
     )
     const parsedWrapperXML = parseXml(newWrapperXML)
-    const newWrapperAd = getFirstAd(parsedWrapperXML)
-    const wrapperResponse = {
+    const newWrapperAd = getFirstAd(parsedWrapperXML) as ParsedAd
+    const wrapperResponse = new Response(newWrapperXML, {
       status: 200,
-      text: () => newWrapperXML
-    }
+    })
 
-    const anotherWrapperResponse = {
+    const anotherWrapperResponse = new Response(vastWrapperXML, {
       status: 200,
-      text: () => vastWrapperXML
-    }
+    })
 
     global.fetch = jest
       .fn()
@@ -379,7 +371,6 @@ describe('requestAd', () => {
       },
       {
         ad: newWrapperAd,
-        errorCode: null,
         parsedXML: parsedWrapperXML,
         requestTag: 'http://adtag.test.example.com',
         response: wrapperResponse,
@@ -389,7 +380,7 @@ describe('requestAd', () => {
   })
 
   describe('with timeout', () => {
-    let origDateNow
+    let origDateNow: typeof Date.now
 
     beforeEach(() => {
       origDateNow = Date.now
@@ -401,28 +392,28 @@ describe('requestAd', () => {
     })
 
     test('must update the timeout for each wrapper chain', async () => {
-      setTimeout.mockClear()
+      ;(setTimeout as unknown as jest.Mock).mockClear()
 
-      const wrapperResponse = {
+      const wrapperResponse = new Response(vastWrapperXML, {
         status: 200,
-        text: () => vastWrapperXML
-      }
+      })
 
-      const inlineResponse = {
+      const middleWrapperResponse = wrapperResponse.clone()
+
+      const inlineResponse = new Response(vastInlineXML, {
         status: 200,
-        text: () => vastInlineXML
-      }
+      })
 
       global.fetch = jest
         .fn()
         .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
-        .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
+        .mockImplementationOnce(() => Promise.resolve(middleWrapperResponse))
         .mockImplementationOnce(() => Promise.resolve(inlineResponse))
 
-      Date.now.mockReturnValueOnce(1000)
-      Date.now.mockReturnValueOnce(1100)
-      Date.now.mockReturnValueOnce(1200)
-      Date.now.mockReturnValueOnce(1300)
+      ;(Date.now as jest.Mock).mockReturnValueOnce(1000)
+      ;(Date.now as jest.Mock).mockReturnValueOnce(1100)
+      ;(Date.now as jest.Mock).mockReturnValueOnce(1200)
+      ;(Date.now as jest.Mock).mockReturnValueOnce(1300)
 
       const vastChain = await requestAd('http://adtag.test.example.com', {
         timeout: 1000
@@ -434,7 +425,6 @@ describe('requestAd', () => {
       expect(vastChain).toEqual([
         {
           ad: inlineAd,
-          errorCode: null,
           parsedXML: inlineParsedXML,
           requestTag: 'https://test.example.com/vastadtaguri',
           response: inlineResponse,
@@ -442,15 +432,13 @@ describe('requestAd', () => {
         },
         {
           ad: wrapperAd,
-          errorCode: null,
           parsedXML: wrapperParsedXML,
           requestTag: 'https://test.example.com/vastadtaguri',
-          response: wrapperResponse,
+          response: middleWrapperResponse,
           XML: vastWrapperXML
         },
         {
           ad: wrapperAd,
-          errorCode: null,
           parsedXML: wrapperParsedXML,
           requestTag: 'http://adtag.test.example.com',
           response: wrapperResponse,
@@ -468,13 +456,14 @@ describe('requestAd', () => {
     })
 
     test('must set errorCode 301 if the request timed out', async () => {
-      setTimeout.mockClear()
+      ;(setTimeout as unknown as jest.Mock).mockClear()
+
       global.fetch = jest
         .fn()
         .mockImplementationOnce(() => new Promise(() => {}))
 
-      Date.now.mockReturnValueOnce(1000)
-      Date.now.mockReturnValueOnce(1100)
+      ;(Date.now as jest.Mock).mockReturnValueOnce(1000)
+      ;(Date.now as jest.Mock).mockReturnValueOnce(1100)
 
       const vastChainPromise = requestAd('http://adtag.test.example.com', {
         timeout: 1000
@@ -486,12 +475,12 @@ describe('requestAd', () => {
 
       expect(vastChain).toEqual([
         {
-          ad: null,
+          ad: undefined,
           error: expect.any(Error),
           errorCode: ErrorCode.VAST_LOAD_TIMEOUT,
-          parsedXML: null,
+          parsedXML: undefined,
           requestTag: 'http://adtag.test.example.com',
-          XML: null
+          XML: undefined
         }
       ])
 

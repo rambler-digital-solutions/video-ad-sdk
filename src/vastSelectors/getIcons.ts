@@ -32,12 +32,12 @@ const getIconAttributes = (iconElement: ParsedXML): VastIcon => {
   } = getAttributes(iconElement)
 
   return {
-    duration: duration && parseTime(duration) || null,
-    height: (height && formatSize(height)) || null,
-    offset: offset && parseTime(offset) || null,
+    duration: duration && parseTime(duration) || undefined,
+    height: height && formatSize(height) || undefined,
+    offset: offset && parseTime(offset) || undefined,
     program,
-    pxratio: (pxratio && parseInt(pxratio, 10)) || null,
-    width: (width && formatSize(width)) || null,
+    pxratio: pxratio && parseInt(pxratio, 10) || undefined,
+    width: width && formatSize(width) || undefined,
     xPosition: xPosition && formatPosition(xPosition),
     yPosition: yPosition && formatPosition(yPosition)
   }
@@ -105,7 +105,7 @@ const getIconClicks = (iconElement: ParsedXML): VastIcon => {
  * @param ad VAST ad object.
  * @returns Array of VAST icon definitions
  */
-const getIcons = (ad: ParsedAd): VastIcon[] | null => {
+const getIcons = (ad: ParsedAd): Optional<VastIcon[]> => {
   const linearCreativeElement = ad && getLinearCreative(ad)
   const linearElement =
     linearCreativeElement && get(linearCreativeElement, 'linear')
@@ -120,8 +120,6 @@ const getIcons = (ad: ParsedAd): VastIcon[] | null => {
       ...getIconClicks(iconElement)
     }))
   }
-
-  return null
 }
 
 export default getIcons

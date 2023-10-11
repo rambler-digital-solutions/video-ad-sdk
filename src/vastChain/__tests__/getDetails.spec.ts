@@ -9,33 +9,31 @@ import {
   noAdParsedXML
 } from '../../../fixtures'
 import {ErrorCode} from '../../tracker'
+import {VastChain} from '../../types'
 import getDetails from '../getDetails'
 
 describe('getDetails', () => {
-  let vastChain
-  let inlineVastChain
-  let noInlineVastChain
-  let emptyVastChain
+  let vastChain: VastChain
+  let inlineVastChain: VastChain
+  let noInlineVastChain: VastChain
+  let emptyVastChain: VastChain
 
   beforeEach(() => {
     vastChain = [
       {
         ad: inlineAd,
-        errorCode: null,
         parsedXML: inlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastInlineXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'http://adtag.test.example.com',
         XML: vastWrapperXML
@@ -300,7 +298,7 @@ describe('getDetails', () => {
         {
           ad: undefined,
           errorCode: ErrorCode.UNKNOWN_ERROR,
-          parsedXML: '',
+          parsedXML: '' as any,
           requestTag: 'http://adtag.test.example.com',
           XML: vastNoAdXML
         }

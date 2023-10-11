@@ -3,7 +3,7 @@ import createIframeResource from '../createIframeResource'
 import createStaticResource from '../createStaticResource'
 import createResource from '../createResource'
 
-const mockResource = document.createElement('DIV')
+const mockResource = document.createElement('div')
 
 jest.mock('../createHtmlResource', () => jest.fn(() => mockResource))
 jest.mock('../createIframeResource', () => jest.fn(() => mockResource))

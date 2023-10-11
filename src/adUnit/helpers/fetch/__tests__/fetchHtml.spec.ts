@@ -1,14 +1,14 @@
 import fetchHtml from '../fetchHtml'
+
 ;['text/plain', 'text/html'].forEach((contentType) => {
   test(`fetchHtml must resolve with the html fragment with content-type ${contentType}`, async () => {
     const htmlFragment = '<div></div>'
-    const successResponse = {
+    const successResponse = new Response(htmlFragment, {
       headers: {
-        get: () => contentType
+        'content-type': contentType
       },
-      status: 200,
-      text: () => htmlFragment
-    }
+      status: 200
+    })
 
     global.fetch = jest.fn(() => Promise.resolve(successResponse))
 
@@ -21,19 +21,19 @@ import fetchHtml from '../fetchHtml'
 test("fetchHtml must throw an error if the response's status is above 399", async () => {
   expect.assertions(2)
 
-  const forbiddenResponse = {
+  const forbiddenResponse = new Response(null, {
     headers: {
-      get: () => 'text/plain'
+      'content-type': 'text/plain'
     },
     status: 403,
     statusText: 'forbidden request'
-  }
+  })
 
   global.fetch = jest.fn(() => Promise.resolve(forbiddenResponse))
 
   try {
     await fetchHtml('http://example.com')
-  } catch (error) {
+  } catch (error: any) {
     expect(error.message).toBe(forbiddenResponse.statusText)
     expect(error.response).toEqual(forbiddenResponse)
   }
@@ -43,19 +43,18 @@ test("fetchHtml must throw an error if the response's Content-Type is not valid"
   expect.assertions(2)
 
   const htmlFragment = '<div></div>'
-  const invalidResponse = {
+  const invalidResponse = new Response(htmlFragment, {
     headers: {
-      get: () => 'text/json'
+       'content-type': 'text/json'
     },
-    status: 200,
-    text: () => htmlFragment
-  }
+    status: 200
+  })
 
   global.fetch = jest.fn(() => Promise.resolve(invalidResponse))
 
   try {
     await fetchHtml('http://example.com')
-  } catch (error) {
+  } catch (error: any) {
     expect(error.message).toBe(
       'fetchHtml error, invalid Content-Type text/json'
     )

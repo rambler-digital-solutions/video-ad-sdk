@@ -1,5 +1,5 @@
 import {get, getFirstChild, getText, getAttribute} from '../xml'
-import {ParsedXML, ParsedAd, VastChain, VastChainDetails} from '../types'
+import {ParsedXML, ParsedAd, VastChain, VastChainDetails, MediaFile} from '../types'
 import getLinearCreative from '../vastSelectors/helpers/getLinearCreative'
 import {
   isInline,
@@ -11,40 +11,32 @@ import {
 } from '../vastSelectors'
 import parseTime from '../vastSelectors/helpers/parseTime'
 
-const getAdSystem = (ad: ParsedAd): string | null => {
+const getAdSystem = (ad: ParsedAd): Optional<string> => {
   const adTypeElement = getFirstChild(ad)
   const element = adTypeElement && get(adTypeElement, 'AdSystem')
 
-  if (element) {
-    return getText(element)
-  }
-
-  return null
+  return element && getText(element)
 }
 
 const getSubElementValue = (
   parentElement: ParsedXML,
   tagName: string
-): string | null => {
+): Optional<string> => {
   const element = parentElement && get(parentElement, tagName)
 
-  if (element) {
-    return getText(element)
-  }
-
-  return null
+  return element && getText(element)
 }
 
-const getPricingElement = (ad: ParsedAd): ParsedXML | null => {
+const getPricingElement = (ad: ParsedAd): Optional<ParsedXML> => {
   const adTypeElement = getFirstChild(ad)
 
   return adTypeElement && get(adTypeElement, 'Pricing')
 }
 
 interface Pricing {
-  pricing?: string | null
-  pricingCurrency?: string | null
-  pricingModel?: string | null
+  pricing?: string
+  pricingCurrency?: string
+  pricingModel?: string
 }
 
 const getPricing = (vastChain: VastChain): Pricing => {
@@ -67,11 +59,11 @@ const getPricing = (vastChain: VastChain): Pricing => {
 }
 
 interface Category {
-  category?: string | null
-  categoryAuthority?: string | null
+  category?: string
+  categoryAuthority?: string
 }
 
-const getCategory = (ad: ParsedAd | null): Category => {
+const getCategory = (ad?: ParsedAd): Category => {
   const inLineElement = ad && get(ad, 'InLine')
   const categoryElement = inLineElement && get(inLineElement, 'Category')
 
@@ -85,7 +77,7 @@ const getCategory = (ad: ParsedAd | null): Category => {
   return {}
 }
 
-const getVastVersion = (parsedVast: ParsedXML | null): string | null => {
+const getVastVersion = (parsedVast?: ParsedXML): Optional<string> => {
   const vastElement = parsedVast && get(parsedVast, 'VAST')
 
   if (vastElement) {
@@ -114,37 +106,37 @@ const getCreativeAdIds = (creatives: ParsedXML[]): string[] =>
     .map((creative) => creative && getAttribute(creative, 'adId'))
     .filter(Boolean)
 
-const getAdTypeElement = (ad: ParsedXML | null): ParsedXML | null =>
+const getAdTypeElement = (ad?: ParsedXML): Optional<ParsedXML> =>
   ad && getFirstChild(ad)
 
-const getCreativeElement = (ad: ParsedXML | null): ParsedXML | null =>
+const getCreativeElement = (ad?: ParsedXML): Optional<ParsedXML> =>
   ad && getLinearCreative(ad)
 
 const getLinearElement = (
-  creativeElement: ParsedXML | null
-): ParsedXML | null => creativeElement && get(creativeElement, 'Linear')
+  creativeElement?: ParsedXML
+): Optional<ParsedXML> => creativeElement && get(creativeElement, 'Linear')
 
-const getAdServingId = (adTypeElement: ParsedXML | null): string | null =>
+const getAdServingId = (adTypeElement?: ParsedXML): Optional<string> =>
   adTypeElement && getSubElementValue(adTypeElement, 'AdServingId')
 
-const getAdvertiser = (adTypeElement: ParsedXML | null): string | null =>
+const getAdvertiser = (adTypeElement?: ParsedXML): Optional<string> =>
   adTypeElement && getSubElementValue(adTypeElement, 'Advertiser')
 
-const getAdTitle = (adTypeElement: ParsedXML | null): string | null =>
+const getAdTitle = (adTypeElement?: ParsedXML): Optional<string> =>
   adTypeElement && getSubElementValue(adTypeElement, 'AdTitle')
 
-const getDescription = (adTypeElement: ParsedXML | null): string | null =>
+const getDescription = (adTypeElement?: ParsedXML): Optional<string> =>
   adTypeElement && getSubElementValue(adTypeElement, 'Description')
 
-const getDuration = (linearElement: ParsedXML | null): string | null =>
+const getDuration = (linearElement?: ParsedXML): Optional<string> =>
   linearElement && getSubElementValue(linearElement, 'Duration')
 
-const getDurationInMs = (duration: string | null): number | null =>
-  duration ? parseTime(duration) : null
+const getDurationInMs = (duration?: string): Optional<number> =>
+  duration ? parseTime(duration) : undefined
 
 const getUniversalIdElement = (
-  creativeElement: ParsedXML | null
-): ParsedXML | null => creativeElement && get(creativeElement, 'UniversalAdId')
+  creativeElement?: ParsedXML
+): Optional<ParsedXML> => creativeElement && get(creativeElement, 'UniversalAdId')
 
 /**
  * Returns a summary of the passed {@link VastChain}.
@@ -175,18 +167,18 @@ const getDetails = (vastChain: VastChain): VastChainDetails => {
   const durationInMs = getDurationInMs(duration)
 
   let adId
-  let adWrapperIds
+  let adWrapperIds: string[] = []
   let adSystem
-  let adWrapperSystems
+  let adWrapperSystems: string[] = []
   let creativeId
-  let adWrapperCreativeIds
+  let adWrapperCreativeIds: string[] = []
   let creativeAdId
-  let adWrapperCreativeAdIds
+  let adWrapperCreativeAdIds: string[] = []
   let clickThroughUrl
   let creativeData
   let universalAdId
   let universalAdIdRegistry
-  let mediaFiles
+  let mediaFiles: MediaFile[] = []
   let vpaid
   let skippable
   let skipOffset
@@ -199,24 +191,23 @@ const getDetails = (vastChain: VastChain): VastChainDetails => {
     ;[creativeAdId, ...adWrapperCreativeAdIds] = creativeAdIds
 
     clickThroughUrl = ad && getClickThrough(ad)
-    creativeData = XML ? getCreativeData(XML) : null
+    creativeData = XML ? getCreativeData(XML) : undefined
 
     const universalIdElement = getUniversalIdElement(creativeElement)
 
     universalAdId = universalIdElement && getText(universalIdElement)
     universalAdIdRegistry =
       universalIdElement && getAttribute(universalIdElement, 'idRegistry')
-    mediaFiles = (ad && getMediaFiles(ad)) || []
+    mediaFiles = ad && getMediaFiles(ad) || []
     vpaid = Boolean(ad && getInteractiveFiles(ad))
     skipOffset = linearElement && getAttribute(linearElement, 'skipoffset')
-    skipOffsetInMs = skipOffset ? parseTime(skipOffset) : null
+    skipOffsetInMs = skipOffset ? parseTime(skipOffset) : undefined
     skippable = Boolean(skipOffset)
   } else if (isWrapper(vastChain[0].ad)) {
     adWrapperIds = adIds
     adWrapperSystems = adSystems
     adWrapperCreativeIds = creativeIds
     adWrapperCreativeAdIds = creativeAdIds
-    mediaFiles = []
   }
 
   return {

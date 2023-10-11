@@ -1,22 +1,22 @@
 import onElementVisibilityChange from '../onElementVisibilityChange'
-import IntersectionObserver from '../helpers/IntersectionObserver'
+
+const mockObserve = jest.fn()
+const mockDisconnect = jest.fn()
+let simulateIntersection: any
 
 jest.mock('../helpers/IntersectionObserver', () => {
-  const observe = jest.fn()
-  const disconnect = jest.fn()
-  let mockHandler = null
+  let mockHandler: any
 
   class MockIntersectionObserver {
-    constructor(handler) {
+    observe = mockObserve
+    disconnect = mockDisconnect
+
+    constructor(handler: any) {
       mockHandler = handler
-      this.observe = observe
-      this.disconnect = disconnect
     }
   }
 
-  MockIntersectionObserver.observe = observe
-  MockIntersectionObserver.disconnect = disconnect
-  MockIntersectionObserver.simulateIntersection = (target, intersectionRatio): IntersectionObserver =>
+  simulateIntersection = (target: HTMLElement, intersectionRatio: number): IntersectionObserver =>
     mockHandler([
       {
         intersectionRatio,
@@ -27,7 +27,7 @@ jest.mock('../helpers/IntersectionObserver', () => {
   return MockIntersectionObserver
 })
 
-const once = (context: Window | Element, eventName: string, listener: (...args: any[]) => void): void => {
+const once = (context: Window | Document | Element, eventName: string, listener: (...args: any[]) => void): void => {
   const handler = (...args: any[]): void => {
     context.removeEventListener(eventName, handler)
     listener(...args)
@@ -36,14 +36,14 @@ const once = (context: Window | Element, eventName: string, listener: (...args: 
   context.addEventListener(eventName, handler)
 }
 
-const waitForEvent = (eventName: string, context = window): Promise<Event> =>
+const waitForEvent = (eventName: string, context: Window | Document | Element = window): Promise<Event> =>
   new Promise<Event>((resolve) => {
     once(context, eventName, resolve)
   })
 
-let origHidden
+let origHidden: boolean
 
-jest.mock('lodash.debounce', () => (fn) => fn)
+jest.mock('lodash.debounce', () => (fn: any) => fn)
 
 beforeEach(() => {
   origHidden = document.hidden
@@ -59,8 +59,8 @@ afterEach(() => {
     writable: true
   })
 
-  IntersectionObserver.observe.mockReset()
-  IntersectionObserver.disconnect.mockReset()
+  mockObserve.mockReset()
+  mockDisconnect.mockReset()
 })
 
 test('onElementVisibilityChange must be a function', () => {
@@ -73,7 +73,7 @@ test('onElementVisibilityChange must complain if the passed target is not an Ele
 
 test("onElementVisibilityChange mut complain if you don't pass a callback function", () => {
   expect(() =>
-    onElementVisibilityChange(document.createElement('DIV'))
+    onElementVisibilityChange(document.createElement('div'), undefined as any)
   ).toThrow(TypeError)
 })
 
@@ -85,7 +85,7 @@ test('onElementVisibilityChange must call callback with true if the element is v
     mock(...args)
   )
 
-  IntersectionObserver.simulateIntersection(target, 1)
+  simulateIntersection(target, 1)
 
   expect(mock).toHaveBeenCalledWith(true)
 
@@ -93,18 +93,18 @@ test('onElementVisibilityChange must call callback with true if the element is v
 })
 
 test('onElementVisibilityChange must call callback with true if the element becomes visible on intersection', () => {
-  const target = document.createElement('DIV')
+  const target = document.createElement('div')
   const mock = jest.fn()
 
   const disconnect = onElementVisibilityChange(target, (...args) =>
     mock(...args)
   )
 
-  IntersectionObserver.simulateIntersection(target, 0)
+  simulateIntersection(target, 0)
 
   expect(mock).not.toHaveBeenCalled()
 
-  IntersectionObserver.simulateIntersection(target, 1)
+  simulateIntersection(target, 1)
 
   expect(mock).toHaveBeenCalledWith(true)
 
@@ -112,18 +112,18 @@ test('onElementVisibilityChange must call callback with true if the element beco
 })
 
 test('onElementVisibilityChange must call callback with false if the element becomes hidden on intersection', () => {
-  const target = document.createElement('DIV')
+  const target = document.createElement('div')
   const mock = jest.fn()
 
   const disconnect = onElementVisibilityChange(target, (...args) =>
     mock(...args)
   )
 
-  IntersectionObserver.simulateIntersection(target, 1)
+  simulateIntersection(target, 1)
 
   expect(mock).toHaveBeenCalledWith(true)
 
-  IntersectionObserver.simulateIntersection(target, 0)
+  simulateIntersection(target, 0)
 
   expect(mock).toHaveBeenCalledWith(false)
 
@@ -131,22 +131,28 @@ test('onElementVisibilityChange must call callback with false if the element bec
 })
 
 test('onElementVisibilityChange must call callback with true if the element becomes visible on visibilitychange', async () => {
-  const target = document.createElement('DIV')
+  const target = document.createElement('div')
   const mock = jest.fn()
 
-  document.hidden = true
+  Object.defineProperty(document, 'hidden', {
+    value: true,
+    writable: true
+  })
 
   const disconnect = onElementVisibilityChange(target, (...args) =>
     mock(...args)
   )
 
-  IntersectionObserver.simulateIntersection(target, 1)
+  simulateIntersection(target, 1)
 
   expect(mock).not.toHaveBeenCalled()
 
   const waitPromise = waitForEvent('visibilitychange', document)
 
-  document.hidden = false
+  Object.defineProperty(document, 'hidden', {
+    value: false,
+    writable: true
+  })
   document.dispatchEvent(new Event('visibilitychange'))
 
   await waitPromise
@@ -157,22 +163,28 @@ test('onElementVisibilityChange must call callback with true if the element beco
 })
 
 test('onElementVisibilityChange must call callback with false if the element becomes hidden on visibilitychange', async () => {
-  const target = document.createElement('DIV')
+  const target = document.createElement('div')
   const mock = jest.fn()
 
-  document.hidden = false
+  Object.defineProperty(document, 'hidden', {
+    value: false,
+    writable: true
+  })
 
   const disconnect = onElementVisibilityChange(target, (...args) =>
     mock(...args)
   )
 
-  IntersectionObserver.simulateIntersection(target, 1)
+  simulateIntersection(target, 1)
 
   expect(mock).toHaveBeenCalledWith(true)
 
   const waitPromise = waitForEvent('visibilitychange', document)
 
-  document.hidden = true
+  Object.defineProperty(document, 'hidden', {
+    value: true,
+    writable: true
+  })
   document.dispatchEvent(new Event('visibilitychange'))
 
   await waitPromise
@@ -183,7 +195,7 @@ test('onElementVisibilityChange must call callback with false if the element bec
 })
 
 test('onElementVisibilityChange on element removed must remove the all the listeners if there are no more elements to check', () => {
-  const target = document.createElement('DIV')
+  const target = document.createElement('div')
   const mock = jest.fn()
 
   document.removeEventListener = jest.fn()
@@ -192,7 +204,7 @@ test('onElementVisibilityChange on element removed must remove the all the liste
     mock(...args)
   )
 
-  expect(IntersectionObserver.disconnect).not.toHaveBeenCalled()
+  expect(mockDisconnect).not.toHaveBeenCalled()
   expect(document.removeEventListener).not.toHaveBeenCalledWith(
     'visibilitychange',
     expect.any(Function)
@@ -200,7 +212,7 @@ test('onElementVisibilityChange on element removed must remove the all the liste
 
   disconnect()
 
-  expect(IntersectionObserver.disconnect).toHaveBeenCalled()
+  expect(mockDisconnect).toHaveBeenCalled()
   expect(document.removeEventListener).toHaveBeenCalledWith(
     'visibilitychange',
     expect.any(Function)
@@ -220,21 +232,21 @@ test('onElementVisibilityChange on element remove must not remove the all the li
     mock(...args)
   )
 
-  expect(IntersectionObserver.disconnect).not.toHaveBeenCalled()
+  expect(mockDisconnect).not.toHaveBeenCalled()
   expect(document.removeEventListener).not.toHaveBeenCalledWith(
     'visibilitychange',
     expect.any(Function)
   )
 
   disconnect()
-  expect(IntersectionObserver.disconnect).not.toHaveBeenCalled()
+  expect(mockDisconnect).not.toHaveBeenCalled()
   expect(document.removeEventListener).not.toHaveBeenCalledWith(
     'visibilitychange',
     expect.any(Function)
   )
 
   disconnect2()
-  expect(IntersectionObserver.disconnect).toHaveBeenCalled()
+  expect(mockDisconnect).toHaveBeenCalled()
   expect(document.removeEventListener).toHaveBeenCalledWith(
     'visibilitychange',
     expect.any(Function)

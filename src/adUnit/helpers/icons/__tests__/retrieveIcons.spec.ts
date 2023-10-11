@@ -8,8 +8,8 @@ beforeEach(() => {
   })
 })
 
-test('retrieveIcons must return null if there are no icons on the vastAdChain', () => {
-  expect(retrieveIcons([{ad: {}}])).toEqual(null)
+test('retrieveIcons must return undefined if there are no icons on the vastAdChain', () => {
+  expect(retrieveIcons([{ad: {}}] as any)).toBeUndefined()
 })
 
 test('retrieveIcons must return the icons filtering out the duplicates and just one per program', () => {
@@ -18,7 +18,7 @@ test('retrieveIcons must return the icons filtering out the duplicates and just 
     {ad: inlineAd},
     {ad: wrapperAd},
     {ad: wrapperAd}
-  ])
+  ] as any)
 
   expect(icons).toEqual([
     {
@@ -102,7 +102,7 @@ test('retrieveIcons must filter the icons taking the pxratio into account', () =
     {ad: inlineAd},
     {ad: wrapperAd},
     {ad: wrapperAd}
-  ])
+  ] as any)
 
   expect(icons).toEqual(
     expect.arrayContaining([
@@ -134,9 +134,9 @@ test('retrieveIcons must filter the icons taking the pxratio into account', () =
     {ad: inlineAd},
     {ad: wrapperAd},
     {ad: wrapperAd}
-  ])
+  ] as any)
 
-  const molStaticIcons = icons.filter(({program}) => program === 'MOL_STATIC')
+  const molStaticIcons = icons?.filter(({program}) => program === 'MOL_STATIC') ?? []
 
   expect(molStaticIcons.length).toBe(1)
   expect(molStaticIcons[0]).toEqual(

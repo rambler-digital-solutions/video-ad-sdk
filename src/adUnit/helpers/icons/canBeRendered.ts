@@ -54,9 +54,9 @@ const overlap = (
   newIcon: RenderedVastIcon,
   drawnIcon: RenderedVastIcon
 ): boolean =>
-  left(newIcon) <= right(drawnIcon) ||
-  right(newIcon) >= left(drawnIcon) ||
-  bottom(newIcon) >= top(drawnIcon) ||
+  left(newIcon) <= right(drawnIcon) &&
+  right(newIcon) >= left(drawnIcon) &&
+  bottom(newIcon) >= top(drawnIcon) &&
   top(newIcon) <= bottom(drawnIcon)
 
 export const withoutOverlaps = (

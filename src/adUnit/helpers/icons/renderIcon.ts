@@ -8,7 +8,7 @@ export interface RenderIconOptions extends LoadResourceOptions {
   onIconClick?(icon: VastIcon): void
 }
 
-const noop = (): void => undefined
+const noop = (): void => {}
 
 const wrapWithClickThrough = (
   iconElement: HTMLElement,
@@ -65,18 +65,10 @@ const createIcon = async (
 }
 
 const updateIconElement = (
-  iconElement: HTMLElement,
+  iconElement: HTMLAnchorElement,
   icon: RenderedVastIcon
 ): HTMLElement => {
   const {height, width, left, top, yPosition} = icon
-
-  if (
-    iconElement instanceof HTMLIFrameElement ||
-    iconElement instanceof HTMLImageElement
-  ) {
-    iconElement.height = height
-    iconElement.width = width
-  }
 
   iconElement.style.position = 'absolute'
   iconElement.style.left = `${left}px`
@@ -108,9 +100,7 @@ const renderIcon = async (
       placeholder.appendChild(updateIconElement(iconElement, updatedIcon))
     }
   } else {
-    if (iconElement.parentNode) {
-      iconElement.parentNode.removeChild(iconElement)
-    }
+    iconElement.parentNode?.removeChild(iconElement)
 
     throw new Error("Icon can't be rendered")
   }

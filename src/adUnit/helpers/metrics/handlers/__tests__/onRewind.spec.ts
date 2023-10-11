@@ -2,10 +2,10 @@ import {linearEvents} from '../../../../../tracker'
 import onRewind from '../onRewind'
 
 const {rewind} = linearEvents
-let videoElement
+let videoElement: HTMLVideoElement
 
 beforeEach(() => {
-  videoElement = document.createElement('VIDEO')
+  videoElement = document.createElement('video')
   Object.defineProperty(videoElement, 'duration', {
     value: 100,
     writable: true
@@ -17,12 +17,12 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  videoElement = null
+  ;(videoElement as any) = null
 })
 
 test('onRewind must call the callback with rewind when there is a rewind of the current video', () => {
   const callback = jest.fn()
-  const disconnect = onRewind({videoElement}, callback)
+  const disconnect = onRewind({videoElement} as any, callback)
 
   videoElement.currentTime = 10
   videoElement.dispatchEvent(new Event('timeupdate'))

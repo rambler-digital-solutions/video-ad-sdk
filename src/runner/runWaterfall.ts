@@ -58,7 +58,7 @@ const transformVastResponse = (
   return vastChain
 }
 
-const handleVastError = (error: any, vastChain?: VastChain, tracker?: PixelTracker): void => {
+const handleVastError = (error: VastError, vastChain?: VastChain, tracker?: PixelTracker): void => {
   let errorCode = vastChain?.[0]?.errorCode || error?.code
 
   if (vastChain && errorCode) {
@@ -85,7 +85,7 @@ const waterfall = async (
   {...options}: WaterfallOptions,
   isCanceled: () => boolean
 ): Promise<void> => {
-  let vastChain: VastChain | undefined
+  let vastChain: Optional<VastChain>
   let runEpoch!: number
   let adUnit: VastAdUnit | VpaidAdUnit | undefined
   const {onAdStart, onError, onRunFinish} = options
@@ -127,7 +127,7 @@ const waterfall = async (
     adUnit.onFinish(onRunFinish)
     onAdStart(adUnit)
   } catch (error: any) {
-    handleVastError(vastChain, error, options.tracker)
+    handleVastError(error, vastChain, options.tracker)
 
     onError(error, {
       adUnit,

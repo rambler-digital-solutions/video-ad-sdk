@@ -1,7 +1,7 @@
 import viewmode from '../viewmode'
 
 describe('viewmode', () => {
-  let origScreen
+  let origScreen: Screen
 
   beforeEach(() => {
     origScreen = window.screen

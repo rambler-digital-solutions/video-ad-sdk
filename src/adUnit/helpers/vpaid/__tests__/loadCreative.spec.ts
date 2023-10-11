@@ -6,19 +6,19 @@ import {
   vpaidInlineParsedXML,
   vastVpaidInlineXML
 } from '../../../../../fixtures'
+import {VastChain} from '../../../../types'
 import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
 import loadCreative from '../loadCreative'
 
 describe('loadCreative', () => {
-  let vastChain
-  let vpaidChain
-  let videoAdContainer
+  let vastChain: VastChain
+  let vpaidChain: VastChain
+  let videoAdContainer: VideoAdContainer
 
   beforeEach(() => {
     vastChain = [
       {
         ad: inlineAd,
-        errorCode: null,
         parsedXML: inlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastInlineXML
@@ -28,7 +28,6 @@ describe('loadCreative', () => {
     vpaidChain = [
       {
         ad: vpaidInlineAd,
-        errorCode: null,
         parsedXML: vpaidInlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastVpaidInlineXML
@@ -42,7 +41,7 @@ describe('loadCreative', () => {
 
     try {
       await loadCreative(vastChain, videoAdContainer)
-    } catch (error) {
+    } catch (error: any) {
       expect(error).toBeInstanceOf(TypeError)
       expect(error.message).toBe(
         'VastChain does not contain a supported vpaid creative'
@@ -56,10 +55,10 @@ describe('loadCreative', () => {
     }
 
     videoAdContainer.addScript = jest.fn()
-    videoAdContainer.addScript.mockReturnValue(Promise.resolve('success'))
+    ;(videoAdContainer.addScript as jest.Mock).mockReturnValue(Promise.resolve('success'))
     videoAdContainer.executionContext = {
       getVPAIDAd: () => mockVpaidCreative
-    }
+    } as any
 
     const creative = await loadCreative(vpaidChain, videoAdContainer)
 

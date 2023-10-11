@@ -141,18 +141,14 @@ const getOptions = (
  */
 const requestAd = async (
   adTag: string,
-  options: RequestAdOptions,
+  options: RequestAdOptions & WrapperOptions,
   vastChain: VastChain = []
 ): Promise<VastChain> => {
   const vastAdResponse: VastResponse = {
-    ad: null,
-    errorCode: null,
-    parsedXML: null,
-    requestTag: adTag,
-    XML: null
+    requestTag: adTag
   }
-  let epoch: number | undefined
-  let timeout: number | undefined
+  let epoch: Optional<number>
+  let timeout: Optional<number>
 
   try {
     const resultOptions = getOptions(vastChain, options)
@@ -186,7 +182,7 @@ const requestAd = async (
 
     validateResponse(vastAdResponse, resultOptions)
 
-    if (vastAdResponse.ad && isWrapper(vastAdResponse.ad)) {
+    if (isWrapper(vastAdResponse.ad)) {
       if (epoch && timeout) {
         timeout -= Date.now() - epoch
       }

@@ -33,7 +33,7 @@ const run = async (
   placeholder: HTMLElement,
   options: RunOptions
 ): Promise<VastAdUnit | VpaidAdUnit> => {
-  let videoAdContainer: VideoAdContainer | undefined
+  let videoAdContainer: Optional<VideoAdContainer>
 
   try {
     const {timeout} = options

@@ -12,44 +12,39 @@ import getLinearCreative from './helpers/getLinearCreative'
 const getNonLinearTrackingEvents = (
   ad: ParsedAd,
   eventName?: string
-): VastTrackingEvent[] | null => {
+): Optional<VastTrackingEvent[]> => {
   const creativeElement = ad && getLinearCreative(ad)
+  const nonLinearAdsElement = creativeElement && get(creativeElement, 'NonLinearAds')
+  const trackingEventsElement =
+    nonLinearAdsElement && get(nonLinearAdsElement, 'TrackingEvents')
+  const trackingEventElements =
+    trackingEventsElement && getAll(trackingEventsElement, 'Tracking')
 
-  if (creativeElement) {
-    const NonLinearAdsElement = get(creativeElement, 'NonLinearAds')
-    const trackingEventsElement =
-      NonLinearAdsElement && get(NonLinearAdsElement, 'TrackingEvents')
-    const trackingEventElements =
-      trackingEventsElement && getAll(trackingEventsElement, 'Tracking')
+  if (trackingEventElements && trackingEventElements.length > 0) {
+    const trackingEvents = trackingEventElements.map(
+      (trackingEventElement) => {
+        const {event} = getAttributes(trackingEventElement)
+        const uri = getText(trackingEventElement)
 
-    if (trackingEventElements && trackingEventElements.length > 0) {
-      const trackingEvents = trackingEventElements.map(
-        (trackingEventElement) => {
-          const {event} = getAttributes(trackingEventElement)
-          const uri = getText(trackingEventElement)
-
-          return {
-            event,
-            uri
-          }
+        return {
+          event,
+          uri
         }
-      )
-
-      if (eventName) {
-        const filteredEvents = trackingEvents.filter(
-          ({event}) => event === eventName
-        )
-
-        if (filteredEvents.length > 0) {
-          return filteredEvents
-        }
-      } else {
-        return trackingEvents
       }
+    )
+
+    if (!eventName) {
+      return trackingEvents
+    }
+
+    const filteredEvents = trackingEvents.filter(
+      ({event}) => event === eventName
+    )
+
+    if (filteredEvents.length > 0) {
+      return filteredEvents
     }
   }
-
-  return null
 }
 
 export default getNonLinearTrackingEvents

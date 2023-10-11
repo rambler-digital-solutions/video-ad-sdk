@@ -6,6 +6,7 @@ import {
   wrapperAd,
   inlineAd
 } from '../../../fixtures'
+import {VastChain} from '../../types'
 import startVideoAd from '../helpers/startVideoAd'
 import run from '../run'
 import VideoAdContainer from '../../adContainer/VideoAdContainer'
@@ -20,25 +21,26 @@ jest.mock('../../tracker', () => ({
   linearEvents: {},
   trackError: jest.fn()
 }))
+
+const noop = (): void => {}
+
 describe('run', () => {
-  let vastAdChain
-  let options
-  let placeholder
-  let adContainer
-  let adUnit
+  let vastAdChain: VastChain
+  let options: any
+  let placeholder: HTMLElement
+  let adContainer: VideoAdContainer
+  let adUnit: VastAdUnit
 
   beforeEach(() => {
     vastAdChain = [
       {
         ad: inlineAd,
-        errorCode: null,
         parsedXML: inlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastInlineXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
@@ -54,8 +56,8 @@ describe('run', () => {
       document.createElement('video')
     )
     adUnit = new VastAdUnit(vastAdChain, adContainer, options)
-    createVideoAdContainer.mockImplementation(() => adContainer)
-    startVideoAd.mockImplementation(() => Promise.resolve(adUnit))
+    ;(createVideoAdContainer as jest.Mock).mockImplementation(() => adContainer)
+    ;(startVideoAd as jest.Mock).mockImplementation(() => Promise.resolve(adUnit))
   })
 
   afterEach(() => {
@@ -87,7 +89,7 @@ describe('run', () => {
 
     const testError = new Error('Ad container creation error')
 
-    createVideoAdContainer.mockImplementation(() => {
+    ;(createVideoAdContainer as jest.Mock).mockImplementation(() => {
       throw testError
     })
 
@@ -102,10 +104,12 @@ describe('run', () => {
     const adUnitError = new Error('boom')
 
     adContainer.destroy = jest.fn()
-    startVideoAd.mockImplementation(() => Promise.reject(adUnitError))
+    ;(startVideoAd as jest.Mock).mockImplementation(() => Promise.reject(adUnitError))
 
     try {
-      await run(vastAdChain, placeholder, {})
+      await run(vastAdChain, placeholder, {
+        onAdReady: noop
+      })
     } catch (error) {
       expect(adContainer.destroy).toHaveBeenCalledTimes(1)
     }
@@ -114,11 +118,14 @@ describe('run', () => {
   describe('with timeout', () => {
     test('must throw and destroy the adContainer on timeout', async () => {
       adContainer.destroy = jest.fn()
-      startVideoAd.mockImplementation(() => new Promise(() => {}))
+      ;(startVideoAd as jest.Mock).mockImplementation(() => new Promise(() => {}))
 
       try {
-        await run(vastAdChain, placeholder, {timeout: 0})
-      } catch (error) {
+        await run(vastAdChain, placeholder, {
+          timeout: 0,
+          onAdReady: noop
+        })
+      } catch (error: any) {
         expect(error.message).toBe('Timeout while starting the ad')
         expect(adContainer.destroy).toHaveBeenCalledTimes(1)
       }
@@ -132,11 +139,14 @@ describe('run', () => {
       }
 
       adContainer.destroy = jest.fn()
-      startVideoAd.mockImplementation(() => deferred.promise)
+      ;(startVideoAd as jest.Mock).mockImplementation(() => deferred.promise)
 
       try {
-        await run(vastAdChain, placeholder, {timeout: 0})
-      } catch (error) {
+        await run(vastAdChain, placeholder, {
+          timeout: 0,
+          onAdReady: noop
+        })
+      } catch (error: any) {
         expect(error.message).toBe('Timeout while starting the ad')
         expect(adContainer.destroy).toHaveBeenCalledTimes(1)
       }
@@ -155,11 +165,14 @@ describe('run', () => {
       }
 
       adContainer.destroy = jest.fn()
-      startVideoAd.mockImplementation(() => deferred.promise)
+      ;(startVideoAd as jest.Mock).mockImplementation(() => deferred.promise)
 
       try {
-        await run(vastAdChain, placeholder, {timeout: 0})
-      } catch (error) {
+        await run(vastAdChain, placeholder, {
+          timeout: 0,
+          onAdReady: noop
+        })
+      } catch (error: any) {
         expect(error.message).toBe('Timeout while starting the ad')
         expect(adContainer.destroy).toHaveBeenCalledTimes(1)
       }

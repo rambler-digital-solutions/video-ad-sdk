@@ -1,4 +1,5 @@
 import createVideoAdContainer from '../../../../adContainer/createVideoAdContainer'
+import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
 import renderIcons from '../renderIcons'
 import renderIcon from '../renderIcon'
 import canBeShown from '../canBeShown'
@@ -6,12 +7,12 @@ import canBeShown from '../canBeShown'
 jest.mock('../renderIcon')
 jest.mock('../canBeShown')
 
-let videoAdContainer
-let logger
-let icons
+let videoAdContainer: VideoAdContainer
+let logger: any
+let icons: any
 
 beforeEach(async () => {
-  videoAdContainer = await createVideoAdContainer(document.createElement('DIV'))
+  videoAdContainer = createVideoAdContainer(document.createElement('div'))
   logger = {
     log: jest.fn()
   }
@@ -25,11 +26,11 @@ beforeEach(async () => {
       width: 5
     }
   ]
-  canBeShown.mockImplementation(() => true)
+  ;(canBeShown as jest.Mock).mockImplementation(() => true)
 })
 
 afterEach(() => {
-  videoAdContainer = null
+  ;(videoAdContainer as any) = null
   logger = null
   icons = null
 })
@@ -39,7 +40,7 @@ test('renderIcons must filter out the icons that can not be shown due to their o
 
   icons[0].element = iconElement
   videoAdContainer.element.appendChild(iconElement)
-  canBeShown.mockImplementation(() => false)
+  ;(canBeShown as jest.Mock).mockImplementation(() => false)
 
   expect(
     renderIcons(icons, {
@@ -48,7 +49,7 @@ test('renderIcons must filter out the icons that can not be shown due to their o
     })
   ).resolves.toEqual([])
 
-  expect(iconElement.parentNode).toBe(null)
+  expect(iconElement.parentNode).toBeNull()
 })
 
 test('renderIcons must render the passed icons and return an array with the rendered icon definitions updated', () => {
@@ -59,7 +60,7 @@ test('renderIcons must render the passed icons and return an array with the rend
     width: 5
   }
 
-  renderIcon.mockImplementation(() => Promise.resolve(updatedIcon))
+  ;(renderIcon as jest.Mock).mockImplementation(() => Promise.resolve(updatedIcon))
 
   expect(
     renderIcons(icons, {
@@ -79,7 +80,7 @@ test('renderIcons must log an error if an icon failed to render and return the o
 
   const renderError = new Error('Error rendering the icon')
 
-  renderIcon
+  ;(renderIcon as jest.Mock)
     .mockImplementationOnce(() => Promise.reject(renderError))
     .mockImplementationOnce(() => Promise.resolve(updatedIcon))
 

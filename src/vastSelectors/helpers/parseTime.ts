@@ -4,7 +4,7 @@ const parseMinToMs = (minStr: string): number =>
   parseInt(minStr, 10) * 60 * 1000
 const parseSecToMs = (secStr: string): number => parseInt(secStr, 10) * 1000
 
-const parseTime = (durationStr: string): number | null => {
+const parseTime = (durationStr: string): Optional<number> => {
   if (typeof durationStr === 'string') {
     const durationRegex = /(\d\d):(\d\d):(\d\d)(\.(\d\d\d))?/
     const match = durationStr.match(durationRegex)
@@ -21,8 +21,6 @@ const parseTime = (durationStr: string): number | null => {
       }
     }
   }
-
-  return null
 }
 
 export default parseTime

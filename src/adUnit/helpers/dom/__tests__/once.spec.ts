@@ -1,7 +1,7 @@
 import once from '../once'
 
 test('once must exec the listener once when the event occurs on the passed element', () => {
-  const element = document.createElement('DIV')
+  const element = document.createElement('div')
   const listener = jest.fn()
   const eventName = 'test'
 
@@ -19,7 +19,7 @@ test('once must exec the listener once when the event occurs on the passed eleme
 })
 
 test('once must call the listener with all the args', () => {
-  const element = document.createElement('DIV')
+  const element = document.createElement('div')
   const listener = jest.fn()
   const eventName = 'test'
   const event = new Event(eventName)
@@ -33,7 +33,7 @@ test('once must call the listener with all the args', () => {
 })
 
 test('once must return a remove function', () => {
-  const element = document.createElement('DIV')
+  const element = document.createElement('div')
   const listener = jest.fn()
   const eventName = 'test'
 

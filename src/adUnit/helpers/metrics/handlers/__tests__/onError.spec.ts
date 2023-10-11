@@ -2,10 +2,10 @@ import {linearEvents} from '../../../../../tracker'
 import onError from '../onError'
 
 const {error} = linearEvents
-let videoElement
+let videoElement: HTMLVideoElement
 
 beforeEach(() => {
-  videoElement = document.createElement('VIDEO')
+  videoElement = document.createElement('video')
   Object.defineProperty(videoElement, 'duration', {
     value: 100,
     writable: true
@@ -21,15 +21,15 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  videoElement = null
+  ;(videoElement as any) = null
 })
 
 test('onError must call the callback with rewind when there is an error on the current video', () => {
   const callback = jest.fn()
-  const disconnect = onError({videoElement}, callback)
+  const disconnect = onError({videoElement} as any, callback)
   const mockVideoError = new Error('mockVideoError')
 
-  videoElement.error = mockVideoError
+  Object.defineProperty(videoElement, 'error', {value: mockVideoError})
 
   expect(callback).toHaveBeenCalledTimes(0)
   videoElement.dispatchEvent(new Event('error'))

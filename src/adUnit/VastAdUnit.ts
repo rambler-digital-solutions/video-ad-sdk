@@ -86,7 +86,7 @@ class VastAdUnit extends VideoAdUnit {
     }
   }
 
-  public assetUri: string | null = null
+  public assetUri?: string
 
   /** Ad unit type. Will be `VAST` for VastAdUnit */
   public type = 'VAST'
@@ -195,7 +195,7 @@ class VastAdUnit extends VideoAdUnit {
     const skipoffset = inlineAd && getSkipOffset(inlineAd)
     const currentTimeMs = this.currentTime() * 1000
 
-    if (skipoffset && currentTimeMs >= skipoffset) {
+    if (typeof skipoffset === 'number' && currentTimeMs >= skipoffset) {
       this[_private].handleMetric(skip)
     }
   }

@@ -34,7 +34,7 @@ const onSkip = (
   const skipHandler = (): void => {
     const currentTimeMs = videoElement.currentTime * 1000
 
-    if (!skipControl && skipoffset && currentTimeMs >= skipoffset) {
+    if (!skipControl && typeof skipoffset === 'number' && currentTimeMs >= skipoffset) {
       skipControl = createSkipControl()
 
       skipControl.onclick = (event) => {

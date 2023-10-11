@@ -1,4 +1,4 @@
-import Emitter from '../index'
+import Emitter from '../'
 
 test('Emitter `on` method must register the listener to the passed eventName', () => {
   const emitter = new Emitter()
@@ -6,7 +6,7 @@ test('Emitter `on` method must register the listener to the passed eventName', (
 
   emitter.on('bla', listener)
 
-  expect(emitter.evts.bla[0]).toBe(listener)
+  expect(emitter.events.bla[0]).toBe(listener)
 })
 
 test('Emitter `on` method must return this', () => {
@@ -23,7 +23,7 @@ test('Emitter `removeListener` method must remove a previously registered listen
   emitter.on('bla', listener)
   emitter.removeListener('bla', listener)
 
-  expect(emitter.evts.bla.length).toBe(0)
+  expect(emitter.events.bla.length).toBe(0)
 })
 
 test('Emitter `removeListener` method must do nothing if the listener was not registered', () => {
@@ -32,7 +32,7 @@ test('Emitter `removeListener` method must do nothing if the listener was not re
 
   emitter.removeListener('bla', listener)
 
-  expect(emitter.evts.bla.length).toBe(0)
+  expect(emitter.events.bla.length).toBe(0)
 })
 
 test('Emitter `removeListener` method must return this', () => {
@@ -50,12 +50,12 @@ test('Emitter `removeAllListeners` method must remove all listeners', () => {
   emitter.on('bla', listener)
   emitter.on('bla', listener)
 
-  expect(emitter.evts.ble.length).toBe(1)
-  expect(emitter.evts.bla.length).toBe(2)
+  expect(emitter.events.ble.length).toBe(1)
+  expect(emitter.events.bla.length).toBe(2)
 
-  emitter.removeAllListeners()
+  emitter.removeAllListeners(undefined as any)
 
-  expect(emitter.evts).toEqual({})
+  expect(emitter.events).toEqual({})
 })
 
 test('Emitter `removeAllListeners` method must remove all the listeners of the provided eventName', () => {
@@ -66,19 +66,19 @@ test('Emitter `removeAllListeners` method must remove all the listeners of the p
   emitter.on('bla', listener)
   emitter.on('bla', listener)
 
-  expect(emitter.evts.ble.length).toBe(1)
-  expect(emitter.evts.bla.length).toBe(2)
+  expect(emitter.events.ble.length).toBe(1)
+  expect(emitter.events.bla.length).toBe(2)
 
   emitter.removeAllListeners('bla')
 
-  expect(emitter.evts.ble.length).toBe(1)
-  expect(emitter.evts.bla).toEqual(null)
+  expect(emitter.events.ble.length).toBe(1)
+  expect(emitter.events.bla).toBeUndefined()
 })
 
 test('Emitter `removeAllListeners` method must return this', () => {
   const emitter = new Emitter()
 
-  expect(emitter.removeAllListeners()).toBe(emitter)
+  expect(emitter.removeAllListeners(undefined as any)).toBe(emitter)
 })
 
 test('Emitter `once` method must execute the passed listener once', () => {
@@ -116,7 +116,7 @@ test('Emitter `emit` method must call all the previously registered listeners wi
 })
 
 test('Emitter `emit` method must still call all the listeners if a listener throws an exception', () => {
-  const emitter = new Emitter({error: () => {}})
+  const emitter = new Emitter({error: () => {}} as any)
   const listener = (): void => {
     throw new Error('Test error!!')
   }

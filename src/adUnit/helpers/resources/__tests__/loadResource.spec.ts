@@ -1,26 +1,26 @@
 import loadResource from '../loadResource'
 import createResource from '../createResource'
 
-const mockResource = document.createElement('IMG')
+const mockResource = document.createElement('img')
 
 mockResource.classList.add('mock-resource-element')
 
 jest.mock('../createResource', () => jest.fn(() => mockResource))
 
-let icon
-let placeholder
+let icon: any
+let placeholder: HTMLElement
 
 beforeEach(() => {
   icon = {
     staticResource: 'http://test.example.com/resource'
   }
 
-  placeholder = document.createElement('DIV')
+  placeholder = document.createElement('div')
 })
 
 afterEach(() => {
   icon = null
-  placeholder = null
+  ;(placeholder as any) = null
 })
 
 test('loadResource must return a promise', async () => {
@@ -29,7 +29,7 @@ test('loadResource must return a promise', async () => {
     placeholder
   })
 
-  const iconElement = placeholder.querySelector('.mock-resource-element')
+  const iconElement = placeholder.querySelector('.mock-resource-element') as HTMLElement
 
   expect(iconElement.style.zIndex).toBe('-9999')
 
@@ -50,14 +50,14 @@ test('loadResource must reject the promise if there is a problem loading the ico
     placeholder
   })
 
-  const iconElement = placeholder.querySelector('.mock-resource-element')
+  const iconElement = placeholder.querySelector('.mock-resource-element') as HTMLElement
 
   expect(iconElement.style.zIndex).toBe('-9999')
 
   try {
     iconElement.dispatchEvent(new Event('error'))
     await promise
-  } catch (error) {
+  } catch (error: any) {
     expect(error.message).toBe('Error loading resource')
     expect(iconElement.style.zIndex).toBe('0')
     expect(placeholder.querySelector('.mock-resource-element')).toBeNull()
@@ -65,7 +65,7 @@ test('loadResource must reject the promise if there is a problem loading the ico
 })
 
 test('loadResource must reject the promise if there is a problem creating the resource', () => {
-  createResource.mockImplementation(() => () => {
+  ;(createResource as jest.Mock).mockImplementation(() => () => {
     throw new Error('boom')
   })
 

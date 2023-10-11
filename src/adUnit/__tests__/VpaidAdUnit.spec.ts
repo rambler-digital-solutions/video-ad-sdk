@@ -8,6 +8,7 @@ import loadCreative from '../helpers/vpaid/loadCreative'
 import handshake from '../helpers/vpaid/handshake'
 import initAd from '../helpers/vpaid/initAd'
 import callAndWait from '../helpers/vpaid/callAndWait'
+import AdUnitError from '../helpers/adUnitError'
 import VpaidAdUnit from '../VpaidAdUnit'
 import {
   adLoaded,
@@ -60,6 +61,7 @@ import linearEvents, {
 } from '../../tracker/linearEvents'
 import {acceptInvitation, adCollapse} from '../../tracker/nonLinearEvents'
 import {ErrorCode} from '../../tracker'
+import {VastChain} from '../../types'
 import addIcons from '../helpers/icons/addIcons'
 import retrieveIcons from '../helpers/icons/retrieveIcons'
 import {volumeChanged, adProgress} from '../adUnitEvents'
@@ -74,27 +76,26 @@ const mockDrawIcons = jest.fn()
 const mockRemoveIcons = jest.fn()
 const mockHasPendingRedraws = jest.fn(() => false)
 
-jest.mock('../helpers/icons/addIcons.js', () =>
+jest.mock('../helpers/icons/addIcons', () =>
   jest.fn(() => ({
     drawIcons: mockDrawIcons,
     hasPendingIconRedraws: mockHasPendingRedraws,
     removeIcons: mockRemoveIcons
   }))
 )
-jest.mock('../helpers/icons/retrieveIcons.js', () => jest.fn())
+jest.mock('../helpers/icons/retrieveIcons', () => jest.fn())
 
 describe('VpaidAdUnit', () => {
-  let vpaidChain
-  let videoAdContainer
+  let vpaidChain: VastChain
+  let videoAdContainer: VideoAdContainer
 
   beforeEach(() => {
-    callAndWait.mockImplementation(
+    ;(callAndWait as jest.Mock).mockImplementation(
       jest.requireActual('../helpers/vpaid/callAndWait').default
     )
     vpaidChain = [
       {
         ad: vpaidInlineAd,
-        errorCode: null,
         parsedXML: vpaidInlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastVpaidInlineXML
@@ -119,26 +120,26 @@ describe('VpaidAdUnit', () => {
   })
 
   describe('start', () => {
-    let mockCreativeAd
-    let adUnit
+    let mockCreativeAd: MockVpaidCreativeAd
+    let adUnit: VpaidAdUnit
 
     beforeEach(() => {
       mockCreativeAd = new MockVpaidCreativeAd()
 
-      initAd.mockImplementation(() => {
+      ;(initAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adLoaded)
       })
 
-      mockCreativeAd.startAd.mockImplementation(() => {
+      ;(mockCreativeAd.startAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adStarted)
       })
 
-      mockCreativeAd.stopAd.mockImplementationOnce(() => {
+      ;(mockCreativeAd.stopAd as jest.Mock).mockImplementationOnce(() => {
         mockCreativeAd.emit(adStopped)
       })
 
-      loadCreative.mockReturnValue(Promise.resolve(mockCreativeAd))
-      retrieveIcons.mockReturnValue(null)
+      ;(loadCreative as jest.Mock).mockReturnValue(Promise.resolve(mockCreativeAd))
+      ;(retrieveIcons as jest.Mock).mockReturnValue(undefined)
 
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
     })
@@ -169,9 +170,8 @@ describe('VpaidAdUnit', () => {
     test('must start the ad', async () => {
       expect(adUnit.isStarted()).toBe(false)
 
-      const res = await adUnit.start()
+      await adUnit.start()
 
-      expect(res).toBe(adUnit)
       expect(adUnit.isStarted()).toBe(true)
       expect(adUnit.creativeAd).toBe(mockCreativeAd)
       expect(handshake).toHaveBeenCalledTimes(1)
@@ -190,9 +190,8 @@ describe('VpaidAdUnit', () => {
       expect(adUnit.isStarted()).toBe(false)
       videoAdContainer.destroy()
 
-      const res = await adUnit.start()
+      await adUnit.start()
 
-      expect(res).toBe(adUnit)
       expect(adUnit.isStarted()).toBe(false)
       expect(adUnit.creativeAd).toBe(mockCreativeAd)
       expect(handshake).toHaveBeenCalledTimes(1)
@@ -216,9 +215,8 @@ describe('VpaidAdUnit', () => {
 
       expect(adUnit.isStarted()).toBe(false)
 
-      const res = await adUnit.start()
+      await adUnit.start()
 
-      expect(res).toBe(adUnit)
       expect(adUnit.isStarted()).toBe(false)
       expect(adUnit.isFinished()).toBe(true)
       expect(adUnit.creativeAd).toBe(mockCreativeAd)
@@ -239,24 +237,24 @@ describe('VpaidAdUnit', () => {
 
       try {
         await adUnit.start()
-      } catch (error) {
+      } catch (error: any) {
         expect(error.message).toBe('VpaidAdUnit already started')
       }
     })
 
     describe("with creativeAd's adIcon property", () => {
       test('undefined (VPAID 1) must not render the icons', async () => {
-        delete mockCreativeAd[getAdIcons]
+        delete (mockCreativeAd as any)[getAdIcons]
         await adUnit.start()
 
-        expect(adUnit.icons).toBe(null)
+        expect(adUnit.icons).toBeUndefined()
       })
 
       test('false, must not render the icons', async () => {
         mockCreativeAd[getAdIcons].mockReturnValue(false)
         await adUnit.start()
 
-        expect(adUnit.icons).toBe(null)
+        expect(adUnit.icons).toBeUndefined()
       })
 
       describe('true,', () => {
@@ -270,8 +268,8 @@ describe('VpaidAdUnit', () => {
         })
 
         test('with vast icons, must render the icons', async () => {
-          addIcons.mockClear()
-          retrieveIcons.mockClear()
+          ;(addIcons as jest.Mock).mockClear()
+          ;(retrieveIcons as jest.Mock).mockClear()
 
           const icons = [
             {
@@ -282,7 +280,7 @@ describe('VpaidAdUnit', () => {
             }
           ]
 
-          retrieveIcons.mockReturnValue(icons)
+          ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
           mockCreativeAd[getAdIcons].mockReturnValue(true)
           adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
 
@@ -305,15 +303,15 @@ describe('VpaidAdUnit', () => {
   })
 
   describe('with icons', () => {
-    let mockCreativeAd
-    let adUnit
+    let mockCreativeAd: MockVpaidCreativeAd
+    let adUnit: VpaidAdUnit
 
     beforeEach(() => {
       jest.useFakeTimers()
 
       mockCreativeAd = new MockVpaidCreativeAd()
 
-      initAd.mockImplementation(() => {
+      ;(initAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adLoaded)
       })
 
@@ -329,7 +327,7 @@ describe('VpaidAdUnit', () => {
         mockCreativeAd.emit(adSizeChange)
       })
 
-      loadCreative.mockReturnValue(Promise.resolve(mockCreativeAd))
+      ;(loadCreative as jest.Mock).mockReturnValue(Promise.resolve(mockCreativeAd))
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
     })
 
@@ -347,7 +345,7 @@ describe('VpaidAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
       mockCreativeAd[getAdIcons].mockReturnValue(true)
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
 
@@ -368,7 +366,7 @@ describe('VpaidAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
       mockCreativeAd[getAdIcons].mockReturnValue(true)
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
 
@@ -376,13 +374,13 @@ describe('VpaidAdUnit', () => {
 
       expect(mockDrawIcons).toHaveBeenCalledTimes(1)
 
-      await adUnit.resize()
+      await adUnit.resize(640, 480, 'normal')
 
       expect(mockDrawIcons).toHaveBeenCalledTimes(2)
     })
 
     test(`must emit '${iconClick}' event on click`, async () => {
-      addIcons.mockClear()
+      ;(addIcons as jest.Mock).mockClear()
 
       const icons = [
         {
@@ -393,7 +391,7 @@ describe('VpaidAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
       mockCreativeAd[getAdIcons].mockReturnValue(true)
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
 
@@ -401,7 +399,7 @@ describe('VpaidAdUnit', () => {
 
       expect(adUnit.icons).toBe(icons)
 
-      const passedConfig = addIcons.mock.calls[0][1]
+      const passedConfig = (addIcons as jest.Mock).mock.calls[0][1]
 
       const promise = new Promise((resolve) => {
         adUnit.on(iconClick, (...args) => {
@@ -423,7 +421,7 @@ describe('VpaidAdUnit', () => {
     })
 
     test(`must emit '${iconView}' event on view`, async () => {
-      addIcons.mockClear()
+      ;(addIcons as jest.Mock).mockClear()
 
       const icons = [
         {
@@ -434,14 +432,14 @@ describe('VpaidAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
       mockCreativeAd[getAdIcons].mockReturnValue(true)
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
       await adUnit.start()
 
       expect(adUnit.icons).toBe(icons)
 
-      const passedConfig = addIcons.mock.calls[0][1]
+      const passedConfig = (addIcons as jest.Mock).mock.calls[0][1]
 
       const promise = new Promise((resolve) => {
         adUnit.on(iconView, (...args) => {
@@ -472,7 +470,7 @@ describe('VpaidAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
       mockCreativeAd[getAdIcons].mockReturnValue(true)
       mockHasPendingRedraws.mockReturnValueOnce(true)
       mockHasPendingRedraws.mockReturnValueOnce(false)
@@ -496,7 +494,7 @@ describe('VpaidAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
       mockCreativeAd[getAdIcons].mockReturnValue(true)
       mockHasPendingRedraws.mockReturnValueOnce(true)
       mockHasPendingRedraws.mockReturnValueOnce(false)
@@ -514,13 +512,13 @@ describe('VpaidAdUnit', () => {
   })
 
   describe('method', () => {
-    let mockCreativeAd
-    let adUnit
+    let mockCreativeAd: MockVpaidCreativeAd
+    let adUnit: VpaidAdUnit
 
     beforeEach(() => {
       mockCreativeAd = new MockVpaidCreativeAd()
 
-      initAd.mockImplementation(() => {
+      ;(initAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adLoaded)
       })
 
@@ -548,25 +546,25 @@ describe('VpaidAdUnit', () => {
         mockCreativeAd.emit(adSizeChange)
       })
 
-      loadCreative.mockReturnValue(Promise.resolve(mockCreativeAd))
+      ;(loadCreative as jest.Mock).mockReturnValue(Promise.resolve(mockCreativeAd))
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
     })
 
     describe('resume', () => {
       test('must call resumeAd', async () => {
         await adUnit.start()
-        await adUnit.resume()
+        adUnit.resume()
 
-        expect(adUnit.creativeAd[resumeAd]).toHaveBeenCalledTimes(1)
+        expect(adUnit.creativeAd?.[resumeAd]).toHaveBeenCalledTimes(1)
       })
     })
 
     describe('pause', () => {
       test('must call pauseAd', async () => {
         await adUnit.start()
-        await adUnit.pause()
+        adUnit.pause()
 
-        expect(adUnit.creativeAd[pauseAd]).toHaveBeenCalledTimes(1)
+        expect(adUnit.creativeAd?.[pauseAd]).toHaveBeenCalledTimes(1)
       })
     })
 
@@ -575,7 +573,7 @@ describe('VpaidAdUnit', () => {
         await adUnit.start()
         adUnit.skip()
 
-        expect(adUnit.creativeAd[skipAd]).toHaveBeenCalledTimes(1)
+        expect(adUnit.creativeAd?.[skipAd]).toHaveBeenCalledTimes(1)
       })
     })
 
@@ -583,7 +581,7 @@ describe('VpaidAdUnit', () => {
       test('must call getAdVolume', async () => {
         await adUnit.start()
         mockCreativeAd.getAdVolume.mockClear()
-        await adUnit.getVolume()
+        adUnit.getVolume()
 
         expect(mockCreativeAd.getAdVolume).toHaveBeenCalledTimes(1)
       })
@@ -593,7 +591,7 @@ describe('VpaidAdUnit', () => {
       test('must call setAdVolume', async () => {
         await adUnit.start()
         mockCreativeAd.setAdVolume.mockClear()
-        await adUnit.setVolume(0.5)
+        adUnit.setVolume(0.5)
 
         expect(mockCreativeAd.setAdVolume).toHaveBeenCalledTimes(1)
         expect(mockCreativeAd.setAdVolume).toHaveBeenCalledWith(0.5)
@@ -626,7 +624,7 @@ describe('VpaidAdUnit', () => {
 
         try {
           await adUnit.cancel()
-        } catch (error) {
+        } catch (error: any) {
           expect(error.message).toBe('VideoAdUnit is finished')
         }
       })
@@ -661,7 +659,7 @@ describe('VpaidAdUnit', () => {
       test("must throw if you don't pass a callback function ", async () => {
         await adUnit.start()
 
-        expect(() => adUnit.onFinish()).toThrow('Expected a callback function')
+        expect(() => adUnit.onFinish(undefined as any)).toThrow('Expected a callback function')
       })
 
       test('must be called if the ad unit gets canceled', async () => {
@@ -687,8 +685,8 @@ describe('VpaidAdUnit', () => {
 
         expect(callback).not.toHaveBeenCalled()
 
-        adUnit.creativeAd.emit(adVideoComplete)
-        adUnit.creativeAd.emit(adStopped)
+        ;(adUnit.creativeAd as any).emit(adVideoComplete)
+        ;(adUnit.creativeAd as any).emit(adStopped)
 
         expect(callback).toHaveBeenCalledTimes(1)
       })
@@ -702,7 +700,7 @@ describe('VpaidAdUnit', () => {
 
         expect(callback).not.toHaveBeenCalled()
 
-        adUnit.creativeAd.emit(adStopped)
+        ;(adUnit.creativeAd as any).emit(adStopped)
 
         expect(callback).toHaveBeenCalledTimes(1)
       })
@@ -716,7 +714,7 @@ describe('VpaidAdUnit', () => {
 
         expect(callback).not.toHaveBeenCalled()
 
-        adUnit.creativeAd.emit(adUserClose)
+        ;(adUnit.creativeAd as any).emit(adUserClose)
 
         expect(callback).toHaveBeenCalledTimes(1)
       })
@@ -726,7 +724,7 @@ describe('VpaidAdUnit', () => {
       test("must throw if you don't pass a callback function ", async () => {
         await adUnit.start()
 
-        expect(() => adUnit.onError()).toThrow('Expected a callback function')
+        expect(() => adUnit.onError(undefined as any)).toThrow('Expected a callback function')
       })
 
       test('must call the callback if there is a problem starting the ad', async () => {
@@ -739,7 +737,7 @@ describe('VpaidAdUnit', () => {
 
         adUnit.onError(callback)
 
-        handshake.mockImplementationOnce(() => {
+        ;(handshake as jest.Mock).mockImplementationOnce(() => {
           throw handshakeVersionError
         })
 
@@ -764,7 +762,7 @@ describe('VpaidAdUnit', () => {
 
         expect(callback).not.toHaveBeenCalled()
 
-        adUnit.creativeAd.emit(adError)
+        ;(adUnit.creativeAd as any).emit(adError)
 
         expect(callback).toHaveBeenCalledTimes(1)
         expect(callback).toHaveBeenCalledWith(
@@ -781,13 +779,13 @@ describe('VpaidAdUnit', () => {
   })
 
   describe('creative vpaid event', () => {
-    let mockCreativeAd
-    let adUnit
+    let mockCreativeAd: MockVpaidCreativeAd
+    let adUnit: VpaidAdUnit
 
     beforeEach(() => {
       mockCreativeAd = new MockVpaidCreativeAd()
 
-      initAd.mockImplementation(() => {
+      ;(initAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adLoaded)
       })
 
@@ -799,7 +797,7 @@ describe('VpaidAdUnit', () => {
         mockCreativeAd.emit(adStopped)
       })
 
-      loadCreative.mockReturnValue(Promise.resolve(mockCreativeAd))
+      ;(loadCreative as jest.Mock).mockReturnValue(Promise.resolve(mockCreativeAd))
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
     })
 
@@ -810,7 +808,7 @@ describe('VpaidAdUnit', () => {
         adUnit.on(vpaidEvt, callback)
         await adUnit.start()
 
-        adUnit.creativeAd.emit(vpaidEvt)
+        ;(adUnit.creativeAd as any).emit(vpaidEvt)
 
         expect(callback).toHaveBeenCalledWith({
           adUnit,
@@ -902,7 +900,7 @@ describe('VpaidAdUnit', () => {
           adUnit.on(vastEvt, callback)
           await adUnit.start()
 
-          adUnit.creativeAd.emit(vpaidEvt, payload)
+          ;(adUnit.creativeAd as any).emit(vpaidEvt, payload)
           expect(callback).toHaveBeenCalledWith({
             adUnit,
             type: vastEvt
@@ -917,9 +915,9 @@ describe('VpaidAdUnit', () => {
       adUnit.on(start, callback)
       await adUnit.start()
 
-      adUnit.creativeAd.emit(adVideoStart)
-      adUnit.creativeAd.emit(adVideoStart)
-      adUnit.creativeAd.emit(adVideoStart)
+      ;(adUnit.creativeAd as any).emit(adVideoStart)
+      ;(adUnit.creativeAd as any).emit(adVideoStart)
+      ;(adUnit.creativeAd as any).emit(adVideoStart)
       expect(callback).toHaveBeenCalledTimes(1)
     })
 
@@ -929,7 +927,7 @@ describe('VpaidAdUnit', () => {
       adUnit.on(start, callback)
       await adUnit.start()
 
-      adUnit.creativeAd.emit(adImpression)
+      ;(adUnit.creativeAd as any).emit(adImpression)
       expect(callback).toHaveBeenCalledTimes(1)
       expect(callback).toHaveBeenCalledWith({
         adUnit,
@@ -942,9 +940,9 @@ describe('VpaidAdUnit', () => {
 
       adUnit.on(start, callback)
       await adUnit.start()
-      adUnit.creativeAd.emit(adVideoStart)
+      ;(adUnit.creativeAd as any).emit(adVideoStart)
       expect(callback).toHaveBeenCalledTimes(1)
-      adUnit.creativeAd.emit(adImpression)
+      ;(adUnit.creativeAd as any).emit(adImpression)
       expect(callback).toHaveBeenCalledTimes(1)
     })
 
@@ -953,13 +951,13 @@ describe('VpaidAdUnit', () => {
         await adUnit.start()
         expect(adUnit.paused()).toBe(true)
 
-        adUnit.creativeAd.emit(adVideoStart)
+        ;(adUnit.creativeAd as any).emit(adVideoStart)
         expect(adUnit.paused()).toBe(false)
 
-        adUnit.creativeAd.emit(adPaused)
+        ;(adUnit.creativeAd as any).emit(adPaused)
         expect(adUnit.paused()).toBe(true)
 
-        adUnit.creativeAd.emit(adPlaying)
+        ;(adUnit.creativeAd as any).emit(adPlaying)
         expect(adUnit.paused()).toBe(false)
 
         await adUnit.cancel()
@@ -968,7 +966,7 @@ describe('VpaidAdUnit', () => {
     })
 
     describe(adClickThru, () => {
-      let origOpen
+      let origOpen: any
 
       beforeEach(() => {
         origOpen = window.open
@@ -982,7 +980,7 @@ describe('VpaidAdUnit', () => {
       test('must not open a new tab if `playerHandles` is false', async () => {
         await adUnit.start()
 
-        adUnit.creativeAd.emit(
+        ;(adUnit.creativeAd as any).emit(
           adClickThru,
           'https://test.example.com/clickUrl',
           undefined,
@@ -997,38 +995,37 @@ describe('VpaidAdUnit', () => {
         })
 
         test('if paused, must resume the adUnit', () => {
-          adUnit.creativeAd.emit(adVideoStart)
-          adUnit.creativeAd.emit(adPaused)
+          ;(adUnit.creativeAd as any).emit(adVideoStart)
+          ;(adUnit.creativeAd as any).emit(adPaused)
           expect(adUnit.paused()).toBe(true)
-          adUnit.creativeAd.emit(
+          ;(adUnit.creativeAd as any).emit(
             adClickThru,
             'https://test.example.com/clickUrl',
             undefined,
             true
           )
           expect(window.open).not.toHaveBeenCalled()
-          expect(adUnit.creativeAd.pauseAd).toHaveBeenCalledTimes(0)
-          expect(adUnit.creativeAd.resumeAd).toHaveBeenCalledTimes(1)
+          expect(adUnit.creativeAd?.pauseAd).toHaveBeenCalledTimes(0)
+          expect(adUnit.creativeAd?.resumeAd).toHaveBeenCalledTimes(1)
         })
 
         describe('if playing', () => {
           test('must pause the adUnit', () => {
-            adUnit.creativeAd.emit(adVideoStart)
-            adUnit.creativeAd.emit(
+            ;(adUnit.creativeAd as any).emit(adVideoStart)
+            ;(adUnit.creativeAd as any).emit(
               adClickThru,
               'https://test.example.com/clickUrl',
               undefined,
               true
             )
             expect(window.open).toHaveBeenCalled()
-            expect(adUnit.creativeAd.pauseAd).toHaveBeenCalledTimes(1)
-            expect(adUnit.creativeAd.resumeAd).toHaveBeenCalledTimes(0)
+            expect(adUnit.creativeAd?.pauseAd).toHaveBeenCalledTimes(1)
+            expect(adUnit.creativeAd?.resumeAd).toHaveBeenCalledTimes(0)
           })
 
           test('must open the provided url in a new tab', () => {
-            adUnit.creativeAd.emit(adVideoStart)
-
-            adUnit.creativeAd.emit(
+            ;(adUnit.creativeAd as any).emit(adVideoStart)
+            ;(adUnit.creativeAd as any).emit(
               adClickThru,
               'https://test.example.com/clickUrl',
               undefined,
@@ -1042,9 +1039,8 @@ describe('VpaidAdUnit', () => {
           })
 
           test('must use vast clickthrough url if no url is provided', () => {
-            adUnit.creativeAd.emit(adVideoStart)
-
-            adUnit.creativeAd.emit(adClickThru, '', '', true)
+            ;(adUnit.creativeAd as any).emit(adVideoStart)
+            ;(adUnit.creativeAd as any).emit(adClickThru, '', '', true)
             expect(window.open).toHaveBeenCalledTimes(1)
             expect(window.open).toHaveBeenCalledWith(
               'https://test.example.com/clickthrough',
@@ -1055,10 +1051,10 @@ describe('VpaidAdUnit', () => {
 
         test('if paused, must not resume the adUnit and open the provided url in a new tab', () => {
           adUnit.pauseOnAdClick = false
-          adUnit.creativeAd.emit(adVideoStart)
-          adUnit.creativeAd.emit(adPaused)
+          ;(adUnit.creativeAd as any).emit(adVideoStart)
+          ;(adUnit.creativeAd as any).emit(adPaused)
           expect(adUnit.paused()).toBe(true)
-          adUnit.creativeAd.emit(
+          ;(adUnit.creativeAd as any).emit(
             adClickThru,
             'https://test.example.com/clickUrl',
             undefined,
@@ -1069,15 +1065,15 @@ describe('VpaidAdUnit', () => {
             'https://test.example.com/clickUrl',
             '_blank'
           )
-          expect(adUnit.creativeAd.pauseAd).not.toHaveBeenCalled()
-          expect(adUnit.creativeAd.resumeAd).not.toHaveBeenCalled()
+          expect(adUnit.creativeAd?.pauseAd).not.toHaveBeenCalled()
+          expect(adUnit.creativeAd?.resumeAd).not.toHaveBeenCalled()
         })
 
         test('if playing, must not pause the adUnit and open the provided url in a new tab', () => {
           adUnit.pauseOnAdClick = false
-          adUnit.creativeAd.emit(adVideoStart)
+          ;(adUnit.creativeAd as any).emit(adVideoStart)
           expect(adUnit.paused()).toBe(false)
-          adUnit.creativeAd.emit(
+          ;(adUnit.creativeAd as any).emit(
             adClickThru,
             'https://test.example.com/clickUrl',
             undefined,
@@ -1088,8 +1084,8 @@ describe('VpaidAdUnit', () => {
             'https://test.example.com/clickUrl',
             '_blank'
           )
-          expect(adUnit.creativeAd.pauseAd).not.toHaveBeenCalled()
-          expect(adUnit.creativeAd.resumeAd).not.toHaveBeenCalled()
+          expect(adUnit.creativeAd?.pauseAd).not.toHaveBeenCalled()
+          expect(adUnit.creativeAd?.resumeAd).not.toHaveBeenCalled()
         })
       })
     })
@@ -1103,7 +1099,7 @@ describe('VpaidAdUnit', () => {
         adUnit.on(vastEvt, callback)
         await adUnit.start()
 
-        adUnit.creativeAd.emit(adError)
+        ;(adUnit.creativeAd as any).emit(adError)
 
         expect(callback).toHaveBeenCalledWith({
           adUnit,
@@ -1112,8 +1108,8 @@ describe('VpaidAdUnit', () => {
 
         const error = adUnit.error
 
-        expect(error.message).toBe('VPAID general error')
-        expect(error.code).toBe(ErrorCode.VPAID_ERROR)
+        expect(error?.message).toBe('VPAID general error')
+        expect(error?.code).toBe(ErrorCode.VPAID_ERROR)
         expect(adUnit.errorCode).toBe(ErrorCode.VPAID_ERROR)
       })
 
@@ -1123,10 +1119,10 @@ describe('VpaidAdUnit', () => {
         adUnit.on(vastEvt, callback)
         await adUnit.start()
 
-        const creativeError = new Error('test error')
+        const creativeError = new AdUnitError('test error')
 
         creativeError.code = ErrorCode.VAST_TOO_MANY_REDIRECTS
-        adUnit.creativeAd.emit(adError, creativeError)
+        ;(adUnit.creativeAd as any).emit(adError, creativeError)
 
         expect(callback).toHaveBeenCalledWith({
           adUnit,
@@ -1136,7 +1132,7 @@ describe('VpaidAdUnit', () => {
         const error = adUnit.error
 
         expect(error).toBe(creativeError)
-        expect(error.code).toBe(ErrorCode.VAST_TOO_MANY_REDIRECTS)
+        expect(error?.code).toBe(ErrorCode.VAST_TOO_MANY_REDIRECTS)
         expect(adUnit.errorCode).toBe(ErrorCode.VAST_TOO_MANY_REDIRECTS)
       })
     })
@@ -1148,7 +1144,7 @@ describe('VpaidAdUnit', () => {
         await adUnit.start()
 
         adUnit.on(volumeChanged, callback)
-        adUnit.creativeAd.setAdVolume(0)
+        adUnit.creativeAd?.setAdVolume(0)
         expect(callback).toHaveBeenCalledTimes(1)
         expect(callback).toHaveBeenCalledWith({
           adUnit,
@@ -1162,7 +1158,7 @@ describe('VpaidAdUnit', () => {
         adUnit.on(mute, callback)
         await adUnit.start()
 
-        adUnit.creativeAd.setAdVolume(0)
+        adUnit.creativeAd?.setAdVolume(0)
         expect(callback).toHaveBeenCalledTimes(1)
         expect(callback).toHaveBeenCalledWith({
           adUnit,
@@ -1176,9 +1172,9 @@ describe('VpaidAdUnit', () => {
         adUnit.on(unmute, callback)
         await adUnit.start()
 
-        adUnit.creativeAd.setAdVolume(0)
+        adUnit.creativeAd?.setAdVolume(0)
         expect(callback).not.toHaveBeenCalled()
-        adUnit.creativeAd.setAdVolume(0.5)
+        adUnit.creativeAd?.setAdVolume(0.5)
         expect(callback).toHaveBeenCalledTimes(1)
         expect(callback).toHaveBeenCalledWith({
           adUnit,
@@ -1192,8 +1188,8 @@ describe('VpaidAdUnit', () => {
         adUnit.on(unmute, callback)
         await adUnit.start()
 
-        adUnit.creativeAd.setAdVolume(0.5)
-        adUnit.creativeAd.setAdVolume(0.5)
+        adUnit.creativeAd?.setAdVolume(0.5)
+        adUnit.creativeAd?.setAdVolume(0.5)
         expect(callback).not.toHaveBeenCalled()
       })
     })
@@ -1205,17 +1201,17 @@ describe('VpaidAdUnit', () => {
 
       it('must return the creative duration', async () => {
         await adUnit.start()
-        adUnit.creativeAd[getAdDuration].mockReturnValue(30)
+        ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(30)
 
         expect(adUnit.duration()).toBe(30)
       })
 
       it('must return 0 if the creative returns a negative duration', async () => {
         await adUnit.start()
-        adUnit.creativeAd[getAdDuration].mockReturnValue(-1)
+        ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(-1)
 
         expect(adUnit.duration()).toBe(0)
-        adUnit.creativeAd[getAdDuration].mockReturnValue(-2)
+        ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(-2)
 
         expect(adUnit.duration()).toBe(0)
       })
@@ -1228,23 +1224,23 @@ describe('VpaidAdUnit', () => {
 
       it('must return the creative current time', async () => {
         await adUnit.start()
-        adUnit.creativeAd[getAdDuration].mockReturnValue(30)
-        adUnit.creativeAd[getAdRemainingTime].mockReturnValue(25)
+        ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(30)
+        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(25)
 
         expect(adUnit.currentTime()).toBe(5)
-        adUnit.creativeAd[getAdRemainingTime].mockReturnValue(5)
+        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(5)
 
         expect(adUnit.currentTime()).toBe(25)
       })
 
       it('must return 0 if the creative returns a negative adRemainingTime', async () => {
         await adUnit.start()
-        adUnit.creativeAd[getAdDuration].mockReturnValue(-1)
-        adUnit.creativeAd[getAdRemainingTime].mockReturnValue(-1)
+        ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(-1)
+        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(-1)
 
         expect(adUnit.currentTime()).toBe(0)
-        adUnit.creativeAd[getAdDuration].mockReturnValue(-2)
-        adUnit.creativeAd[getAdRemainingTime].mockReturnValue(-2)
+        ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(-2)
+        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(-2)
 
         expect(adUnit.currentTime()).toBe(0)
       })

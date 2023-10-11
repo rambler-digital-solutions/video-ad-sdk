@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import {ParsedXML, ParsedAd} from '../src/types'
 import {parseXml} from '../src/xml'
 import {getFirstAd} from '../src/vastSelectors'
 
@@ -44,19 +45,19 @@ export const hybridInlineXML = fs.readFileSync(
   'utf8'
 )
 
-export const wrapperParsedXML = parseXml(vastWrapperXML)
-export const inlineParsedXML = parseXml(vastInlineXML)
-export const vpaidInlineParsedXML = parseXml(vastVpaidInlineXML)
-export const legacyVpaidInlineParsedXML = parseXml(legacyVastVpaidInlineXML)
-export const podParsedXML = parseXml(vastPodXML)
-export const noAdParsedXML = parseXml(vastNoAdXML)
-export const waterfallParsedXML = parseXml(vastWaterfallXML)
-export const waterfallWithInlineParsedXML = parseXml(vastWaterfallWithInlineXML)
-export const vastInvalidParsedXML = parseXml(vastInvalidXML)
-export const hybridInlineParsedXML = parseXml(hybridInlineXML)
+export const wrapperParsedXML = parseXml(vastWrapperXML) as ParsedXML
+export const inlineParsedXML = parseXml(vastInlineXML) as ParsedXML
+export const vpaidInlineParsedXML = parseXml(vastVpaidInlineXML) as ParsedXML
+export const legacyVpaidInlineParsedXML = parseXml(legacyVastVpaidInlineXML) as ParsedXML
+export const podParsedXML = parseXml(vastPodXML) as ParsedXML
+export const noAdParsedXML = parseXml(vastNoAdXML) as ParsedXML
+export const waterfallParsedXML = parseXml(vastWaterfallXML) as ParsedXML
+export const waterfallWithInlineParsedXML = parseXml(vastWaterfallWithInlineXML) as ParsedXML
+export const vastInvalidParsedXML = parseXml(vastInvalidXML) as ParsedXML
+export const hybridInlineParsedXML = parseXml(hybridInlineXML) as ParsedXML
 
-export const wrapperAd = getFirstAd(wrapperParsedXML)
-export const inlineAd = getFirstAd(inlineParsedXML)
-export const hybridInlineAd = getFirstAd(hybridInlineParsedXML)
-export const vpaidInlineAd = getFirstAd(vpaidInlineParsedXML)
-export const legacyVpaidInlineAd = getFirstAd(legacyVpaidInlineParsedXML)
+export const wrapperAd = getFirstAd(wrapperParsedXML) as ParsedAd
+export const inlineAd = getFirstAd(inlineParsedXML) as ParsedAd
+export const hybridInlineAd = getFirstAd(hybridInlineParsedXML) as ParsedAd
+export const vpaidInlineAd = getFirstAd(vpaidInlineParsedXML) as ParsedAd
+export const legacyVpaidInlineAd = getFirstAd(legacyVpaidInlineParsedXML) as ParsedAd

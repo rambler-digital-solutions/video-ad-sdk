@@ -7,7 +7,7 @@ export interface LoadResourceOptions {
   placeholder: HTMLElement
 }
 
-const noop = (): void => undefined
+const noop = (): void => {}
 
 const loadResource = (
   icon: VastIcon,

@@ -1,16 +1,24 @@
 import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd'
 import waitFor from '../waitFor'
 
-jest.useFakeTimers()
-
 describe('waitFor', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+    jest.spyOn(global, 'setTimeout')
+    jest.spyOn(global, 'clearTimeout')
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+    jest.clearAllTimers()
+  })
+
   test('must resolve once the event is fired', async () => {
-    const creativeAd = new MockVpaidCreativeAd()
+    const creativeAd: any = new MockVpaidCreativeAd()
     const callback = jest.fn()
 
     const promise = waitFor(creativeAd, 'adLoaded', 1000)
-
-    promise.then(callback)
+    const promiseWithCallback = promise.then(callback)
 
     expect(callback).not.toHaveBeenCalled()
     expect(setTimeout).toHaveBeenCalledTimes(1)
@@ -18,48 +26,46 @@ describe('waitFor', () => {
 
     creativeAd.emit('adLoaded')
 
-    await promise
+    await promiseWithCallback
 
     expect(clearTimeout).toHaveBeenCalled()
     expect(callback).toHaveBeenCalledTimes(1)
   })
 
   test('must reject with an error if it times out', async () => {
-    const creativeAd = new MockVpaidCreativeAd()
+    const creativeAd: any = new MockVpaidCreativeAd()
     const callback = jest.fn()
 
     const promise = waitFor(creativeAd, 'adLoaded', 2000)
-
-    promise.then(callback)
+    const promiseWithCallback = promise.then(callback)
 
     expect(callback).not.toHaveBeenCalled()
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
 
     jest.runOnlyPendingTimers()
-
+    
     try {
-      await promise
-    } catch (error) {
+      await promiseWithCallback
+    } catch (error: any) {
       expect(error.message).toBe("Timeout waiting for event 'adLoaded'")
       expect(callback).not.toHaveBeenCalled()
     }
   })
 
   test('must not call setTimeout if no time is passed', async () => {
-    setTimeout.mockClear()
-    clearTimeout.mockClear()
+    ;(setTimeout as unknown as jest.Mock).mockClear()
+    ;(clearTimeout as unknown as jest.Mock).mockClear()
 
-    const creativeAd = new MockVpaidCreativeAd()
+    const creativeAd: any = new MockVpaidCreativeAd()
     const callback = jest.fn()
     const promise = waitFor(creativeAd, 'adLoaded')
-
-    promise.then(callback)
+    const promiseWithCallback = promise.then(callback)
 
     expect(setTimeout).not.toHaveBeenCalled()
 
     creativeAd.emit('adLoaded')
 
-    await promise
+    await promiseWithCallback
 
     expect(clearTimeout).not.toHaveBeenCalled()
     expect(callback).toHaveBeenCalledTimes(1)

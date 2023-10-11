@@ -28,15 +28,15 @@ jest.mock('../../../adUnit/helpers/media/canPlay')
 
 const createAdUnitMock = (adChain: VastChain, adContainer: VideoAdContainer, opts: VastAdUnitOptions): VastAdUnit => {
   const vastAdUnit = new VastAdUnit(adChain, adContainer, opts)
-  const errorCallbacks = []
+  const errorCallbacks: any[] = []
 
-  vastAdUnit.onError = (handler): void => {
+  vastAdUnit.onError = (handler: any): void => {
     errorCallbacks.push(handler)
   }
 
   vastAdUnit.cancel = jest.fn()
 
-  vastAdUnit.__simulateError = (error): void => {
+  ;(vastAdUnit as any).__simulateError = (error: Error): void => {
     errorCallbacks.forEach((handler) => handler(error))
   }
 
@@ -45,15 +45,15 @@ const createAdUnitMock = (adChain: VastChain, adContainer: VideoAdContainer, opt
 
 const createVPAIDAdUnitMock = (adChain: VastChain, adContainer: VideoAdContainer, opts: VpaidAdUnitOptions): VpaidAdUnit => {
   const vastAdUnit = new VpaidAdUnit(adChain, adContainer, opts)
-  const errorCallbacks = []
+  const errorCallbacks: any[] = []
 
-  vastAdUnit.onError = (handler): void => {
+  vastAdUnit.onError = (handler: any): void => {
     errorCallbacks.push(handler)
   }
 
   vastAdUnit.cancel = jest.fn()
 
-  vastAdUnit.__simulateError = (error): void => {
+  ;(vastAdUnit as any).__simulateError = (error: Error): void => {
     errorCallbacks.forEach((handler) => handler(error))
   }
 
@@ -61,25 +61,23 @@ const createVPAIDAdUnitMock = (adChain: VastChain, adContainer: VideoAdContainer
 }
 
 describe('startVideoAd', () => {
-  let vastAdChain
-  let hybridVastAdChain
-  let wrongVastAdChain
-  let vpaidAdChain
-  let videoAdContainer
-  let options
+  let vastAdChain: VastChain
+  let hybridVastAdChain: VastChain
+  let wrongVastAdChain: VastChain
+  let vpaidAdChain: VastChain
+  let videoAdContainer: VideoAdContainer
+  let options: any
 
   beforeEach(() => {
     vastAdChain = [
       {
         ad: inlineAd,
-        errorCode: null,
         parsedXML: inlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastInlineXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
@@ -88,14 +86,12 @@ describe('startVideoAd', () => {
     hybridVastAdChain = [
       {
         ad: hybridInlineAd,
-        errorCode: null,
         parsedXML: hybridInlineParsedXML,
         requestTag: 'https://test.example.com/hybridVAST',
         XML: hybridInlineXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
@@ -104,14 +100,12 @@ describe('startVideoAd', () => {
     vpaidAdChain = [
       {
         ad: vpaidInlineAd,
-        errorCode: null,
         parsedXML: vpaidInlineParsedXML,
         requestTag: 'https://test.example.com/hybridVAST',
         XML: vastVpaidInlineXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
@@ -120,7 +114,6 @@ describe('startVideoAd', () => {
     wrongVastAdChain = [
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
@@ -134,7 +127,7 @@ describe('startVideoAd', () => {
     const placeholder = document.createElement('div')
 
     videoAdContainer = new VideoAdContainer(placeholder)
-    canPlay.mockReturnValue(true)
+    ;(canPlay as jest.Mock).mockReturnValue(true)
   })
 
   afterEach(() => {
@@ -143,10 +136,10 @@ describe('startVideoAd', () => {
   })
 
   test("must complain if you don't pass a valid vastAdChain or videoAdContainer", () => {
-    expect(startVideoAd()).rejects.toBeInstanceOf(TypeError)
-    expect(startVideoAd([])).rejects.toBeInstanceOf(TypeError)
-    expect(startVideoAd(vastAdChain)).rejects.toBeInstanceOf(TypeError)
-    expect(startVideoAd(vastAdChain, {})).rejects.toBeInstanceOf(TypeError)
+    expect((startVideoAd as any)()).rejects.toBeInstanceOf(TypeError)
+    expect((startVideoAd as any)([])).rejects.toBeInstanceOf(TypeError)
+    expect((startVideoAd as any)(vastAdChain)).rejects.toBeInstanceOf(TypeError)
+    expect((startVideoAd as any)(vastAdChain, {})).rejects.toBeInstanceOf(TypeError)
   })
 
   test('must fail if there is a problem creating the ad Unit', () => {
@@ -154,7 +147,7 @@ describe('startVideoAd', () => {
 
     const adUnitError = new Error('AdUnit error')
 
-    createVideoAdUnit.mockImplementation(() => {
+    ;(createVideoAdUnit as jest.Mock).mockImplementation(() => {
       throw adUnitError
     })
 
@@ -168,7 +161,7 @@ describe('startVideoAd', () => {
 
     try {
       await startVideoAd(wrongVastAdChain, videoAdContainer, options)
-    } catch (error) {
+    } catch (error: any) {
       expect(error.code).toBe(ErrorCode.VAST_MEDIA_FILE_NOT_FOUND)
       expect(error.message).toBe(
         'No valid creative found in the passed VAST chain'
@@ -182,9 +175,9 @@ describe('startVideoAd', () => {
     const adUnitError = new Error('adUnit error')
     const adUnit = createAdUnitMock(vastAdChain, videoAdContainer, options)
 
-    createVideoAdUnit.mockImplementation(() => {
-      adUnit.start = () => {
-        adUnit.__simulateError(adUnitError)
+    ;(createVideoAdUnit as jest.Mock).mockImplementation(() => {
+      adUnit.start = async () => {
+        ;(adUnit as any).__simulateError(adUnitError)
       }
 
       return adUnit
@@ -200,8 +193,8 @@ describe('startVideoAd', () => {
 
       const adUnit = createAdUnitMock(vastAdChain, videoAdContainer, options)
 
-      createVideoAdUnit.mockImplementation(() => {
-        adUnit.start = () => {
+      ;(createVideoAdUnit as jest.Mock).mockImplementation(() => {
+        adUnit.start = async () => {
           adUnit.emit(event)
         }
 
@@ -210,7 +203,7 @@ describe('startVideoAd', () => {
 
       try {
         await startVideoAd(vpaidAdChain, videoAdContainer, options)
-      } catch (error) {
+      } catch (error: any) {
         expect(error.message).toBe(
           `Ad unit start rejected due to event '${event}'`
         )
@@ -220,7 +213,7 @@ describe('startVideoAd', () => {
 
   test('must onAdReady event if the ad unit gets canceled', async () => {
     expect.assertions(5)
-    canPlay.mockReturnValue(false)
+    ;(canPlay as jest.Mock).mockReturnValue(false)
 
     const adUnitError = new Error('adUnit error')
     const adUnit = createVPAIDAdUnitMock(
@@ -229,9 +222,9 @@ describe('startVideoAd', () => {
       options
     )
 
-    createVideoAdUnit.mockImplementation(() => {
-      adUnit.start = () => {
-        adUnit.__simulateError(adUnitError)
+    ;(createVideoAdUnit as jest.Mock).mockImplementation(() => {
+      adUnit.start = async () => {
+        ;(adUnit as any).__simulateError(adUnitError)
       }
 
       return adUnit
@@ -260,8 +253,8 @@ describe('startVideoAd', () => {
 
     const adUnit = createAdUnitMock(vastAdChain, videoAdContainer, options)
 
-    createVideoAdUnit.mockImplementation(() => {
-      adUnit.start = () => {
+    ;(createVideoAdUnit as jest.Mock).mockImplementation(() => {
+      adUnit.start = async () => {
         adUnit.emit(start)
       }
 
@@ -279,8 +272,8 @@ describe('startVideoAd', () => {
     test('must favor vpaid', () => {
       const vpaidUnit = createAdUnitMock(vastAdChain, videoAdContainer, options)
 
-      createVideoAdUnit.mockImplementation(() => {
-        vpaidUnit.start = () => {
+      ;(createVideoAdUnit as jest.Mock).mockImplementation(() => {
+        vpaidUnit.start = async () => {
           vpaidUnit.emit('start')
         }
 
@@ -305,7 +298,7 @@ describe('startVideoAd', () => {
       const adUnitError = new Error('adUnit error')
       const adUnit = createAdUnitMock(vastAdChain, videoAdContainer, options)
 
-      createVideoAdUnit
+      ;(createVideoAdUnit as jest.Mock)
         .mockImplementationOnce(() => {
           const vpaidUnit = createAdUnitMock(
             vastAdChain,
@@ -313,14 +306,14 @@ describe('startVideoAd', () => {
             options
           )
 
-          vpaidUnit.start = () => {
-            vpaidUnit.__simulateError(adUnitError)
+          vpaidUnit.start = async () => {
+            ;(vpaidUnit as any).__simulateError(adUnitError)
           }
 
           return vpaidUnit
         })
         .mockImplementationOnce(() => {
-          adUnit.start = () => {
+          adUnit.start = async () => {
             adUnit.emit(start)
           }
 

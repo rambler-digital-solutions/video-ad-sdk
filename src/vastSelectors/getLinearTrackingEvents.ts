@@ -26,34 +26,29 @@ const getTrackingEvent = (
 const getLinearTrackingEvents = (
   ad: ParsedAd,
   eventName?: string
-): VastTrackingEvent[] | null => {
+): Optional<VastTrackingEvent[]> => {
   const creativeElement = ad && getLinearCreative(ad)
+  const linearElement = creativeElement && get(creativeElement, 'Linear')
+  const trackingEventsElement =
+    linearElement && get(linearElement, 'TrackingEvents')
+  const trackingEventElements =
+    trackingEventsElement && getAll(trackingEventsElement, 'Tracking')
 
-  if (creativeElement) {
-    const linearElement = get(creativeElement, 'Linear')
-    const trackingEventsElement =
-      linearElement && get(linearElement, 'TrackingEvents')
-    const trackingEventElements =
-      trackingEventsElement && getAll(trackingEventsElement, 'Tracking')
+  if (trackingEventElements && trackingEventElements.length > 0) {
+    const trackingEvents = trackingEventElements.map(getTrackingEvent)
 
-    if (trackingEventElements && trackingEventElements.length > 0) {
-      const trackingEvents = trackingEventElements.map(getTrackingEvent)
+    if (!eventName) {
+      return trackingEvents
+    }
 
-      if (eventName) {
-        const filteredEvents = trackingEvents.filter(
-          ({event}) => event === eventName
-        )
+    const filteredEvents = trackingEvents.filter(
+      ({event}) => event === eventName
+    )
 
-        if (filteredEvents.length > 0) {
-          return filteredEvents
-        }
-      } else {
-        return trackingEvents
-      }
+    if (filteredEvents.length > 0) {
+      return filteredEvents
     }
   }
-
-  return null
 }
 
 export default getLinearTrackingEvents

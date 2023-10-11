@@ -102,19 +102,18 @@ class VideoAdUnit extends Emitter {
   }
 
   /** Ad unit type */
-  public type: string | null = null
+  public type?: string
 
   /** If an error occurs it will contain the reference to the error otherwise it will be bull */
-  public error: AdUnitError | null = null
+  public error?: AdUnitError
 
   /** If an error occurs it will contain the Vast Error code of the error */
-  public errorCode: number | null = null
+  public errorCode?: number
 
   public vastChain: VastChain
   public videoAdContainer: VideoAdContainer
-
-  protected pauseOnAdClick: boolean
-  protected icons: VastIcon[] | null
+  public icons?: VastIcon[]
+  public pauseOnAdClick: boolean
 
   /**
    * Creates a {@link VideoAdUnit}.
@@ -143,7 +142,7 @@ class VideoAdUnit extends Emitter {
     /** Reference to the {@link VideoAdContainer} that contains the ad. */
     this.videoAdContainer = videoAdContainer
 
-    /** Array of {@link VastIcon} definitions to display from the passed {@link VastChain} or null if there are no icons.*/
+    /** Array of {@link VastIcon} definitions to display from the passed {@link VastChain} or undefined if there are no icons.*/
     this.icons = retrieveIcons(vastChain)
 
     this.pauseOnAdClick = pauseOnAdClick

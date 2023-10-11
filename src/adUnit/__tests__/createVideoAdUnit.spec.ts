@@ -19,6 +19,7 @@ import {
 import VastAdUnit from '../VastAdUnit'
 import createVideoAdUnit from '../createVideoAdUnit'
 import VpaidAdUnit from '../VpaidAdUnit'
+import {VastChain} from '../../types'
 
 jest.mock('../../tracker', () => ({
   ...jest.requireActual('../../tracker'),
@@ -32,29 +33,26 @@ jest.mock('../helpers/dom/elementObservers', () => ({
 }))
 
 describe('createVideoAdUnit', () => {
-  let vastChain
-  let vpaidChain
-  let videoAdContainer
+  let vastChain: VastChain
+  let vpaidChain: VastChain
+  let videoAdContainer: VideoAdContainer
 
   beforeEach(() => {
     vastChain = [
       {
         ad: inlineAd,
-        errorCode: null,
         parsedXML: inlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastInlineXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastWrapperXML
       },
       {
         ad: wrapperAd,
-        errorCode: null,
         parsedXML: wrapperParsedXML,
         requestTag: 'http://adtag.test.example.com',
         XML: vastWrapperXML
@@ -63,7 +61,6 @@ describe('createVideoAdUnit', () => {
     vpaidChain = [
       {
         ad: vpaidInlineAd,
-        errorCode: null,
         parsedXML: vpaidInlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastVpaidInlineXML
@@ -74,10 +71,10 @@ describe('createVideoAdUnit', () => {
   })
 
   afterEach(() => {
-    vastChain = null
-    videoAdContainer = null
-    trackLinearEvent.mockClear()
-    trackNonLinearEvent.mockClear()
+    ;(vastChain as any) = null
+    ;(videoAdContainer as any) = null
+    ;(trackLinearEvent as jest.Mock).mockClear()
+    ;(trackNonLinearEvent as jest.Mock).mockClear()
   })
 
   test('must return a VastAdUnit for Vast ads', () => {
@@ -98,7 +95,7 @@ describe('createVideoAdUnit', () => {
 
   Object.values(linearEvents).forEach((event) => {
     test(`must track the ${event} linear events`, async () => {
-      const adUnit = createVideoAdUnit(vastChain, videoAdContainer, {})
+      const adUnit = createVideoAdUnit(vastChain, videoAdContainer, {} as any)
       const data = {
         progressUri: 'http://test.example.com/progress'
       }
@@ -123,7 +120,7 @@ describe('createVideoAdUnit', () => {
 
   Object.values(nonLinearEvents).forEach((event) => {
     test(`must track the ${event} non linear event`, async () => {
-      const adUnit = createVideoAdUnit(vastChain, videoAdContainer, {})
+      const adUnit = createVideoAdUnit(vastChain, videoAdContainer, {} as any)
       const data = {
         progressUri: 'http://test.example.com/progress'
       }

@@ -6,11 +6,11 @@ const {mute, unmute} = linearEvents
 
 test('onVolumechange must call the callback with mute if the video was unmute and it became mute and the other way around', () => {
   const callback = jest.fn()
-  const videoElement = document.createElement('VIDEO')
+  const videoElement = document.createElement('video')
 
   videoElement.muted = false
 
-  const disconnect = onVolumeChange({videoElement}, callback)
+  const disconnect = onVolumeChange({videoElement} as any, callback)
 
   videoElement.muted = true
 

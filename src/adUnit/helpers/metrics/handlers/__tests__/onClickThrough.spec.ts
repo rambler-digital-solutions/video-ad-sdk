@@ -1,14 +1,14 @@
-import {createVideoAdContainer} from '../../../../../adContainer'
+import {createVideoAdContainer, VideoAdContainer} from '../../../../../adContainer'
 import {linearEvents} from '../../../../../tracker'
 import onClickThrough from '../onClickThrough'
 
 const {clickThrough} = linearEvents
-let videoAdContainer
-let callback
+let videoAdContainer: VideoAdContainer
+let callback: any
 
 beforeEach(async () => {
   callback = jest.fn()
-  videoAdContainer = await createVideoAdContainer(document.createElement('DIV'))
+  videoAdContainer = createVideoAdContainer(document.createElement('div'))
 
   const {videoElement} = videoAdContainer
 
@@ -30,7 +30,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   callback = null
-  videoAdContainer = null
+  ;(videoAdContainer as any) = null
 })
 
 test('onClickThrough must add an anchor to the videoAdContainer element', () => {
@@ -38,7 +38,7 @@ test('onClickThrough must add an anchor to the videoAdContainer element', () => 
 
   onClickThrough(videoAdContainer, callback)
 
-  const anchor = element.querySelector('a.mol-vast-clickthrough')
+  const anchor = element.querySelector('a.mol-vast-clickthrough') as HTMLAnchorElement
 
   expect(anchor).toBeInstanceOf(HTMLAnchorElement)
   expect(anchor.href).toBe('')
@@ -56,7 +56,7 @@ test('onClickThrough must add the clickThrough url to the anchor if passed', () 
     clickThroughUrl
   })
 
-  const anchor = element.querySelector('a.mol-vast-clickthrough')
+  const anchor = element.querySelector('a.mol-vast-clickthrough') as HTMLAnchorElement
 
   expect(anchor).toBeInstanceOf(HTMLAnchorElement)
   expect(anchor.href).toBe(clickThroughUrl)
@@ -71,9 +71,12 @@ test('onClickThrough must on anchor click, pause the video content and call the 
 
   onClickThrough(videoAdContainer, callback)
 
-  const anchor = element.querySelector('a.mol-vast-clickthrough')
+  const anchor = element.querySelector('a.mol-vast-clickthrough') as HTMLAnchorElement
 
-  videoElement.paused = false
+  Object.defineProperty(videoElement, 'paused', {
+    value: false,
+    writable: true
+  })
   anchor.click()
 
   expect(videoElement.pause).toHaveBeenCalledTimes(1)
@@ -87,9 +90,12 @@ test('onClickThrough must on anchor second click, play the video and not call th
 
   onClickThrough(videoAdContainer, callback)
 
-  const anchor = element.querySelector('a.mol-vast-clickthrough')
+  const anchor = element.querySelector('a.mol-vast-clickthrough') as HTMLAnchorElement
 
-  videoElement.paused = true
+  Object.defineProperty(videoElement, 'paused', {
+    value: true,
+    writable: true
+  })
   anchor.click()
 
   expect(videoElement.play).toHaveBeenCalledTimes(1)
@@ -102,9 +108,12 @@ test('onClickThrough must on anchor every click, not pause the video and call th
 
   onClickThrough(videoAdContainer, callback, {pauseOnAdClick: false})
 
-  const anchor = element.querySelector('a.mol-vast-clickthrough')
+  const anchor = element.querySelector('a.mol-vast-clickthrough') as HTMLAnchorElement
 
-  videoElement.paused = false
+  Object.defineProperty(videoElement, 'paused', {
+    value: false,
+    writable: true
+  })
   anchor.click()
 
   expect(videoElement.pause).not.toHaveBeenCalled()
@@ -118,9 +127,12 @@ test('onClickThrough must on anchor every click, not play the video and call the
 
   onClickThrough(videoAdContainer, callback, {pauseOnAdClick: false})
 
-  const anchor = element.querySelector('a.mol-vast-clickthrough')
+  const anchor = element.querySelector('a.mol-vast-clickthrough') as HTMLAnchorElement
 
-  videoElement.paused = true
+  Object.defineProperty(videoElement, 'paused', {
+    value: true,
+    writable: true
+  })
   anchor.click()
 
   expect(videoElement.pause).not.toHaveBeenCalled()
@@ -136,7 +148,7 @@ test('onClickThrough must remove the anchor on disconnect', () => {
 
   disconnect()
 
-  expect(element.querySelector('a.mol-vast-clickthrough')).toEqual(null)
+  expect(element.querySelector('a.mol-vast-clickthrough')).toBeNull()
 })
 
 test('onClickThrough must use custom click element', () => {
@@ -149,7 +161,10 @@ test('onClickThrough must use custom click element', () => {
 
   onClickThrough(videoAdContainer, callback, {createClickControl})
 
-  videoElement.paused = false
+  Object.defineProperty(videoElement, 'paused', {
+    value: false,
+    writable: true
+  })
   customClickElement.click()
 
   expect(element.querySelector('a.mol-vast-clickthrough')).toBeNull()

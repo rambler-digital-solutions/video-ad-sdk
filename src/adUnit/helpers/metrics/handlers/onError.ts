@@ -6,14 +6,16 @@ const {error} = linearEvents
 
 const onError = (
   {videoElement}: VideoAdContainer,
-  callback: (event: string, mediaError: MediaError | null) => void
+  callback: (event: string, mediaError?: MediaError) => void
 ): Cancel => {
   const errorHandler = (): void => {
-    const mediaError = videoElement.error
+    const mediaError = videoElement.error ?? undefined
 
-    Object.defineProperty(mediaError, 'code', {
-      get: () => ErrorCode.VAST_PROBLEM_DISPLAYING_MEDIA_FILE
-    })
+    if (mediaError) {
+      Object.defineProperty(mediaError, 'code', {
+        get: () => ErrorCode.VAST_PROBLEM_DISPLAYING_MEDIA_FILE
+      })
+    }
 
     callback(error, mediaError)
   }

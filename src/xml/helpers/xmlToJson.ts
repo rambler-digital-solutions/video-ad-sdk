@@ -14,22 +14,22 @@ const getNodeType = (node: Node): NodeType => {
   }
 }
 
-const getNodeAttributes = (node: Element): Attributes | null =>
+const getNodeAttributes = (node: Element): Optional<Attributes> =>
   node.attributes.length === 0
-    ? null
+    ? undefined
     : Object.fromEntries(
         Array.from(node.attributes).map((attribute) => [
           attribute.nodeName,
-          attribute.nodeValue
+          attribute.nodeValue ?? undefined
         ])
       )
 
-const getNodeText = (node: Text | CDATASection): string | undefined =>
+const getNodeText = (node: Text | CDATASection): Optional<string> =>
   node.nodeValue?.replace('<![CDATA[', '').replace(']]>', '').trim()
 
-const getNodeChildren = (node: Document | ChildNode): ParsedXML[] | null => {
+const getNodeChildren = (node: Document | ChildNode): Optional<ParsedXML[]> => {
   if (!node.hasChildNodes()) {
-    return null
+    return
   }
 
   const childNodes = Array.from(node.childNodes).filter((childNode) =>

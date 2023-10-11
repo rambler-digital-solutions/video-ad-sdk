@@ -48,7 +48,7 @@ test('parseMacro must fill the TIMESTAMP variable if not provided', () => {
 
   const macro = 'https://test.example.com/[TIMESTAMP]'
 
-  global.Date.now = jest.fn(() => now)
+  ;(Date.now as any) = jest.fn(() => now)
 
   expect(parseMacro(macro, {})).toEqual(
     `https://test.example.com/${encodeURIComponent(now.toISOString())}`

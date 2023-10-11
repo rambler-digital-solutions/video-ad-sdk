@@ -4,15 +4,15 @@ const mockClientRect = (element: HTMLElement, mockValue: Partial<DOMRect>): void
   element.getBoundingClientRect = jest.fn(() => mockValue as DOMRect)
 }
 
-let icon
-let iconElement
-let placeholder
-let drawnIcons
-let config
+let icon: any
+let iconElement: HTMLImageElement
+let placeholder: HTMLElement
+let drawnIcons: any
+let config: any
 
 beforeEach(() => {
-  placeholder = document.createElement('DIV')
-  iconElement = document.createElement('IMG')
+  placeholder = document.createElement('div')
+  iconElement = document.createElement('img')
   icon = {}
 
   mockClientRect(placeholder, {
@@ -46,9 +46,9 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  placeholder = null
+  ;(placeholder as any) = null
   icon = null
-  iconElement = null
+  ;(iconElement as any)  = null
   drawnIcons = null
   config = null
 })

@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`getDetails must return the media files 1`] = `
-Array [
-  Object {
+[
+  {
     "apiFramework": undefined,
     "bitrate": "600",
     "codec": undefined,
@@ -18,7 +18,7 @@ Array [
     "universalAdId": "8465",
     "width": "1920",
   },
-  Object {
+  {
     "apiFramework": undefined,
     "bitrate": "600",
     "codec": undefined,
@@ -34,7 +34,7 @@ Array [
     "universalAdId": "8465",
     "width": "768",
   },
-  Object {
+  {
     "apiFramework": undefined,
     "bitrate": "600",
     "codec": undefined,
@@ -54,8 +54,8 @@ Array [
 `;
 
 exports[`getDetails must return the media files 2`] = `
-Array [
-  Object {
+[
+  {
     "apiFramework": undefined,
     "bitrate": "600",
     "codec": undefined,
@@ -71,7 +71,7 @@ Array [
     "universalAdId": "8465",
     "width": "1920",
   },
-  Object {
+  {
     "apiFramework": undefined,
     "bitrate": "600",
     "codec": undefined,
@@ -87,7 +87,7 @@ Array [
     "universalAdId": "8465",
     "width": "768",
   },
-  Object {
+  {
     "apiFramework": undefined,
     "bitrate": "600",
     "codec": undefined,

@@ -17,7 +17,7 @@ const unmarkAdsAsRequested = (parsedXml: ParsedXML): void => {
   getAds(parsedXml).forEach(unmarkAdAsRequested)
 }
 
-test('getNextAd must return null if there is no next ad definition in the waterfall', () => {
+test('getNextAd must return undefined if there is no next ad definition in the waterfall', () => {
   markAdAsRequested(wrapperAd)
 
   expect(
@@ -25,10 +25,10 @@ test('getNextAd must return null if there is no next ad definition in the waterf
       {
         ad: wrapperAd,
         parsedXML: wrapperParsedXML
-      },
+      } as any,
       {}
     )
-  ).toBe(null)
+  ).toBeUndefined()
 
   markAdsAsRequested(waterfallParsedXML)
 
@@ -39,10 +39,10 @@ test('getNextAd must return null if there is no next ad definition in the waterf
       {
         ad: waterfallAds[0],
         parsedXML: waterfallParsedXML
-      },
+      } as any,
       {}
     )
-  ).toBe(null)
+  ).toBeUndefined()
 
   unmarkAdsAsRequested(waterfallParsedXML)
   unmarkAdAsRequested(wrapperAd)
@@ -58,7 +58,7 @@ test('getNextAd must get the next available ad definition if fallbackOnNoAd is t
       {
         ad: waterfallAds[0],
         parsedXML: waterfallParsedXML
-      },
+      } as any,
       {fallbackOnNoAd: true}
     )
   ).toBe(waterfallAds[1])
@@ -66,7 +66,7 @@ test('getNextAd must get the next available ad definition if fallbackOnNoAd is t
   unmarkAdAsRequested(waterfallAds[0])
 })
 
-test('getNextAd must return null if fallbackOnNoAd is false', () => {
+test('getNextAd must return undefined if fallbackOnNoAd is false', () => {
   const waterfallAds = getAds(waterfallParsedXML)
 
   expect(
@@ -74,10 +74,10 @@ test('getNextAd must return null if fallbackOnNoAd is false', () => {
       {
         ad: waterfallAds[0],
         parsedXML: waterfallParsedXML
-      },
+      } as any,
       {fallbackOnNoAd: false}
     )
-  ).toBe(null)
+  ).toBeUndefined()
 })
 
 test('getNextAd must get the next ad definition on the ad Pod sequence', () => {
@@ -91,7 +91,7 @@ test('getNextAd must get the next ad definition on the ad Pod sequence', () => {
       {
         ad: podAds[0],
         parsedXML: podParsedXML
-      },
+      } as any,
       {}
     )
   ).toBe(podAds[1])
@@ -99,7 +99,7 @@ test('getNextAd must get the next ad definition on the ad Pod sequence', () => {
   unmarkAdAsRequested(podAds[0])
 })
 
-test('getNextAd must return null if there is no next pod in the ad pod sequence', () => {
+test('getNextAd must return undefined if there is no next pod in the ad pod sequence', () => {
   const ads = getAds(podParsedXML)
   const podAds = ads.filter(isPodAd)
 
@@ -110,10 +110,10 @@ test('getNextAd must return null if there is no next pod in the ad pod sequence'
       {
         ad: podAds[0],
         parsedXML: podParsedXML
-      },
+      } as any,
       {}
     )
-  ).toBe(null)
+  ).toBeUndefined()
 
   unmarkAdsAsRequested(podParsedXML)
 })
@@ -130,7 +130,7 @@ test('getNextAd with useAdBuffet option flag set to true must get an ad definiti
       {
         ad: podAds[0],
         parsedXML: podParsedXML
-      },
+      } as any,
       {useAdBuffet: true}
     )
   ).toBe(buffetAds[0])
@@ -151,7 +151,7 @@ test('getNextAd with useAdBuffet option flag set to true must get the next ad de
       {
         ad: podAds[0],
         parsedXML: podParsedXML
-      },
+      } as any,
       {useAdBuffet: true}
     )
   ).toBe(podAds[1])

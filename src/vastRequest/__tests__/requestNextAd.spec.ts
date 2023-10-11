@@ -14,8 +14,8 @@ import requestNextAd from '../requestNextAd'
 import {markAdAsRequested, unmarkAdAsRequested} from '../helpers/adUtils'
 
 test('requestNextAd must throw if we pass an invalid VAST chain', () => {
-  expect(() => requestNextAd()).toThrowError('Invalid VAST chain')
-  expect(() => requestNextAd()).toThrowError(TypeError)
+  expect(() => (requestNextAd as any)()).toThrowError('Invalid VAST chain')
+  expect(() => (requestNextAd as any)()).toThrowError(TypeError)
 })
 
 test('requestNexAd must return the next inline to play in the waterfall', async () => {
@@ -23,21 +23,18 @@ test('requestNexAd must return the next inline to play in the waterfall', async 
   const VASTWaterfallChain = [
     {
       ad: inlineAd,
-      errorCode: null,
       parsedXML: inlineParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastInlineXML
     },
     {
       ad: wrapperAd,
-      errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastWrapperXML
     },
     {
       ad: waterfallAds[0],
-      errorCode: null,
       parsedXML: waterfallWithInlineParsedXML,
       requestTag: 'http://adtag.test.example.com',
       XML: vastWaterfallXML
@@ -53,7 +50,6 @@ test('requestNexAd must return the next inline to play in the waterfall', async 
   expect(vastChain).toEqual([
     {
       ad: waterfallAds[1],
-      errorCode: null,
       parsedXML: waterfallWithInlineParsedXML,
       requestTag: 'http://adtag.test.example.com',
       XML: vastWaterfallXML
@@ -70,50 +66,47 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
   const VASTWaterfallChain = [
     {
       ad: inlineAd,
-      errorCode: null,
       parsedXML: inlineParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastInlineXML
     },
     {
       ad: wrapperAd,
-      errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastWrapperXML
     },
     {
       ad: wrapperAd,
-      errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastWrapperXML
     },
     {
       ad: waterfallAds[0],
-      errorCode: null,
       parsedXML: waterfallParsedXML,
       requestTag: 'http://adtag.test.example.com',
       XML: vastWaterfallXML
     }
   ]
 
-  const wrapperResponse = {
+  const wrapperResponse = new Response(vastWrapperXML, {
     status: 200,
-    text: () => vastWrapperXML
-  }
+  })
 
-  const inlineResponse = {
+  const inlineResponse = new Response(vastInlineXML, {
     status: 200,
-    text: () => vastInlineXML
-  }
+  })
+
+  const nextWrapperResponse = wrapperResponse.clone()
+  const nextInlineResponse = inlineResponse.clone()
 
   global.fetch = jest
     .fn()
     .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
     .mockImplementationOnce(() => Promise.resolve(inlineResponse))
-    .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
-    .mockImplementationOnce(() => Promise.resolve(inlineResponse))
+    .mockImplementationOnce(() => Promise.resolve(nextWrapperResponse))
+    .mockImplementationOnce(() => Promise.resolve(nextInlineResponse))
 
   markAdAsRequested(inlineAd)
   markAdAsRequested(wrapperAd)
@@ -124,7 +117,6 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
   expect(vastChain).toEqual([
     {
       ad: inlineAd,
-      errorCode: null,
       parsedXML: inlineParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       response: inlineResponse,
@@ -132,7 +124,6 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
     },
     {
       ad: wrapperAd,
-      errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       response: wrapperResponse,
@@ -140,7 +131,6 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
     },
     {
       ad: waterfallAds[1],
-      errorCode: null,
       parsedXML: waterfallParsedXML,
       requestTag: 'http://adtag.test.example.com',
       XML: vastWaterfallXML
@@ -152,23 +142,20 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
   expect(vastChain).toEqual([
     {
       ad: inlineAd,
-      errorCode: null,
       parsedXML: inlineParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
-      response: inlineResponse,
+      response: nextInlineResponse,
       XML: vastInlineXML
     },
     {
       ad: wrapperAd,
-      errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
-      response: wrapperResponse,
+      response: nextWrapperResponse,
       XML: vastWrapperXML
     },
     {
       ad: waterfallAds[2],
-      errorCode: null,
       parsedXML: waterfallParsedXML,
       requestTag: 'http://adtag.test.example.com',
       XML: vastWaterfallXML
@@ -187,21 +174,18 @@ test('requestNextAd must throw an error if there are no more ads to play in the 
   const VastChain = [
     {
       ad: inlineAd,
-      errorCode: null,
       parsedXML: inlineParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastInlineXML
     },
     {
       ad: wrapperAd,
-      errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastWrapperXML
     },
     {
       ad: wrapperAd,
-      errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastWrapperXML

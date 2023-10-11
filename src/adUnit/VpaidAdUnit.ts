@@ -124,7 +124,7 @@ class VpaidAdUnit extends VideoAdUnit {
       },
       [adError]: (payload: Error | unknown) => {
         this.error = vpaidGeneralError(payload)
-        this.errorCode = this.error.code || null
+        this.errorCode = this.error.code
 
         this[_protected].onErrorCallbacks.forEach((callback) =>
           callback(this.error, {
@@ -308,10 +308,10 @@ class VpaidAdUnit extends VideoAdUnit {
       if (this.creativeAd?.[getAdIcons]) {
         try {
           if (!this.creativeAd[getAdIcons]()) {
-            this.icons = null
+            delete this.icons
           }
         } catch (error) {
-          this.icons = null
+          delete this.icons
         }
       }
     },
@@ -337,7 +337,7 @@ class VpaidAdUnit extends VideoAdUnit {
   public type = 'VPAID'
 
   /** Reference to the Vpaid Creative ad unit. Will be null before the ad unit starts. */
-  public creativeAd: VpaidCreativeAdUnit | null = null
+  public creativeAd?: VpaidCreativeAdUnit
 
   /**
    * Creates a {VpaidAdUnit}.

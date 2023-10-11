@@ -4,6 +4,7 @@ import {
   vastVpaidInlineXML
 } from '../../../../../fixtures'
 import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
+import {VastChain} from '../../../../types'
 import initAd from '../initAd'
 import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd'
 
@@ -11,15 +12,14 @@ jest.mock('../loadCreative')
 jest.mock('../handshake')
 
 describe('initAd', () => {
-  let vpaidChain
-  let videoAdContainer
-  let origScreen
+  let vpaidChain: VastChain
+  let videoAdContainer: VideoAdContainer
+  let origScreen: Screen
 
   beforeEach(() => {
     vpaidChain = [
       {
         ad: vpaidInlineAd,
-        errorCode: null,
         parsedXML: vpaidInlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastVpaidInlineXML
@@ -44,9 +44,9 @@ describe('initAd', () => {
   })
 
   test('must init the creative', async () => {
-    const mockCreativeAd = new MockVpaidCreativeAd()
+    const mockCreativeAd: any = new MockVpaidCreativeAd()
 
-    await initAd(mockCreativeAd, videoAdContainer, vpaidChain)
+    initAd(mockCreativeAd, videoAdContainer, vpaidChain)
 
     expect(mockCreativeAd.initAd).toHaveBeenCalledTimes(1)
     expect(mockCreativeAd.initAd).toHaveBeenCalledWith(

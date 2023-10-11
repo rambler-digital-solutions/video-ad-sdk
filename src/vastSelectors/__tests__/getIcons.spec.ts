@@ -1,10 +1,10 @@
 import {inlineAd, wrapperAd} from '../../../fixtures'
 import getIcons from '../getIcons'
 
-test('getIcons must return null if there are no icons', () => {
-  expect(getIcons()).toEqual(null)
-  expect(getIcons(null)).toEqual(null)
-  expect(getIcons({})).toEqual(null)
+test('getIcons must return undefined if there are no icons', () => {
+  expect((getIcons as any)()).toBeUndefined()
+  expect((getIcons as any)(null)).toBeUndefined()
+  expect((getIcons as any)({})).toBeUndefined()
 })
 
 test('getIcons must return the formatted icons', () => {

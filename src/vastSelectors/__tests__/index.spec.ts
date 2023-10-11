@@ -35,85 +35,85 @@ import {
   isPodAd,
   isInline,
   isWrapper
-} from '../index'
+} from '../'
+import {ParsedXML, ParsedAd, Attributes, MediaFile, InteractiveFile} from '../../types'
 
-const clone = (obj: Record<string, any>): Record<string, any> => JSON.parse(JSON.stringify(obj))
+const clone = <T extends Record<string, any>>(obj: T): T => JSON.parse(JSON.stringify(obj))
 
 test('getVastErrorURI must return the error uri of the VAST element', () => {
-  expect(getVastErrorURI(inlineParsedXML)).toEqual(null)
+  expect(getVastErrorURI(inlineParsedXML)).toBeUndefined()
   expect(getVastErrorURI(noAdParsedXML)).toEqual([
     'https://test.example.com/error/[ERRORCODE]',
     'https://test.example.com/error2/[ERRORCODE]'
   ])
-  expect(getVastErrorURI(null)).toEqual(null)
-  expect(getVastErrorURI({})).toEqual(null)
+  expect(getVastErrorURI(undefined as unknown as ParsedXML)).toBeUndefined()
+  expect(getVastErrorURI({} as ParsedXML)).toBeUndefined()
 })
 
-test('getAds must return the ads of the passed adResponse or null otherwise', () => {
+test('getAds must return the ads of the passed adResponse or undefined otherwise', () => {
   expect(getAds(wrapperParsedXML)).toEqual([wrapperAd])
   expect(getAds(noAdParsedXML)).toEqual([])
-  expect(getAds({})).toEqual([])
-  expect(getAds(null)).toEqual([])
-  expect(getAds()).toEqual([])
+  expect(getAds({} as ParsedXML)).toEqual([])
+  expect(getAds(undefined as unknown as ParsedXML)).toEqual([])
 })
 
-test('getFirstAd must return the first ad of the passed adResponse or null otherwise', () => {
+test('getFirstAd must return the first ad of the passed adResponse or undefined otherwise', () => {
   expect(getFirstAd(wrapperParsedXML)).toEqual(wrapperAd)
-  expect(getFirstAd({})).toBe(null)
+  expect(getFirstAd({} as ParsedXML)).toBeUndefined()
 })
 
 test('getFirsAd must return the firs ad in the sequence if the passed VAST has an ad pod', () => {
   const ad = getFirstAd(podParsedXML)
-  const {id} = ad.attributes
 
-  expect(id).toBe('1234')
+  expect(ad?.attributes?.id).toBe('1234')
 })
 
 test('isWrapper must return true if the ad contains a wrapper and false otherwise', () => {
   expect(isWrapper(wrapperAd)).toBe(true)
   expect(isWrapper(inlineAd)).toBe(false)
-  expect(isWrapper({})).toBe(false)
-  expect(isWrapper(null)).toBe(false)
-  expect(isWrapper(1)).toBe(false)
+  expect(isWrapper({} as ParsedAd)).toBe(false)
+  expect(isWrapper(undefined as unknown as ParsedAd)).toBe(false)
+  expect(isWrapper(1 as unknown as ParsedAd)).toBe(false)
 })
 
 test('isInline must return true if the ad contains a wrapper and false otherwise', () => {
   expect(isInline(inlineAd)).toBe(true)
   expect(isInline(wrapperAd)).toBe(false)
-  expect(isInline({})).toBe(false)
-  expect(isInline(null)).toBe(false)
-  expect(isInline(1)).toBe(false)
+  expect(isInline({} as ParsedAd)).toBe(false)
+  expect(isInline(undefined as unknown as ParsedAd)).toBe(false)
+  expect(isInline(1 as unknown as ParsedAd)).toBe(false)
 })
 
-test('getVASTAdTagURI must return the VASTAdTagURI from the wrapper ad or null otherwise', () => {
+test('getVASTAdTagURI must return the VASTAdTagURI from the wrapper ad or undefined otherwise', () => {
   expect(getVASTAdTagURI(wrapperAd)).toBe(
     'https://test.example.com/vastadtaguri'
   )
-  expect(getVASTAdTagURI(inlineAd)).toBe(null)
+  expect(getVASTAdTagURI(inlineAd)).toBeUndefined()
 })
 
 test('hasAdPod must return true if the passed ads have an ad pod and false otherwise', () => {
   expect(hasAdPod(podParsedXML)).toBe(true)
   expect(hasAdPod(inlineParsedXML)).toBe(false)
-  expect(hasAdPod({})).toBe(false)
-  expect(hasAdPod(null)).toBe(false)
-  expect(hasAdPod()).toBe(false)
+  expect(hasAdPod({} as ParsedAd)).toBe(false)
+  expect(hasAdPod(undefined as unknown as ParsedAd)).toBe(false)
 })
 
 test('hasAdPod must return false if the there is only one ad with a sequence', () => {
   const podAds = getAds(podParsedXML)
 
-  podParsedXML.elements[0].elements = [podAds[1]]
+  if (podParsedXML.elements)
+    podParsedXML.elements[0].elements = [podAds[1]]
 
   expect(hasAdPod(podParsedXML)).toBe(false)
 
+  if (podParsedXML.elements)
   podParsedXML.elements[0].elements = podAds
 })
 
 test('getPodAdSequence mus return the sequence of the ad or false otherwise', () => {
   const ads = getAds(podParsedXML)
 
-  expect(getPodAdSequence(ads[0])).toBe(null)
+  expect(getPodAdSequence(ads[0])).toBeUndefined()
   expect(getPodAdSequence(ads[1])).toBe(1)
 })
 
@@ -128,14 +128,14 @@ test('getWrapperOptions must return the options of the ad or {} otherwise', () =
   expect(getWrapperOptions(inlineAd)).toEqual({})
   expect(getWrapperOptions(wrapperAd)).toEqual({allowMultipleAds: true})
 
-  const wrapperAdClone = clone(wrapperAd)
-  const wrapperAttrs = wrapperAdClone.elements[0].attributes
+  const wrapperAdClone = clone<ParsedXML>(wrapperAd)
+  const wrapperAttrs = wrapperAdClone.elements?.[0].attributes as Attributes
 
   wrapperAttrs.allowMultipleAds = 'false'
 
   expect(getWrapperOptions(wrapperAdClone)).toEqual({allowMultipleAds: false})
 
-  wrapperAttrs.allowMultipleAds = true
+  wrapperAttrs.allowMultipleAds = 'true'
   wrapperAttrs.followAdditionalWrappers = 'false'
 
   expect(getWrapperOptions(wrapperAdClone)).toEqual({
@@ -152,65 +152,59 @@ test('getWrapperOptions must return the options of the ad or {} otherwise', () =
   })
 })
 
-test('getAdErrorURI must return the error uri of the inline/wrapper or null if missing', () => {
+test('getAdErrorURI must return the error uri of the inline/wrapper or undefined if missing', () => {
   expect(getAdErrorURI(inlineAd)).toEqual(['https://test.example.com/error'])
   expect(getAdErrorURI(wrapperAd)).toEqual([
     'https://test.example.com/error/[ERRORCODE]'
   ])
-  expect(getAdErrorURI()).toEqual(null)
-  expect(getAdErrorURI(null)).toEqual(null)
-  expect(getAdErrorURI({})).toEqual(null)
+  expect(getAdErrorURI(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getAdErrorURI({} as ParsedAd)).toBeUndefined()
 })
 
-test('getImpression must return the imression uri of the inline/wrapper or null if missing', () => {
+test('getImpression must return the imression uri of the inline/wrapper or undefined if missing', () => {
   expect(getImpression(inlineAd)).toEqual([
     'https://test.example.com/impression'
   ])
   expect(getImpression(wrapperAd)).toEqual([
     'https://test.example.com/impression'
   ])
-  expect(getImpression()).toEqual(null)
-  expect(getImpression(null)).toEqual(null)
-  expect(getImpression({})).toEqual(null)
+  expect(getImpression(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getImpression({} as ParsedAd)).toBeUndefined()
 })
 
-test('getViewable must return the viewable uri of the inline/wrapper or null if missing', () => {
+test('getViewable must return the viewable uri of the inline/wrapper or undefined if missing', () => {
   expect(getViewable(inlineAd)).toEqual(['https://test.example.com/viewable'])
-  expect(getViewable(wrapperAd)).toEqual(null)
-  expect(getViewable()).toEqual(null)
-  expect(getViewable(null)).toEqual(null)
-  expect(getViewable({})).toEqual(null)
+  expect(getViewable(wrapperAd)).toBeUndefined()
+  expect(getViewable(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getViewable({} as ParsedAd)).toBeUndefined()
 })
 
-test('getNotViewable must return the not visible uri of the inline/wrapper or null if missing', () => {
+test('getNotViewable must return the not visible uri of the inline/wrapper or undefined if missing', () => {
   expect(getNotViewable(inlineAd)).toEqual([
     'https://test.example.com/notViewable'
   ])
-  expect(getNotViewable(wrapperAd)).toEqual(null)
-  expect(getNotViewable()).toEqual(null)
-  expect(getNotViewable(null)).toEqual(null)
-  expect(getNotViewable({})).toEqual(null)
+  expect(getNotViewable(wrapperAd)).toBeUndefined()
+  expect(getNotViewable(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getNotViewable({} as ParsedAd)).toBeUndefined()
 })
 
-test('getViewUndetermined must return the undetermined view uri of the inline/wrapper or null if missing', () => {
+test('getViewUndetermined must return the undetermined view uri of the inline/wrapper or undetermined if missing', () => {
   expect(getViewUndetermined(inlineAd)).toEqual([
     'https://test.example.com/notDetermined'
   ])
-  expect(getViewUndetermined(wrapperAd)).toEqual(null)
-  expect(getViewUndetermined()).toEqual(null)
-  expect(getViewUndetermined(null)).toEqual(null)
-  expect(getViewUndetermined({})).toEqual(null)
+  expect(getViewUndetermined(wrapperAd)).toBeUndefined()
+  expect(getViewUndetermined(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getViewUndetermined({} as ParsedAd)).toBeUndefined()
 })
 
-test('getMediaFiles must return null for wrong ads', () => {
-  expect(getMediaFiles()).toEqual(null)
-  expect(getMediaFiles(null)).toEqual(null)
-  expect(getMediaFiles({})).toEqual(null)
-  expect(getMediaFiles(wrapperAd)).toEqual(null)
+test('getMediaFiles must return undefined for wrong ads', () => {
+  expect(getMediaFiles(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getMediaFiles({} as ParsedAd)).toBeUndefined()
+  expect(getMediaFiles(wrapperAd)).toBeUndefined()
 })
 
 test('getMediaFiles must return the mediafiles', () => {
-  const mediaFiles = getMediaFiles(inlineAd)
+  const mediaFiles = getMediaFiles(inlineAd) as MediaFile[]
 
   expect(mediaFiles).toBeInstanceOf(Array)
   expect(mediaFiles.length).toBe(3)
@@ -232,7 +226,7 @@ test('getMediaFiles must return the mediafiles', () => {
 })
 
 test('getMediaFiles must add the apiFramework if present', () => {
-  const mediaFiles = getMediaFiles(vpaidInlineAd)
+  const mediaFiles = getMediaFiles(vpaidInlineAd) as MediaFile[]
 
   expect(mediaFiles).toBeInstanceOf(Array)
   expect(mediaFiles.length).toBe(2)
@@ -245,15 +239,14 @@ test('getMediaFiles must add the apiFramework if present', () => {
   )
 })
 
-test('getInteractiveCreativeFiles must return null for wrong ads', () => {
-  expect(getInteractiveCreativeFiles()).toEqual(null)
-  expect(getInteractiveCreativeFiles(null)).toEqual(null)
-  expect(getInteractiveCreativeFiles({})).toEqual(null)
-  expect(getInteractiveCreativeFiles(wrapperAd)).toEqual(null)
+test('getInteractiveCreativeFiles must return undefined for wrong ads', () => {
+  expect(getInteractiveCreativeFiles(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getInteractiveCreativeFiles({} as ParsedAd)).toBeUndefined()
+  expect(getInteractiveCreativeFiles(wrapperAd)).toBeUndefined()
 })
 
 test('getInteractiveCreativeFiles must return the mediafiles', () => {
-  const interactiveFiles = getInteractiveCreativeFiles(vpaidInlineAd)
+  const interactiveFiles = getInteractiveCreativeFiles(vpaidInlineAd) as InteractiveFile[]
 
   expect(interactiveFiles).toBeInstanceOf(Array)
   expect(interactiveFiles.length).toBe(2)
@@ -269,11 +262,10 @@ test('getInteractiveCreativeFiles must return the mediafiles', () => {
   })
 })
 
-test('getLinearTrackingEvents must return null if there are no linear tracking events', () => {
-  expect(getLinearTrackingEvents()).toEqual(null)
-  expect(getLinearTrackingEvents(null)).toEqual(null)
-  expect(getLinearTrackingEvents({})).toEqual(null)
-  expect(getLinearTrackingEvents(noAdParsedXML)).toEqual(null)
+test('getLinearTrackingEvents must return undefined if there are no linear tracking events', () => {
+  expect(getLinearTrackingEvents(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getLinearTrackingEvents({} as ParsedAd)).toBeUndefined()
+  expect(getLinearTrackingEvents(noAdParsedXML)).toBeUndefined()
 })
 
 test('getLinearTrackingEvents must return the linear tracking events', () => {
@@ -524,8 +516,8 @@ test('getLinearTrackingEvents must return the linear tracking events', () => {
   ])
 })
 
-test('getLinearTrackingEvents must return null if you filter by event and are no tracking events after filtering', () => {
-  expect(getLinearTrackingEvents(inlineAd, 'progress')).toEqual(null)
+test('getLinearTrackingEvents must return undefined if you filter by event and are no tracking events after filtering', () => {
+  expect(getLinearTrackingEvents(inlineAd, 'progress')).toBeUndefined()
 })
 
 test('getLinearTrackingEvents must return the linear progress events if you filter by progress', () => {
@@ -543,11 +535,10 @@ test('getLinearTrackingEvents must return the linear progress events if you filt
   ])
 })
 
-test('getClickThrough must return null if there is none', () => {
-  expect(getClickThrough()).toEqual(null)
-  expect(getClickThrough(null)).toEqual(null)
-  expect(getClickThrough({})).toEqual(null)
-  expect(getClickThrough(wrapperAd)).toEqual(null)
+test('getClickThrough must return undefined if there is none', () => {
+  expect(getClickThrough(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getClickThrough({} as ParsedAd)).toBeUndefined()
+  expect(getClickThrough(wrapperAd)).toBeUndefined()
 })
 
 test('getClickThrough must return the clickThrough uri', () => {
@@ -556,10 +547,9 @@ test('getClickThrough must return the clickThrough uri', () => {
   )
 })
 
-test('getClickTracking must return null if there is none', () => {
-  expect(getClickTracking()).toEqual(null)
-  expect(getClickTracking(null)).toEqual(null)
-  expect(getClickTracking({})).toEqual(null)
+test('getClickTracking must return undefined if there is none', () => {
+  expect(getClickTracking(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getClickTracking({} as ParsedAd)).toBeUndefined()
 })
 
 test('getClickTracking must return the clickThrough uri', () => {
@@ -571,10 +561,9 @@ test('getClickTracking must return the clickThrough uri', () => {
   ])
 })
 
-test('getCustomClick must return null if there is none', () => {
-  expect(getCustomClick()).toEqual(null)
-  expect(getCustomClick(null)).toEqual(null)
-  expect(getCustomClick({})).toEqual(null)
+test('getCustomClick must return undefined if there is none', () => {
+  expect(getCustomClick(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getCustomClick({} as ParsedAd)).toBeUndefined()
 })
 
 test('getCustomClick must return the clickThrough uri', () => {
@@ -586,30 +575,28 @@ test('getCustomClick must return the clickThrough uri', () => {
   ])
 })
 
-test('getSkipOffset must return null if there none', () => {
-  expect(getSkipOffset()).toEqual(null)
-  expect(getSkipOffset(null)).toEqual(null)
-  expect(getSkipOffset({})).toEqual(null)
-  expect(getSkipOffset(wrapperAd)).toEqual(null)
+test('getSkipOffset must return undefined if there none', () => {
+  expect(getSkipOffset(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getSkipOffset({} as ParsedAd)).toBeUndefined()
+  expect(getSkipOffset(wrapperAd)).toBeUndefined()
 })
 
 test('getSkipOffset must return the parsed skipoffset', () => {
   expect(getSkipOffset(inlineAd)).toEqual(5000)
 })
 
-test('getInteractiveFiles must return null for wrong ads', () => {
-  expect(getInteractiveFiles()).toEqual(null)
-  expect(getInteractiveFiles(null)).toEqual(null)
-  expect(getInteractiveFiles({})).toEqual(null)
-  expect(getInteractiveFiles(wrapperAd)).toEqual(null)
+test('getInteractiveFiles must return undefined for wrong ads', () => {
+  expect(getInteractiveFiles(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(getInteractiveFiles({} as ParsedAd)).toBeUndefined()
+  expect(getInteractiveFiles(wrapperAd)).toBeUndefined()
 })
 
-test('getInteractiveFiles must return null if there is no vpaid ad', () => {
-  expect(getInteractiveFiles(inlineAd)).toBeNull()
+test('getInteractiveFiles must return undefined if there is no vpaid ad', () => {
+  expect(getInteractiveFiles(inlineAd)).toBeUndefined()
 })
 
 test('getInteractiveFiles must return the interactive files', () => {
-  const interactiveFiles = getInteractiveFiles(vpaidInlineAd)
+  const interactiveFiles = getInteractiveFiles(vpaidInlineAd) as InteractiveFile[]
 
   expect(interactiveFiles).toBeInstanceOf(Array)
   expect(interactiveFiles.length).toBe(2)
@@ -626,7 +613,7 @@ test('getInteractiveFiles must return the interactive files', () => {
 })
 
 test('getInteractiveFiles must return vast2 interactive files', () => {
-  const interactiveFiles = getInteractiveFiles(legacyVpaidInlineAd)
+  const interactiveFiles = getInteractiveFiles(legacyVpaidInlineAd) as InteractiveFile[]
 
   expect(interactiveFiles).toBeInstanceOf(Array)
   expect(interactiveFiles.length).toBe(2)
@@ -644,7 +631,7 @@ test('getInteractiveFiles must return vast2 interactive files', () => {
 
 test('getCreativeData must return the adParameters', () => {
   expect(getCreativeData(vastWrapperXML)).toEqual({
-    AdParameters: null,
+    AdParameters: undefined,
     xmlEncoded: false
   })
 

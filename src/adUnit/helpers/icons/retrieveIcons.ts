@@ -6,14 +6,14 @@ const UNKNOWN = 'UNKNOWN'
 
 const uniqBy = (
   array: VastIcon[],
-  uniqValue: (item: VastIcon) => string
+  uniqValue: typeof getResource
 ): VastIcon[] => {
   const seen: Record<string, boolean> = {}
 
   return array.filter((item) => {
     const key = uniqValue(item)
 
-    if (seen.hasOwnProperty(key)) {
+    if (!key || seen.hasOwnProperty(key)) {
       return false
     }
 
@@ -30,10 +30,7 @@ const groupIconsByProgram = (icons: VastIcon[]): Record<string, VastIcon[]> =>
   icons.reduce((accumulator: Record<string, VastIcon[]>, icon) => {
     const program = icon.program ?? UNKNOWN
 
-    if (!accumulator[program]) {
-      accumulator[program] = []
-    }
-
+    accumulator[program] ??= []
     accumulator[program].push(icon)
 
     return accumulator
@@ -73,7 +70,7 @@ const chooseIcons = (icons: VastIcon[]): VastIcon[] => {
   }, [])
 }
 
-const retrieveIcons = (vastChain: VastChain): VastIcon[] | null => {
+const retrieveIcons = (vastChain: VastChain): Optional<VastIcon[]> => {
   const ads = vastChain.map(({ad}) => ad).filter(Boolean)
   const icons = ads.reduce<VastIcon[]>(
     (accumulator, ad: ParsedAd) => [...accumulator, ...(getIcons(ad) || [])],
@@ -85,8 +82,6 @@ const retrieveIcons = (vastChain: VastChain): VastIcon[] | null => {
 
     return chooseIcons(uniqIcons)
   }
-
-  return null
 }
 
 export default retrieveIcons

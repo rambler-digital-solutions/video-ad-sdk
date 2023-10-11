@@ -8,23 +8,21 @@ import {
 } from '../../../fixtures'
 import trackNonLinearEvent from '../trackNonLinearEvent'
 import {acceptInvitation, adCollapse, close} from '../nonLinearEvents'
+import {VastChain} from '../../types'
 import pixelTracker from '../helpers/pixelTracker'
 
 jest.mock('../helpers/pixelTracker', () => jest.fn())
 
 describe('trackNonLinearEvent', () => {
-  const vastChain = [
+  const vastChain: VastChain = [
     {
       ad: vpaidInlineAd,
-      error: null,
-      errorCode: null,
       parsedXML: vpaidInlineParsedXML,
       requestTag: 'https://test.example.com/vastadtaguri',
       XML: vastVpaidInlineXML
     },
     {
       ad: getFirstAd(wrapperParsedXML),
-      errorCode: null,
       parsedXML: wrapperParsedXML,
       requestTag: 'http://adtag.test.example.com',
       XML: vastPodXML
@@ -37,11 +35,11 @@ describe('trackNonLinearEvent', () => {
   })
 
   test('must log an error if it gets an unknown event', () => {
-    const logger = {
+    const logger: any = {
       error: jest.fn()
     }
 
-    trackNonLinearEvent('UNKNOWN', vastChain, {
+    trackNonLinearEvent('UNKNOWN' as any, vastChain, {
       data: {},
       logger
     })
@@ -70,7 +68,7 @@ describe('trackNonLinearEvent', () => {
       const data = {}
       const tracker = jest.fn()
 
-      trackNonLinearEvent(event, vastChain, {
+      trackNonLinearEvent(event as any, vastChain, {
         data,
         tracker
       })

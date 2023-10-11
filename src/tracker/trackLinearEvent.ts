@@ -48,7 +48,7 @@ import {
   creativeView
 } from './linearEvents'
 
-type TrackingEventSelector = (ad: ParsedAd) => string[] | null
+type TrackingEventSelector = (ad: ParsedAd) => Optional<string[]>
 
 const eventSelector =
   (...selectors: TrackingEventSelector[]) =>

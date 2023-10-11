@@ -5,7 +5,7 @@ export const enum NodeType {
   TEXT = 'text'
 }
 
-export type Attributes = Record<string, string | null>
+export type Attributes = Partial<Record<string, string>>
 
 export interface ParsedXML {
   type: NodeType
@@ -32,15 +32,15 @@ export interface VastResponse {
   /**
    * The selected ad extracted from the passed XML.
    */
-  ad: ParsedAd | null
+  ad?: ParsedAd
   /**
    * The XML parsed object.
    */
-  parsedXML: ParsedVast | null
+  parsedXML?: ParsedVast
   /**
-   * VAST error code number to identify the error or null if there is no error.
+   * VAST error code number to identify the error.
    */
-  errorCode: number | null
+  errorCode?: number
   /**
    * Error instance with a human readable description of the error or undefined if there is no error.
    */
@@ -52,7 +52,7 @@ export interface VastResponse {
   /**
    * RAW XML as it came from the server.
    */
-  XML: string | null
+  XML?: string
   /**
    * RAW response object.
    */
@@ -78,78 +78,78 @@ export interface VastIcon {
   /**
    * The time of delay from when the associated linear creative begins playing to when the icon should be displayed.
    */
-  offset?: number | null
+  offset?: number
   /**
    * The duration the icon should be displayed unless ad is finished playing.
    */
-  duration?: number | null
+  duration?: number
   /**
    * Pixel height of the icon.
    */
-  height?: number | null
+  height?: number
   /**
    * Pixel width of the icon.
    */
-  width?: number | null
+  width?: number
   /**
    * Pixel top offset of the icon.
    */
-  top?: number | null
+  top?: number
   /**
    * Pixel left offset of the icon.
    */
-  left?: number | null
+  left?: number
   /**
    * The program represented in the icon (e.g. "AdChoices").
    */
-  program?: string | null
+  program?: string
   /**
    * The pixel ratio for which the icon creative is intended.
    * The pixel ratio is the ratio of physical pixels on the device to the device-independent pixels.
    * An ad intended for display on a device with a pixel ratio that is twice that of a standard 1:1 pixel ratio would use the value "2."
    * Default value is "1.".
    */
-  pxratio?: number | null
+  pxratio?: number
   /**
    * The x-coordinate of the top, left corner of the icon asset relative to the ad display area.
    * Values of "left" or "right" also accepted and indicate the leftmost or rightmost available position for the icon asset.
    */
-  xPosition?: string | number | null
+  xPosition?: string | number
   /**
    * The y-coordinate of the top left corner of the icon asset relative to the ad display area.
    * Values of "top" or "bottom" also accepted and indicate the topmost or bottom most available position for the icon asset
    */
-  yPosition?: string | number | null
+  yPosition?: string | number
   /**
    * The URI to a static creative file to be used as the icon.
    */
-  staticResource?: string | null
+  staticResource?: string
   /**
    * The URI to a static creative file to be used as the icon.
    */
-  htmlResource?: string | null
+  htmlResource?: string
   /**
    * The URI to a static creative file to be used as the icon.
    */
-  iFrameResource?: string | null
+  iFrameResource?: string
   /**
    * Array of URIs for the tracking resource files to be called when the icon creative is displayed
    */
-  iconViewTracking?: string[] | null
+  iconViewTracking?: string[]
   /**
    * A URI to the industry program page opened when a viewer clicks the icon.
    */
-  iconClickThrough?: string | null
+  iconClickThrough?: string
   /**
    * Array of URIs to the tracking resource files to be called when a click corresponding to the id attribute (if provided) occurs.
    */
-  iconClickTracking?: string[] | null
+  iconClickTracking?: string[]
   /**
    * @internal
    */
   signature?: string
   /**
-   * @element
+   * @internal
    */
   element?: HTMLAnchorElement
 }
@@ -203,15 +203,15 @@ export interface InteractiveFile {
   /**
    * Will most likely be `VPAID`
    */
-  apiFramework?: string | null
+  apiFramework?: string
   /**
    * The source file url.
    */
-  src?: string | null
+  src?: string
   /**
    * MIME type for the file container like `application/javascript`.
    */
-  type?: string | null
+  type?: string
 }
 
 /**
@@ -222,53 +222,53 @@ export interface MediaFile extends InteractiveFile {
   /**
    * The codec used to encode the file which can take values as specified by [RFC 4281]{@link http://tools.ietf.org/html/rfc4281}.
    */
-  codec?: string | null
+  codec?: string
   /**
    * Either `progressive` for progressive download protocols (such as HTTP) or `streaming` for streaming protocols.
    */
-  delivery?: string | null
+  delivery?: string
   /**
    * The native height of the video file, in pixels.
    */
-  height?: string | null
+  height?: string
   /**
    * An identifier for the media file.
    */
-  id?: string | null
+  id?: string
   /**
    * Boolean value that indicates whether aspect ratio for media file dimensions
    * should be maintained when scaled to new dimensions
    */
-  maintainAspectRatio?: string | null
+  maintainAspectRatio?: string
   /**
    * For progressive load video, the bitrate value specifies the average bitrate for the media file
    */
-  bitrate?: string | null
+  bitrate?: string
   /**
    * Max bitrate for streaming videos.
    */
-  maxBitrate?: string | null
+  maxBitrate?: string
   /**
    * Min bitrate for streaming videos.
    */
-  minBitrate?: string | null
+  minBitrate?: string
   /**
    * Boolean value that indicates whether the media file is meant to scale to larger dimensions
    */
-  scalable?: string | null
+  scalable?: string
   /**
    * MIME type for the file container. Popular MIME types include,
    * but are not limited to “video/x-flv” for Flash Video and “video/mp4” for MP4.
    */
-  type?: string | null
+  type?: string
   /**
    * The native width of the video file, in pixels.
    */
-  width?: string | null
+  width?: string
   /**
    * A string identifying the unique creative identifier.
    */
-  universalAdId?: string | null
+  universalAdId?: string
 }
 
 /**
@@ -278,15 +278,15 @@ export interface VastTrackingEvent {
   /**
    * A string that defines the event being track.
    */
-  event?: string | null
+  event?: string
   /**
    * When the progress of the linear creative has matched the value specified, the included URI is triggered
    */
-  offset?: ParsedOffset | null
+  offset?: ParsedOffset
   /**
    * A URI to the tracking resource for the event specified using the event attribute
    */
-  uri?: string | null
+  uri?: string
 }
 
 /**
@@ -325,11 +325,11 @@ export interface CreativeData {
   /**
    * the AdParameters of the linear Ad as they come in the VAST XML.
    */
-  AdParameters?: string | null
+  AdParameters?: string
   /**
    * true if the AdParameters are xml encoded and false otherwise
    */
-  xmlEncoded?: boolean | null
+  xmlEncoded?: boolean
 }
 
 /**
@@ -340,23 +340,23 @@ export interface VastChainDetails {
   /**
    * the ad Id. See VAST spec for more info
    */
-  adId?: string | null
+  adId?: string
   /**
    * the adServingId See VAST spec for more info
    */
-  adServingId?: string | null
+  adServingId?: string
   /**
    * the ad system. See VAST spec for more info
    */
-  adSystem?: string | null
+  adSystem?: string
   /**
    * ad title.
    */
-  adTitle?: string | null
+  adTitle?: string
   /**
    * ad advertiser's name.
    */
-  advertiser?: string | null
+  advertiser?: string
   /**
    * creative ad ids of the wrapper.
    */
@@ -376,39 +376,39 @@ export interface VastChainDetails {
   /**
    * ad category.
    */
-  category?: string | null
+  category?: string
   /**
    * ad category authority.
    */
-  categoryAuthority?: string | null
+  categoryAuthority?: string
   /**
    * the inline ad clickThroughUr.
    */
-  clickThroughUrl?: string | null
+  clickThroughUrl?: string
   /**
    * [creativeAdId] - the ad id of the linear creative.
    */
-  creativeAdId?: string | null
+  creativeAdId?: string
   /**
    * Object with the {@link creativeData} of the Ad.
    */
-  creativeData?: CreativeData | null
+  creativeData?: CreativeData
   /**
    * the id of the linear creative.
    */
-  creativeId?: string | null
+  creativeId?: string
   /**
    * ad description.
    */
-  description?: string | null
+  description?: string
   /**
    * the linear duration as it comes int the VAST XML
    */
-  duration?: string | null
+  duration?: string
   /**
    * the linear duration in milliseconds
    */
-  durationInMs?: number | null
+  durationInMs?: number
   /**
    * The linear ads {@link MediaFile}s
    */
@@ -416,23 +416,23 @@ export interface VastChainDetails {
   /**
    * the pricing of the ad if available
    */
-  pricing?: string | null
+  pricing?: string
   /**
    * the currency of the pricing if available.
    */
-  pricingCurrency?: string | null
+  pricingCurrency?: string
   /**
    * the pricing model if available.
    */
-  pricingModel?: string | null
+  pricingModel?: string
   /**
    * the linear skip offset as it comes int the VAST XML
    */
-  skipOffset?: string | null
+  skipOffset?: string
   /**
    * the linear skip offset in milliseconds
    */
-  skipOffsetInMs?: number | null
+  skipOffsetInMs?: number
   /**
    * true if the ad is skippable and false otherwise.
    */
@@ -440,15 +440,15 @@ export interface VastChainDetails {
   /**
    * Universal Ad Id of the ad.
    */
-  universalAdId?: string | null
+  universalAdId?: string
   /**
    * registry of the Universal Ad Id of the ad.
    */
-  universalAdIdRegistry?: string | null
+  universalAdIdRegistry?: string
   /**
    * VAST version of the last {@link VastResponse}. If no version is found it will contain `unknown`.
    */
-  vastVersion?: string | null
+  vastVersion?: string
   /**
    * if the VastChain has a linear ad, it will be true if it contains a VPAID creative and false otherwise.
    */
@@ -480,7 +480,7 @@ export interface VastEventTrackerOptions {
   /**
    * Error code. Needed if we are tracking an error.
    */
-  errorCode?: number | null
+  errorCode?: number
   /**
    * Optional tracker to use for the actual tracking. Defaults to the pixel tracker.
    */
@@ -536,8 +536,8 @@ export interface RequestNextAdOptions extends RequestAdOptions {
  * Vpaid Creative environment variables
  */
 export interface EnvironmentVars {
-  slot?: HTMLElement | null
-  videoSlot?: HTMLVideoElement | null
+  slot?: HTMLElement
+  videoSlot?: HTMLVideoElement
   videoSlotCanAutoPlay?: boolean
 }
 
@@ -606,9 +606,9 @@ export interface Hooks {
  * VAST metric handler data
  */
 export interface MetricHandlerData extends Hooks {
-  clickThroughUrl?: string | null
+  clickThroughUrl?: string
   progressEvents?: VastTrackingEvent[]
-  skipoffset?: ParsedOffset | null
+  skipoffset?: ParsedOffset
   pauseOnAdClick?: boolean
 }
 

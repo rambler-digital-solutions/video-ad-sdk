@@ -15,7 +15,7 @@ test('createIframeResource must return an iframe', () => {
   expect(resource.src).toBe(src)
   expect(resource.width).toBe('100')
   expect(resource.height).toBe('100')
-  expect(resource.sandbox).toBe('allow-forms allow-popups allow-scripts')
+  expect(resource.getAttribute('sandbox')).toBe('allow-forms allow-popups allow-scripts')
 })
 
 test('createIframeResource must not set the width and height if not passed', () => {

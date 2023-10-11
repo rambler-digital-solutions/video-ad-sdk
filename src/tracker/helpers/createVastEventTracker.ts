@@ -8,7 +8,7 @@ import pixelTracker from './pixelTracker'
 
 type TrackingEventSelector = (
   ad: ParsedAd
-) => VastTrackingEvent[] | string | null
+) => Optional<VastTrackingEvent[] | string>
 
 const createVastEventTracker =
   (trackingEventSelector: TrackingEventSelector) =>

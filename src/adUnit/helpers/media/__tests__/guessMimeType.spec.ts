@@ -1,7 +1,7 @@
 import guessMimeType from '../guessMimeType'
 
 test('guessMimeType must guess the mime of the passed source', () => {
-  const mimeMap = {
+  const mimeMap: Record<string, string> = {
     '3gp': 'video/3gpp',
     avi: 'video/x-msvideo',
     flv: 'video/x-flv',

@@ -1,7 +1,7 @@
 import waitFor from '../waitFor'
 
 test('waitFor promise must resolve once the event occurs on the passed element', () => {
-  const element = document.createElement('DIV')
+  const element = document.createElement('div')
   const eventName = 'test'
   const event = new Event(eventName)
 
@@ -11,7 +11,7 @@ test('waitFor promise must resolve once the event occurs on the passed element',
 })
 
 test('waitFor cancel must reject the promise', () => {
-  const element = document.createElement('DIV')
+  const element = document.createElement('div')
   const eventName = 'test'
   const event = new Event(eventName)
 

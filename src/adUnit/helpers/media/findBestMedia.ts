@@ -17,19 +17,14 @@ const findBestMedia = (
   videoElement: HTMLVideoElement,
   container: HTMLElement,
   {getMediaFile = getMediaByDefaultBestFit}: Hooks
-): MediaFile | null => {
+): Optional<MediaFile> => {
   const screenRect = container.getBoundingClientRect()
   const mediaFiles = getMediaFiles(inlineAd)
+  const supportedMediaFiles = mediaFiles?.filter(
+    (mediaFile) => canPlay(videoElement, mediaFile)
+  )
 
-  if (mediaFiles) {
-    const supportedMediaFiles = mediaFiles.filter((mediaFile) =>
-      canPlay(videoElement, mediaFile)
-    )
-
-    return getMediaFile(supportedMediaFiles, screenRect)
-  }
-
-  return null
+  return supportedMediaFiles && getMediaFile(supportedMediaFiles, screenRect)
 }
 
 export default findBestMedia

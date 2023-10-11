@@ -1,23 +1,23 @@
 import onElementResize from '../onElementResize'
-import MutationObserver from '../helpers/MutationObserver'
 
-jest.mock('lodash.debounce', () => (fn) => fn)
+const mockObserve = jest.fn()
+const mockDisconnect = jest.fn()
+let simulateAttrMutation: any
+
+jest.mock('lodash.debounce', () => (fn: any) => fn)
 jest.mock('../helpers/MutationObserver', () => {
-  const observe = jest.fn()
-  const disconnect = jest.fn()
-  let mockHandler = null
+  let mockHandler: any
 
   class MockMutationObserver {
-    constructor(handler) {
+    observe = mockObserve
+    disconnect = mockDisconnect
+
+    constructor(handler: any) {
       mockHandler = handler
-      this.observe = observe
-      this.disconnect = disconnect
     }
   }
 
-  MockMutationObserver.observe = observe
-  MockMutationObserver.disconnect = disconnect
-  MockMutationObserver.simulateAttrMutation = (node, attributeName) =>
+  simulateAttrMutation = (node: HTMLElement, attributeName: string): MutationObserver =>
     mockHandler([
       {
         attributeName,
@@ -37,20 +37,20 @@ test('onElementResize must complain if the passed target is not an Element', () 
 })
 
 test("onElementResize mut complain if you don't pass a callback function", () => {
-  expect(() => onElementResize(document.createElement('DIV'))).toThrow(
+  expect(() => onElementResize(document.createElement('div'), undefined as any)).toThrow(
     TypeError
   )
 })
 
 test('onElementResize not must call the callback if the changed style does not change the element size', () => {
-  const target = document.createElement('DIV')
+  const target = document.createElement('div')
   const mock = jest.fn()
 
   onElementResize(target, () => mock())
 
   expect(mock).not.toHaveBeenCalled()
 
-  MutationObserver.simulateAttrMutation(target, 'style')
+  simulateAttrMutation(target, 'style')
 
   expect(mock).not.toHaveBeenCalled()
 })
@@ -64,7 +64,7 @@ test('onElementResize must call the callback if the element width changes on sty
   expect(mock).not.toHaveBeenCalled()
 
   target.style.width = '400px'
-  MutationObserver.simulateAttrMutation(target, 'style')
+  simulateAttrMutation(target, 'style')
   expect(mock).toHaveBeenCalled()
 })
 
@@ -82,10 +82,10 @@ test('onElementResize must call the callback if the element resizes', () => {
   Object.defineProperty(resizeObjElement, 'contentWindow', {
     value: global.window
   })
-  resizeObjElement.onload()
+  resizeObjElement?.onload?.(undefined as any)
 
   target.style.width = '400px'
-  resizeObjElement.contentWindow.dispatchEvent(new Event('resize'))
+  resizeObjElement?.contentWindow?.dispatchEvent(new Event('resize'))
   expect(mock).toHaveBeenCalled()
 })
 
@@ -100,18 +100,18 @@ test('onElementResize must return a disconnect fn', () => {
   Object.defineProperty(resizeObjElement, 'contentWindow', {
     value: global.window
   })
-  resizeObjElement.onload()
+  resizeObjElement?.onload?.(undefined as any)
 
   expect(mock).not.toHaveBeenCalled()
 
   disconnect()
 
   target.style.width = '400px'
-  expect(MutationObserver.disconnect).toHaveBeenCalled()
-  MutationObserver.simulateAttrMutation(target, 'style')
+  expect(mockDisconnect).toHaveBeenCalled()
+  simulateAttrMutation(target, 'style')
   expect(mock).not.toHaveBeenCalled()
 
   target.style.width = '300px'
-  resizeObjElement.contentWindow.dispatchEvent(new Event('resize'))
+  resizeObjElement?.contentWindow?.dispatchEvent(new Event('resize'))
   expect(mock).not.toHaveBeenCalled()
 })

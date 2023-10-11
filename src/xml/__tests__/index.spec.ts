@@ -6,7 +6,8 @@ import {
   getAttributes,
   getAttribute,
   parseXml
-} from '../index'
+} from '../'
+import {ParsedXML} from '../../types'
 
 const xml = `<?xml version="1.0" encoding="utf-8"?>
 <note importance="high" logged="true">
@@ -68,7 +69,7 @@ describe('parseXml', () => {
 })
 
 describe('helpers', () => {
-  let data
+  let data: ParsedXML
 
   beforeEach(() => {
     data = parseXml(xml)
@@ -80,8 +81,8 @@ describe('helpers', () => {
     })
 
     test('must return the element', () => {
-      const noteElement = get(data, 'note')
-      const titleElement = get(noteElement, 'title')
+      const noteElement = get(data, 'note') as ParsedXML
+      const titleElement = get(noteElement, 'title') as ParsedXML
 
       expect(get(data, 'note')).toEqual({
         attributes: {
@@ -140,13 +141,13 @@ describe('helpers', () => {
   describe('getAll', () => {
     test('must get all the children of an element by default', () => {
       expect(getAll(data)).toBe(data.elements)
-      expect(getAll(get(data, 'note'))).toEqual(data.elements[0].elements)
-      expect(getAll({})).toEqual([])
+      expect(getAll(get(data, 'note') as ParsedXML)).toEqual(data.elements?.[0].elements)
+      expect(getAll({} as ParsedXML)).toEqual([])
     })
 
     test('must filter by the passed childrenName', () => {
-      const noteElement = get(data, 'note')
-      const todoElements = getAll(noteElement, 'todo')
+      const noteElement = get(data, 'note') as ParsedXML
+      const todoElements = getAll(noteElement, 'todo') as ParsedXML[]
 
       expect(todoElements).toEqual([
         {
@@ -173,41 +174,41 @@ describe('helpers', () => {
     })
 
     test('must return empty array if no element', () => {
-      expect(getAll({})).toEqual([])
+      expect(getAll({} as ParsedXML)).toEqual([])
       expect(getAll(data, 'foo')).toEqual([])
     })
   })
 
   describe('getFirstChild', () => {
     test('must return undefined if there are no children', () => {
-      expect(get({})).toBeUndefined()
+      expect((get as any)({})).toBeUndefined()
     })
 
     test('must return the first child of the element', () => {
-      const noteElement = get(data, 'note')
+      const noteElement = get(data, 'note') as ParsedXML
 
-      expect(getFirstChild(noteElement)).toBe(noteElement.elements[0])
+      expect(getFirstChild(noteElement)).toBe(noteElement.elements?.[0])
     })
   })
 
   describe('getText', () => {
-    test('must return the text of the element or null', () => {
-      const noteElement = get(data, 'note')
-      const titleElement = get(noteElement, 'title')
-      const todoElement = getAll(noteElement, 'todo')[0]
+    test('must return the text of the element or undefined', () => {
+      const noteElement = get(data, 'note') as ParsedXML
+      const titleElement = get(noteElement, 'title') as ParsedXML
+      const todoElement = getAll(noteElement, 'todo')[0] as ParsedXML
 
       expect(getText(titleElement)).toBe('Happy')
       expect(getText(todoElement)).toBe('Work')
-      expect(getText(noteElement)).toBeNull()
-      expect(getText()).toBeNull()
+      expect(getText(noteElement)).toBeUndefined()
+      expect(getText()).toBeUndefined()
     })
   })
 
   describe('getAttributes', () => {
     test('must return the attributes of the element', () => {
-      const noteElement = get(data, 'note')
-      const titleElement = get(noteElement, 'title')
-      const todoElement = getAll(noteElement, 'todo')[0]
+      const noteElement = get(data, 'note') as ParsedXML
+      const titleElement = get(noteElement, 'title') as ParsedXML
+      const todoElement = getAll(noteElement, 'todo')[0] as ParsedXML
 
       expect(getAttributes(noteElement)).toEqual({
         importance: 'high',
@@ -221,7 +222,7 @@ describe('helpers', () => {
 
   describe('getAttribute', () => {
     test('must return the attribute or undefined if not found', () => {
-      const noteElement = get(data, 'note')
+      const noteElement = get(data, 'note') as ParsedXML
 
       expect(getAttribute(noteElement, 'importance')).toBe('high')
       expect(getAttribute(noteElement, 'foo')).toBeUndefined()

@@ -1,7 +1,7 @@
 import createVideoAdContainer from '../createVideoAdContainer'
 import VideoAdContainer from '../VideoAdContainer'
 
-let placeholder
+let placeholder: HTMLElement
 
 beforeEach(() => {
   placeholder = document.createElement('DIV')
@@ -16,8 +16,8 @@ test('createVideoAdContainer must return a VideoAdContainer', () => {
   expect(createVideoAdContainer(placeholder)).toBeInstanceOf(VideoAdContainer)
 })
 
-test('createVideoAdContainer must resolve to a VideoAdContainer', async () => {
-  const videoAdContainer = await createVideoAdContainer(placeholder)
+test('createVideoAdContainer must resolve to a VideoAdContainer', () => {
+  const videoAdContainer = createVideoAdContainer(placeholder)
 
   expect(videoAdContainer).toBeInstanceOf(VideoAdContainer)
 })

@@ -6,7 +6,7 @@ const createVpaidCreative = (): any =>
     acc[key] = () => {}
 
     return acc
-  }, {})
+  }, {} as any)
 
 test("isValidVpaidCreative must return false if doesn't implement the vpaid interface", () => {
   for (const method of METHODS) {

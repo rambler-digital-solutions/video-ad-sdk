@@ -12,6 +12,7 @@ import {
   viewable,
   viewUndetermined
 } from '../../tracker/linearEvents'
+import {VastChain} from '../../types'
 import {getViewable} from '../../vastSelectors'
 import addIcons from '../helpers/icons/addIcons'
 import retrieveIcons from '../helpers/icons/retrieveIcons'
@@ -27,14 +28,14 @@ const mockDrawIcons = jest.fn()
 const mockRemoveIcons = jest.fn()
 const mockHasPendingRedraws = jest.fn(() => false)
 
-jest.mock('../helpers/icons/addIcons.js', () =>
+jest.mock('../helpers/icons/addIcons', () =>
   jest.fn(() => ({
     drawIcons: mockDrawIcons,
     hasPendingIconRedraws: mockHasPendingRedraws,
     removeIcons: mockRemoveIcons
   }))
 )
-jest.mock('../helpers/icons/retrieveIcons.js')
+jest.mock('../helpers/icons/retrieveIcons')
 jest.mock('../helpers/dom/elementObservers', () => ({
   onElementResize: jest.fn(),
   onElementVisibilityChange: jest.fn()
@@ -46,17 +47,16 @@ jest.mock('../../vastSelectors', () => ({
 
 jest.mock('../helpers/dom/preventManualProgress')
 describe('VideoAdUnit', () => {
-  let vpaidChain
-  let videoAdContainer
-  let stopPreventManualProgress
-  let viewableImpression
-  let origScreen
+  let vpaidChain: VastChain
+  let videoAdContainer: VideoAdContainer
+  let stopPreventManualProgress: any
+  let viewableImpression: boolean
+  let origScreen: Screen
 
   beforeEach(() => {
     vpaidChain = [
       {
         ad: vpaidInlineAd,
-        errorCode: null,
         parsedXML: vpaidInlineParsedXML,
         requestTag: 'https://test.example.com/vastadtaguri',
         XML: vastVpaidInlineXML
@@ -64,9 +64,9 @@ describe('VideoAdUnit', () => {
     ]
     videoAdContainer = new VideoAdContainer(document.createElement('DIV'))
     stopPreventManualProgress = jest.fn()
-    preventManualProgress.mockReturnValue(stopPreventManualProgress)
+    ;(preventManualProgress as jest.Mock).mockReturnValue(stopPreventManualProgress)
     viewableImpression = false
-    getViewable.mockImplementation(() => viewableImpression)
+    ;(getViewable as jest.Mock).mockImplementation(() => viewableImpression)
     origScreen = window.screen
 
     Object.defineProperty(window, 'screen', {
@@ -113,7 +113,7 @@ describe('VideoAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
 
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
 
@@ -137,7 +137,7 @@ describe('VideoAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
 
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
 
@@ -147,7 +147,7 @@ describe('VideoAdUnit', () => {
     })
 
     test(`must emit '${iconClick}' event on click`, async () => {
-      addIcons.mockClear()
+      ;(addIcons as jest.Mock).mockClear()
 
       const icons = [
         {
@@ -158,13 +158,13 @@ describe('VideoAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
 
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
 
       expect(adUnit.icons).toBe(icons)
 
-      const passedConfig = addIcons.mock.calls[0][1]
+      const passedConfig = (addIcons as jest.Mock).mock.calls[0][1]
 
       const promise = new Promise((resolve) => {
         adUnit.on(iconClick, (...args) => {
@@ -186,7 +186,7 @@ describe('VideoAdUnit', () => {
     })
 
     test(`must emit '${iconView}' event on view`, async () => {
-      addIcons.mockClear()
+      ;(addIcons as jest.Mock).mockClear()
 
       const icons = [
         {
@@ -197,13 +197,13 @@ describe('VideoAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
 
       const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
 
       expect(adUnit.icons).toBe(icons)
 
-      const passedConfig = addIcons.mock.calls[0][1]
+      const passedConfig = (addIcons as jest.Mock).mock.calls[0][1]
 
       const promise = new Promise((resolve) => {
         adUnit.on(iconView, (...args) => {
@@ -241,7 +241,7 @@ describe('VideoAdUnit', () => {
       test(`${method} must throw if called`, () => {
         const adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
 
-        expect(() => adUnit[method]()).toThrow(
+        expect(() => (adUnit as any)[method]()).toThrow(
           'VideoAdUnit method must be implemented on child class'
         )
       })
@@ -249,7 +249,7 @@ describe('VideoAdUnit', () => {
   })
 
   describe('onFinish', () => {
-    let adUnit
+    let adUnit: VideoAdUnit
 
     beforeEach(() => {
       adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
@@ -269,7 +269,7 @@ describe('VideoAdUnit', () => {
     })
 
     test("must throw if you don't pass a callback function ", () => {
-      expect(() => adUnit.onFinish()).toThrow('Expected a callback function')
+      expect(() => adUnit.onFinish(undefined as any)).toThrow('Expected a callback function')
     })
 
     test('must be called if the ad unit finishes', () => {
@@ -288,7 +288,7 @@ describe('VideoAdUnit', () => {
     test('mut be already finished on callback execution', () => {
       expect.assertions(3)
 
-      let callbackFinishState
+      let callbackFinishState = false
       const callback = (): void => {
         callbackFinishState = adUnit.isFinished()
       }
@@ -303,19 +303,19 @@ describe('VideoAdUnit', () => {
   })
 
   describe('onError', () => {
-    let adUnit
+    let adUnit: VideoAdUnit
 
     beforeEach(() => {
       adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
     })
 
     test("must throw if you don't pass a callback function ", () => {
-      expect(() => adUnit.onError()).toThrow('Expected a callback function')
+      expect(() => adUnit.onError(undefined as any)).toThrow('Expected a callback function')
     })
   })
 
   describe('resize', () => {
-    let adUnit
+    let adUnit: VideoAdUnit
 
     beforeEach(() => {
       adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
@@ -324,7 +324,7 @@ describe('VideoAdUnit', () => {
     test('must not redraw the icons if the adUnit is not started', async () => {
       adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
 
-      await adUnit.resize()
+      await adUnit.resize(640, 480, 'normal')
 
       expect(mockDrawIcons).toHaveBeenCalledTimes(0)
     })
@@ -334,7 +334,7 @@ describe('VideoAdUnit', () => {
 
       adUnit[_protected].finished = true
 
-      await adUnit.resize()
+      await adUnit.resize(640, 480, 'normal')
 
       expect(mockDrawIcons).toHaveBeenCalledTimes(0)
     })
@@ -349,23 +349,23 @@ describe('VideoAdUnit', () => {
         }
       ]
 
-      retrieveIcons.mockReturnValue(icons)
+      ;(retrieveIcons as jest.Mock).mockReturnValue(icons)
       adUnit = new VideoAdUnit(vpaidChain, videoAdContainer)
 
       adUnit[_protected].started = true
-      await adUnit.resize()
+      await adUnit.resize(640, 480, 'normal')
 
       expect(mockDrawIcons).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('option.responsive', () => {
-    let resizeElement
-    let simulateResize
-    let unsubscribe
+    let resizeElement: HTMLElement
+    let simulateResize: any
+    let unsubscribe: any
 
     beforeEach(() => {
-      onElementResize.mockImplementation((element, callback) => {
+      ;(onElementResize as jest.Mock).mockImplementation((element, callback) => {
         resizeElement = element
         simulateResize = callback
         unsubscribe = jest.fn()
@@ -460,11 +460,11 @@ describe('VideoAdUnit', () => {
   })
 
   describe('option.viewability', () => {
-    let simulateVisibilityChange
-    let unsubscribe
+    let simulateVisibilityChange: any
+    let unsubscribe: any
 
     beforeEach(() => {
-      onElementVisibilityChange.mockImplementation((element, callback) => {
+      ;(onElementVisibilityChange as jest.Mock).mockImplementation((_element, callback) => {
         simulateVisibilityChange = callback
         unsubscribe = jest.fn()
 
@@ -543,13 +543,13 @@ describe('VideoAdUnit', () => {
   })
 
   describe('viewable impression', () => {
-    let simulateVisibilityChange
-    let unsubscribe
+    let simulateVisibilityChange: any
+    let unsubscribe: any
 
     beforeEach(() => {
       viewableImpression = true
 
-      onElementVisibilityChange.mockImplementation((element, callback) => {
+      ;(onElementVisibilityChange as jest.Mock).mockImplementation((_element, callback) => {
         simulateVisibilityChange = callback
         unsubscribe = jest.fn()
 

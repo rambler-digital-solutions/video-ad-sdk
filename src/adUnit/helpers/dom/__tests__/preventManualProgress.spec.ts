@@ -1,10 +1,10 @@
 import preventManualProgress from '../preventManualProgress'
 
 describe('preventManualProgress', () => {
-  let videoElement
+  let videoElement: HTMLVideoElement
 
   beforeEach(() => {
-    videoElement = document.createElement('VIDEO')
+    videoElement = document.createElement('video')
     Object.defineProperty(videoElement, 'duration', {
       value: 100,
       writable: true
@@ -27,7 +27,7 @@ describe('preventManualProgress', () => {
   })
 
   afterEach(() => {
-    videoElement = null
+    ;(videoElement as any) = null
   })
 
   test('must be a function', () => {
@@ -36,7 +36,7 @@ describe('preventManualProgress', () => {
 
   test('must prevent ad skip', () => {
     preventManualProgress(videoElement)
-    videoElement.duration = 30
+    Object.defineProperty(videoElement, 'duration', {value: 30})
     videoElement.dispatchEvent(new Event('ended'))
 
     expect(videoElement.pause).toHaveBeenCalledTimes(1)
@@ -44,7 +44,7 @@ describe('preventManualProgress', () => {
 
   test('must prevent ad seek', () => {
     preventManualProgress(videoElement)
-    videoElement.duration = 30
+    Object.defineProperty(videoElement, 'duration', {value: 30})
     videoElement.currentTime = 1
     videoElement.dispatchEvent(new Event('timeupdate'))
 
@@ -66,7 +66,7 @@ describe('preventManualProgress', () => {
     const stop = preventManualProgress(videoElement)
 
     stop()
-    videoElement.duration = 30
+    Object.defineProperty(videoElement, 'duration', {value: 30})
     videoElement.dispatchEvent(new Event('ended'))
 
     videoElement.currentTime = 5

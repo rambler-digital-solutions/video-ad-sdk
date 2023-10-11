@@ -5,10 +5,10 @@ const getChildren = (element: ParsedXML): ParsedXML[] => element.elements ?? []
 const findChildByName = (
   element: ParsedXML,
   childName: string
-): ParsedXML | null =>
+): Optional<ParsedXML> =>
   getChildren(element).find(
     ({name = ''}) => name.toUpperCase() === childName.toUpperCase()
-  ) ?? null
+  )
 
 const filterChildrenByName = (
   element: ParsedXML,
@@ -47,18 +47,18 @@ export const getAll = (element: ParsedXML, childName?: string): ParsedXML[] => {
  *
  * @returns The first child element or undefined if there are non.
  */
-export const getFirstChild = (element: ParsedXML): ParsedXML | null =>
-  getChildren(element)[0] || null
+export const getFirstChild = (element: ParsedXML): Optional<ParsedXML> =>
+  getChildren(element)[0]
 
 /**
- * Get the text value of the passed parsed xml element or null if there is non.
+ * Get the text value of the passed parsed xml element.
  *
- * @returns Text of the element or null.
+ * @returns Text of the element
  */
-export const getText = (element: ParsedXML): string | null => {
+export const getText = (element?: ParsedXML): Optional<string> => {
   const firstChild = element && getFirstChild(element)
 
-  return (firstChild && firstChild.text) || null
+  return firstChild && firstChild.text
 }
 
 /**
@@ -77,4 +77,4 @@ export const getAttributes = (element: ParsedXML): Attributes =>
 export const getAttribute = (
   element: ParsedXML,
   attributeName: string
-): string | null => getAttributes(element)[attributeName] || null
+): Optional<string> => getAttributes(element)[attributeName]

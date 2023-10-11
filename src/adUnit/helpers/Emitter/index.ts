@@ -10,7 +10,7 @@ export interface Listener {
  */
 class Emitter {
   public logger: Console
-  private events: Record<string, Listener[]>
+  public events: Record<string, Listener[]>
 
   constructor(logger?: Console) {
     this.events = {}

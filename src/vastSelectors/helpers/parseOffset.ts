@@ -6,7 +6,7 @@ const isPercentage = (offset: string): boolean => {
   return percentageRegex.test(offset)
 }
 
-const parseOffset = (offset: string): string | number | null => {
+const parseOffset = (offset: string): Optional<string | number> => {
   if (isPercentage(offset)) {
     return offset
   }

@@ -2,7 +2,7 @@ export interface LoadScriptOptions {
   /**
    * Type of the script. Defaults to 'text/javascript'.
    */
-  type?: string | null
+  type?: string
   /**
    * If "true" the "async" attribute is added to the new script. Defaults to false.
    */
@@ -34,7 +34,7 @@ const loadScript = (
 
   return new Promise<HTMLScriptElement>((resolve, reject) => {
     const script = document.createElement('script')
-    let scriptPlaceholder: HTMLElement | Node | null | undefined = placeholder
+    let scriptPlaceholder: Optional<HTMLElement | Node> = placeholder
 
     script.type = type ?? 'text/javascript'
     script.async = async
@@ -44,10 +44,10 @@ const loadScript = (
     script.onload = () => resolve(script)
 
     if (!scriptPlaceholder) {
-      scriptPlaceholder = document.currentScript
+      scriptPlaceholder = (document.currentScript
         ? /* istanbul ignore next */
           document.currentScript.parentNode
-        : document.head
+        : document.head) as HTMLElement
     }
 
     script.src = src

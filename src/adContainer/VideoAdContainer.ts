@@ -13,8 +13,8 @@ const hidden = Symbol('hidden')
 interface Hidden {
   destroyed: boolean
   id: string
-  iframe: HTMLIFrameElement | null
-  readyPromise: Promise<any> | null
+  iframe?: HTMLIFrameElement
+  readyPromise?: Promise<any>
 }
 
 /**
@@ -22,16 +22,16 @@ interface Hidden {
  */
 class VideoAdContainer {
   public element: HTMLElement
-  public slotElement: HTMLElement | null
+  public slotElement?: HTMLElement
   public videoElement: HTMLVideoElement
-  public executionContext: ExecutionContext | null
+  public executionContext?: ExecutionContext
   public isOriginalVideoElement: boolean
 
   private [hidden]: Hidden = {
     destroyed: false,
     id: nextId(),
-    iframe: null,
-    readyPromise: null
+    iframe: undefined,
+    readyPromise: undefined
   }
 
   /**
@@ -49,9 +49,6 @@ class VideoAdContainer {
     }
 
     this.element = createAdContainer()
-    this.slotElement = null
-    this.executionContext = null
-
     this.isOriginalVideoElement = Boolean(videoElement)
 
     if (videoElement) {

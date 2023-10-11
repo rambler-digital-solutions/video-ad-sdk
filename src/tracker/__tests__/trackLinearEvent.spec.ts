@@ -36,22 +36,20 @@ import {
 } from '../linearEvents'
 import pixelTracker from '../helpers/pixelTracker'
 import trackError from '../helpers/trackError'
+import {VastChain} from '../../types'
 import {ErrorCode} from '../errorCode'
 
 jest.mock('../helpers/trackError', () => jest.fn())
 
-const vastChain = [
+const vastChain: VastChain = [
   {
     ad: inlineAd,
-    error: null,
-    errorCode: null,
     parsedXML: inlineParsedXML,
     requestTag: 'https://test.example.com/vastadtaguri',
     XML: vastInlineXML
   },
   {
     ad: getFirstAd(wrapperParsedXML),
-    errorCode: null,
     parsedXML: wrapperParsedXML,
     requestTag: 'http://adtag.test.example.com',
     XML: vastPodXML
@@ -82,7 +80,7 @@ test('trackLinearEvent must track the error linear event with the default pixelT
 
 test('trackLinearEvent must be possible to pass a custom tracker to the linear trackers', () => {
   const data = {}
-  const customTracker = (): void => {}
+  const customTracker: any = (): void => {}
 
   trackLinearEvent(error, vastChain, {
     data,
@@ -99,11 +97,11 @@ test('trackLinearEvent must be possible to pass a custom tracker to the linear t
 
 test("trackLinearEvent must log an error if the the event can't be tracked", () => {
   const data = {}
-  const logger = {
+  const logger: any = {
     error: jest.fn()
   }
 
-  trackLinearEvent('wrongEvent', vastChain, {
+  trackLinearEvent('wrongEvent' as any, vastChain, {
     data,
     logger
   })
@@ -154,7 +152,7 @@ test(`trackLinearEvent must track ${clickThrough} linear event with the default 
     const data = {}
     const tracker = jest.fn()
 
-    trackLinearEvent(event, vastChain, {
+    trackLinearEvent(event as any, vastChain, {
       data,
       tracker
     })

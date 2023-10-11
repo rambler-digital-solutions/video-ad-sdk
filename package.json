@@ -53,6 +53,7 @@
     "@rollup/plugin-typescript": "^8.2.1",
     "@types/jest": "^29.5.5",
     "@types/lodash.debounce": "^4.0.7",
+    "@types/mockdate": "^2",
     "@types/node": "^20.8.2",
     "braintree-jsdoc-template": "^3.3.0",
     "codecov": "^3.1.0",
@@ -84,7 +85,8 @@
     "typescript": "^5.2.2",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5"
+    "webpack-dev-server": "^3.1.5",
+    "whatwg-fetch": "^3.6.19"
   },
   "config": {
     "commitizen": {

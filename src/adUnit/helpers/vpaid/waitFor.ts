@@ -9,7 +9,7 @@ const waitFor = (
     let timeoutId: number
     const handler = (): void => {
       if (typeof timeout === 'number') {
-        clearTimeout(timeoutId)
+        window.clearTimeout(timeoutId)
       }
 
       creativeAd.unsubscribe(handler, event)

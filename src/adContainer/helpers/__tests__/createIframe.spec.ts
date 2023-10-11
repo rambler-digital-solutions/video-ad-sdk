@@ -4,11 +4,7 @@ import supportsSrcdoc from '../supportsSrcdoc'
 jest.mock('../supportsSrcdoc')
 describe('createIframe', () => {
   beforeEach(() => {
-    jsdom.reconfigure({
-      url: 'https://www.example.com/'
-    })
-
-    supportsSrcdoc.mockReturnValue(false)
+    ;(supportsSrcdoc as jest.Mock).mockReturnValue(false)
   })
 
   test('must return an empty Iframe element', async () => {
@@ -17,13 +13,13 @@ describe('createIframe', () => {
     expect(iframe).toBeInstanceOf(HTMLIFrameElement)
     expect(iframe).toMatchSnapshot()
 
-    iframe.parentElement.removeChild(iframe)
+    iframe.parentElement?.removeChild(iframe)
   })
 
   test('must post a message to notify that is ready', async () => {
     expect.assertions(1)
 
-    const handleMessage = ({data}): void => {
+    const handleMessage = ({data}: MessageEvent): void => {
       expect(data).toBe('test_iframe_ready')
     }
 
@@ -35,7 +31,7 @@ describe('createIframe', () => {
     expect.assertions(1)
 
     try {
-      await createIframe(document.createElement('div'), test)
+      await createIframe(document.createElement('div'), 'test')
     } catch (error) {
       expect(error).toBeInstanceOf(Error)
     }

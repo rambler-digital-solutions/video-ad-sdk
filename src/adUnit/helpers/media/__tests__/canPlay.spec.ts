@@ -2,7 +2,7 @@ import canPlay from '../canPlay'
 
 test('canPlay must delegate on the video element to know if the mediaFile is supported', () => {
   let supported = true
-  const mockVideoElement = {
+  const mockVideoElement: any = {
     canPlayType: jest.fn(() => supported)
   }
   const mediaFile = {
@@ -23,7 +23,7 @@ test('canPlay must delegate on the video element to know if the mediaFile is sup
 })
 
 test('canPlay try to guess the src type to check the video element support', () => {
-  const mockVideoElement = {
+  const mockVideoElement: any = {
     canPlayType: jest.fn(() => true)
   }
   const mediaFile = {

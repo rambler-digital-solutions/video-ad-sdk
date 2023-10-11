@@ -6,19 +6,20 @@ import {
   wrapperParsedXML,
   wrapperAd
 } from '../../../../fixtures'
-import {ErrorCode} from '../../errors'
+import {ErrorCode} from '../../errorCode'
+import {VastChain} from '../../../types'
 import pixelTracker from '../pixelTracker'
 import trackError from '../trackError'
 
 jest.mock('../pixelTracker', () => jest.fn())
 
 afterEach(() => {
-  pixelTracker.mockClear()
+  ;(pixelTracker as jest.Mock).mockClear()
 })
 
-const vastChain = [
+const vastChain: VastChain = [
   {
-    ad: null,
+    ad: undefined,
     error: expect.any(Error),
     errorCode: ErrorCode.VAST_UNEXPECTED_MEDIA_FILE,
     parsedXML: noAdParsedXML,
@@ -27,7 +28,6 @@ const vastChain = [
   },
   {
     ad: wrapperAd,
-    errorCode: null,
     parsedXML: wrapperParsedXML,
     requestTag: 'http://adtag.test.example.com',
     XML: vastWrapperXML
@@ -36,8 +36,8 @@ const vastChain = [
 
 test('trackError must track the errors using pixelTracker fn', () => {
   const errorURI = [
-    ...getVastErrorURI(noAdParsedXML),
-    ...getAdErrorURI(wrapperAd)
+    ...getVastErrorURI(noAdParsedXML) as string[],
+    ...getAdErrorURI(wrapperAd) as string[]
   ]
 
   trackError(vastChain, {errorCode: vastChain[0].errorCode})
@@ -51,8 +51,8 @@ test('trackError must track the errors using pixelTracker fn', () => {
 test('trackError must accept an optional track function', () => {
   const mockTrack = jest.fn()
   const errorURI = [
-    ...getVastErrorURI(noAdParsedXML),
-    ...getAdErrorURI(wrapperAd)
+    ...getVastErrorURI(noAdParsedXML) as string[],
+    ...getAdErrorURI(wrapperAd) as string[]
   ]
 
   trackError(vastChain, {

@@ -10,9 +10,9 @@ test('parseOffset must return the passed offset string in ms', () => {
   expect(parseOffset('00:00:05.050')).toBe(5050)
 })
 
-test("parseOffset must return null if you don't pass a proper offset", () => {
-  expect(parseOffset('')).toEqual(null)
-  expect(parseOffset('23423452353')).toEqual(null)
-  expect(parseOffset()).toEqual(null)
-  expect(parseOffset(undefined)).toEqual(null)
+test("parseOffset must return undefined if you don't pass a proper offset", () => {
+  expect(parseOffset('')).toBeUndefined()
+  expect(parseOffset('23423452353')).toBeUndefined()
+  expect((parseOffset as any)()).toBeUndefined()
+  expect((parseOffset as any)(undefined)).toBeUndefined()
 })

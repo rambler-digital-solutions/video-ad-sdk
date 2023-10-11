@@ -1,6 +1,6 @@
 import sortMediaByBestFit from '../sortMediaByBestFit'
 
-let mediafiles
+let mediafiles: any[]
 
 beforeEach(() => {
   mediafiles = [
@@ -51,7 +51,7 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit into the horizonta
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 480,
     width: 854
-  })
+  } as DOMRect)
 
   expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
@@ -102,7 +102,7 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit into the verticall
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 854,
     width: 480
-  })
+  } as DOMRect)
 
   expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
@@ -192,7 +192,7 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with vertical non
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 854,
     width: 480
-  })
+  } as DOMRect)
 
   expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
@@ -274,7 +274,7 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with horizontally
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 480,
     width: 854
-  })
+  } as DOMRect)
 
   expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([
@@ -332,7 +332,7 @@ test('sortMediaByBestFit must sort the mediaFiles by best fit, with square video
   const sortedMediaFiles = sortMediaByBestFit(mediafiles, {
     height: 220,
     width: 220
-  })
+  } as DOMRect)
 
   expect(sortedMediaFiles).not.toBe(mediafiles)
   expect(sortedMediaFiles).toEqual([

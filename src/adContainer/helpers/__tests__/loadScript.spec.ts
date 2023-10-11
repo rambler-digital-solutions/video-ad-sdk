@@ -14,9 +14,9 @@ test('loadScript load the script synchronous by default', () => {
 
   loadScript(src, {placeholder})
 
-  const script = placeholder.querySelector('script')
+  const script = placeholder.querySelector('script') as HTMLScriptElement
 
-  script.onload()
+  script.onload?.(undefined as any)
 
   expect(script.src).toEqual(src)
   expect(script.async).toEqual(false)
@@ -32,7 +32,7 @@ test('loadScript must be able to load script as defer', () => {
     placeholder
   })
 
-  const script = placeholder.querySelector('script')
+  const script = placeholder.querySelector('script') as HTMLScriptElement
 
   expect(script.src).toEqual(src)
   expect(script.async).toEqual(false)
@@ -48,7 +48,7 @@ test('loadScript must be able to load script as async', () => {
     placeholder
   })
 
-  const script = placeholder.querySelector('script')
+  const script = placeholder.querySelector('script') as HTMLScriptElement
 
   expect(script.src).toEqual(src)
   expect(script.async).toEqual(true)
@@ -61,7 +61,7 @@ test("loadScript set the type as 'text/javascript' by default", () => {
 
   loadScript(src, {placeholder})
 
-  const script = placeholder.querySelector('script')
+  const script = placeholder.querySelector('script') as HTMLScriptElement
 
   expect(script.src).toEqual(src)
   expect(script.type).toEqual('text/javascript')
@@ -76,7 +76,7 @@ test('loadScript must be able to set a custom type for the script', () => {
     type: 'txt/test'
   })
 
-  const script = placeholder.querySelector('script')
+  const script = placeholder.querySelector('script') as HTMLScriptElement
 
   expect(script.src).toEqual(src)
   expect(script.type).toEqual('txt/test')
@@ -86,9 +86,9 @@ test('loadScript must add the script to the given placeholder', async () => {
   const placeholder = document.createElement('div')
   const src = 'http://example.com/script'
   const promise = loadScript(src, {placeholder})
-  const script = placeholder.querySelector('script')
+  const script = placeholder.querySelector('script') as HTMLScriptElement
 
-  script.onload()
+  script.onload?.(undefined as any)
 
   expect(await promise).toBe(script)
 })
@@ -97,9 +97,9 @@ test('loadScript must reject the promise if there is an error loading the script
   const placeholder = document.createElement('div')
   const src = 'http://example.com/script'
   const promise = loadScript(src, {placeholder})
-  const script = placeholder.querySelector('script')
+  const script = placeholder.querySelector('script') as HTMLScriptElement
 
-  script.onerror()
+  script.onerror?.(undefined as any)
 
   expect(promise).rejects.toEqual(expect.any(URIError))
 })
@@ -108,9 +108,9 @@ test('loadScript if no document.currentScript must add the script to the documen
   const src = 'http://example.com/script'
   const promise = loadScript(src)
   const scripts = document.head.querySelectorAll('script')
-  const script = scripts[scripts.length - 1]
+  const script = scripts[scripts.length - 1] as HTMLScriptElement
 
-  script.onload()
+  script.onload?.(undefined as any)
 
   expect(await promise).toBe(script)
 })

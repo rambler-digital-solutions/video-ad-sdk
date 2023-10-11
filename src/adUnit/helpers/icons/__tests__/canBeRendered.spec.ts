@@ -8,24 +8,24 @@ const mockClientRect = (element: HTMLElement, mockValue: Partial<DOMRect>): void
   element.getBoundingClientRect = jest.fn(() => mockValue as DOMRect)
 }
 
-let newIcon
-let placeholder
-let drawnIcons
-let config
+let newIcon: any
+let placeholder: any
+let drawnIcons: any
+let config: any
 
 beforeEach(() => {
-  placeholder = document.createElement('DIV')
+  placeholder = document.createElement('div')
 
   newIcon = {
-    element: document.createElement('IMG')
+    element: document.createElement('img')
   }
 
   drawnIcons = [
     {
-      element: document.createElement('IMG')
+      element: document.createElement('img')
     },
     {
-      element: document.createElement('IMG')
+      element: document.createElement('img')
     }
   ]
 
@@ -88,7 +88,7 @@ test('withinBoundaries must return true if the icon position is withing the plac
         left: 0,
         top: -10,
         width: 3
-      },
+      } as any,
       config
     )
   ).toBe(false)
@@ -100,7 +100,7 @@ test('withinBoundaries must return true if the icon position is withing the plac
         left: 0,
         top: 10,
         width: -3
-      },
+      } as any,
       config
     )
   ).toBe(false)
@@ -112,7 +112,7 @@ test('withinBoundaries must return true if the icon position is withing the plac
         left: 0,
         top: 0,
         width: 3
-      },
+      } as any,
       config
     )
   ).toBe(true)

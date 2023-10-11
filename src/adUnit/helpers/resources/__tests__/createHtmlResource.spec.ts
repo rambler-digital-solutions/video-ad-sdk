@@ -32,13 +32,12 @@ test('createHtmlResource must not set the width and height if not passed', () =>
 
 test('createHtmlResource returned div must emit load once ready', async () => {
   const htmlFragment = '<div></div>'
-  const successResponse = {
+  const successResponse = new Response(htmlFragment, {
     headers: {
-      get: () => 'text/html'
+      'content-type': 'text/html'
     },
-    status: 200,
-    text: () => htmlFragment
-  }
+    status: 200
+  })
 
   global.fetch = jest.fn(() => Promise.resolve(successResponse))
 
@@ -60,13 +59,12 @@ test('createHtmlResource returned div must emit load once ready', async () => {
 
 test('createHtmlResource returned div must emit error if there is a problem loading the html', async () => {
   const htmlFragment = '<div></div>'
-  const successResponse = {
+  const successResponse = new Response(htmlFragment, {
     headers: {
-      get: () => 'text/json'
+      'content-type': 'text/json'
     },
-    status: 200,
-    text: () => htmlFragment
-  }
+    status: 200
+  })
 
   global.fetch = jest.fn(() => Promise.resolve(successResponse))
 

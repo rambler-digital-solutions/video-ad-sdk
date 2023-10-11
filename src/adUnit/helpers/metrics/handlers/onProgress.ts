@@ -34,7 +34,7 @@ const offsetToMs = (offset: ParsedOffset, durationInMs: number): number => {
 
 interface ProgressData {
   contentplayhead: string
-  progressUri?: string | null
+  progressUri?: string
 }
 
 interface PendingEvents {
@@ -69,7 +69,7 @@ const onProgress = (
       (accumulator, event) => {
         const {offset} = event
 
-        if (offset && playedMs >= offset) {
+        if (typeof offset === 'number' && playedMs >= offset) {
           accumulator.toCall.push(event)
         } else {
           accumulator.stillPending.push(event)

@@ -2,10 +2,10 @@ import {linearEvents} from '../../../../../tracker'
 import onProgress from '../onProgress'
 
 const {progress} = linearEvents
-let videoElement
+let videoElement: HTMLVideoElement
 
 beforeEach(() => {
-  videoElement = document.createElement('VIDEO')
+  videoElement = document.createElement('video')
   Object.defineProperty(videoElement, 'duration', {
     value: 200,
     writable: true
@@ -17,7 +17,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  videoElement = null
+  ;(videoElement as any) = null
 })
 
 test('onProgress must call the callback with uri of the event that fulfilled the offset', () => {
@@ -43,7 +43,7 @@ test('onProgress must call the callback with uri of the event that fulfilled the
       uri: 'http://test.example.com/progress4'
     }
   ]
-  const disconnect = onProgress({videoElement}, callback, {progressEvents})
+  const disconnect = onProgress({videoElement} as any, callback, {progressEvents})
 
   videoElement.currentTime = 5
   videoElement.dispatchEvent(new Event('timeupdate'))
@@ -100,7 +100,7 @@ test('onProgress must not call the callback if all the events have been called',
     }
   ]
 
-  onProgress({videoElement}, callback, {progressEvents})
+  onProgress({videoElement} as any, callback, {progressEvents})
 
   videoElement.currentTime = 5
   videoElement.dispatchEvent(new Event('timeupdate'))
@@ -129,7 +129,7 @@ test('onProgress must not call the callback if all the events have been called',
 test("onProgress must do nothing if you don't pass progress events", () => {
   const callback = jest.fn()
 
-  onProgress({videoElement}, callback)
+  onProgress({videoElement} as any, callback)
 
   videoElement.currentTime = 100
   videoElement.dispatchEvent(new Event('timeupdate'))
