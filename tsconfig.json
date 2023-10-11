@@ -3,10 +3,11 @@
   "compilerOptions": {
     "baseUrl": "src",
     "outDir": "dist",
+    "sourceMap": false,
     "declaration": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "demo"],
-  "exclude": ["node_modules", "dist", "**/*.specs.ts"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }
