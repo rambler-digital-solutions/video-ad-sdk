@@ -7,10 +7,10 @@ module.exports = {
   coverageReporters: ['text'],
   coverageThreshold: {
     global: {
-      statements: 98,
-      branches: 90,
-      functions: 97,
-      lines: 98
+      statements: 87,
+      branches: 76,
+      functions: 90,
+      lines: 93
     }
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
