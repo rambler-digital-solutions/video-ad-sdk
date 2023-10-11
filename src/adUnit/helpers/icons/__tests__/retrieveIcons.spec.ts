@@ -136,7 +136,8 @@ test('retrieveIcons must filter the icons taking the pxratio into account', () =
     {ad: wrapperAd}
   ] as any)
 
-  const molStaticIcons = icons?.filter(({program}) => program === 'MOL_STATIC') ?? []
+  const molStaticIcons =
+    icons?.filter(({program}) => program === 'MOL_STATIC') ?? []
 
   expect(molStaticIcons.length).toBe(1)
   expect(molStaticIcons[0]).toEqual(

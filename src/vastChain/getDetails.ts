@@ -1,5 +1,11 @@
 import {get, getFirstChild, getText, getAttribute} from '../xml'
-import {ParsedXML, ParsedAd, VastChain, VastChainDetails, MediaFile} from '../types'
+import {
+  ParsedXML,
+  ParsedAd,
+  VastChain,
+  VastChainDetails,
+  MediaFile
+} from '../types'
 import getLinearCreative from '../vastSelectors/helpers/getLinearCreative'
 import {
   isInline,
@@ -112,9 +118,8 @@ const getAdTypeElement = (ad?: ParsedXML): Optional<ParsedXML> =>
 const getCreativeElement = (ad?: ParsedXML): Optional<ParsedXML> =>
   ad && getLinearCreative(ad)
 
-const getLinearElement = (
-  creativeElement?: ParsedXML
-): Optional<ParsedXML> => creativeElement && get(creativeElement, 'Linear')
+const getLinearElement = (creativeElement?: ParsedXML): Optional<ParsedXML> =>
+  creativeElement && get(creativeElement, 'Linear')
 
 const getAdServingId = (adTypeElement?: ParsedXML): Optional<string> =>
   adTypeElement && getSubElementValue(adTypeElement, 'AdServingId')
@@ -136,7 +141,8 @@ const getDurationInMs = (duration?: string): Optional<number> =>
 
 const getUniversalIdElement = (
   creativeElement?: ParsedXML
-): Optional<ParsedXML> => creativeElement && get(creativeElement, 'UniversalAdId')
+): Optional<ParsedXML> =>
+  creativeElement && get(creativeElement, 'UniversalAdId')
 
 /**
  * Returns a summary of the passed {@link VastChain}.
@@ -198,7 +204,7 @@ const getDetails = (vastChain: VastChain): VastChainDetails => {
     universalAdId = universalIdElement && getText(universalIdElement)
     universalAdIdRegistry =
       universalIdElement && getAttribute(universalIdElement, 'idRegistry')
-    mediaFiles = ad && getMediaFiles(ad) || []
+    mediaFiles = (ad && getMediaFiles(ad)) || []
     vpaid = Boolean(ad && getInteractiveFiles(ad))
     skipOffset = linearElement && getAttribute(linearElement, 'skipoffset')
     skipOffsetInMs = skipOffset ? parseTime(skipOffset) : undefined

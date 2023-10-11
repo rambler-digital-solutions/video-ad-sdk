@@ -17,7 +17,10 @@ jest.mock('../helpers/MutationObserver', () => {
     }
   }
 
-  simulateAttrMutation = (node: HTMLElement, attributeName: string): MutationObserver =>
+  simulateAttrMutation = (
+    node: HTMLElement,
+    attributeName: string
+  ): MutationObserver =>
     mockHandler([
       {
         attributeName,
@@ -37,9 +40,9 @@ test('onElementResize must complain if the passed target is not an Element', () 
 })
 
 test("onElementResize mut complain if you don't pass a callback function", () => {
-  expect(() => onElementResize(document.createElement('div'), undefined as any)).toThrow(
-    TypeError
-  )
+  expect(() =>
+    onElementResize(document.createElement('div'), undefined as any)
+  ).toThrow(TypeError)
 })
 
 test('onElementResize not must call the callback if the changed style does not change the element size', () => {

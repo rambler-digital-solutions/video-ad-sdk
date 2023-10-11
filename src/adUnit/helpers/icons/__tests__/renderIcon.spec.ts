@@ -39,19 +39,25 @@ afterEach(() => {
 test('renderIcon must fail if there was a problem creating the icon', () => {
   const loadingError = new Error('problem loading icon')
 
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.reject(loadingError))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.reject(loadingError)
+  )
   expect(renderIcon(icon, config)).rejects.toBe(loadingError)
 })
 
 test('renderIcon must fail if the icon can not be rendered', () => {
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => icon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => false)
   expect(renderIcon(icon, config)).rejects.toThrow("Icon can't be rendered")
 })
 
 test('must append the icon to the placeholder if three is no problem', async () => {
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => icon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
@@ -61,7 +67,9 @@ test('must append the icon to the placeholder if three is no problem', async () 
 })
 
 test('renderIcon must reuse previously created icons', async () => {
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => icon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
@@ -79,7 +87,9 @@ test('renderIcon must reuse previously created icons', async () => {
 test('renderIcon must return the updated icon', () => {
   const updatedIcon = Object.assign({}, icon)
 
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => updatedIcon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
@@ -95,7 +105,9 @@ test('renderIcon must style the icon element', async () => {
     width: 6
   }
 
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => updatedIcon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
@@ -119,8 +131,9 @@ test('renderIcon must wrap the resource with an anchor', async () => {
   }
 
   icon.foo = true
-
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => updatedIcon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
@@ -145,8 +158,9 @@ test('renderIcon element anchor must have the clickThrough url if passed', async
   }
 
   icon.iconClickThrough = 'http://test.example.com/iconClickThrough'
-
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => updatedIcon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
@@ -167,7 +181,9 @@ test('renderIcon element anchor on click must call the passed onIconClick method
     width: 6
   }
 
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => updatedIcon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
@@ -191,7 +207,9 @@ test('renderIcon must add the element if it has no parentNode', async () => {
     width: 6
   }
 
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => updatedIcon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
@@ -209,14 +227,15 @@ test('renderIcon must must remove an icon that can no longer be rendered', async
     width: 6
   }
 
-  ;(loadResource as jest.Mock).mockImplementation(() => Promise.resolve(iconResource))
+  ;(loadResource as jest.Mock).mockImplementation(() =>
+    Promise.resolve(iconResource)
+  )
   ;(updateIcon as jest.Mock).mockImplementation(() => updatedIcon)
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 
   await renderIcon(icon, config)
 
   expect(icon.element.parentNode).toBe(placeholder)
-
   ;(canBeRendered as jest.Mock).mockImplementation(() => false)
 
   try {

@@ -32,12 +32,12 @@ const getIconAttributes = (iconElement: ParsedXML): VastIcon => {
   } = getAttributes(iconElement)
 
   return {
-    duration: duration && parseTime(duration) || undefined,
-    height: height && formatSize(height) || undefined,
-    offset: offset && parseTime(offset) || undefined,
+    duration: (duration && parseTime(duration)) || undefined,
+    height: (height && formatSize(height)) || undefined,
+    offset: (offset && parseTime(offset)) || undefined,
     program,
-    pxratio: pxratio && parseInt(pxratio, 10) || undefined,
-    width: width && formatSize(width) || undefined,
+    pxratio: (pxratio && parseInt(pxratio, 10)) || undefined,
+    width: (width && formatSize(width)) || undefined,
     xPosition: xPosition && formatPosition(xPosition),
     yPosition: yPosition && formatPosition(yPosition)
   }

@@ -16,7 +16,10 @@ jest.mock('../helpers/IntersectionObserver', () => {
     }
   }
 
-  simulateIntersection = (target: HTMLElement, intersectionRatio: number): IntersectionObserver =>
+  simulateIntersection = (
+    target: HTMLElement,
+    intersectionRatio: number
+  ): IntersectionObserver =>
     mockHandler([
       {
         intersectionRatio,
@@ -27,7 +30,11 @@ jest.mock('../helpers/IntersectionObserver', () => {
   return MockIntersectionObserver
 })
 
-const once = (context: Window | Document | Element, eventName: string, listener: (...args: any[]) => void): void => {
+const once = (
+  context: Window | Document | Element,
+  eventName: string,
+  listener: (...args: any[]) => void
+): void => {
   const handler = (...args: any[]): void => {
     context.removeEventListener(eventName, handler)
     listener(...args)
@@ -36,7 +43,10 @@ const once = (context: Window | Document | Element, eventName: string, listener:
   context.addEventListener(eventName, handler)
 }
 
-const waitForEvent = (eventName: string, context: Window | Document | Element = window): Promise<Event> =>
+const waitForEvent = (
+  eventName: string,
+  context: Window | Document | Element = window
+): Promise<Event> =>
   new Promise<Event>((resolve) => {
     once(context, eventName, resolve)
   })

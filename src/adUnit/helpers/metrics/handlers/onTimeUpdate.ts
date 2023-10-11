@@ -37,39 +37,43 @@ const onTimeUpdate = (
     start: {
       isFired: (currentTime) => !started && currentTime > 0,
       callback: () => {
-        started = true;
-        callback(start);
-      },
+        started = true
+        callback(start)
+      }
     },
     firstQuartile: {
-      isFired: (currentTime, duration) => !passFirstQuartile && isPassFirstQuartile(currentTime, duration),
+      isFired: (currentTime, duration) =>
+        !passFirstQuartile && isPassFirstQuartile(currentTime, duration),
       callback: () => {
-        passFirstQuartile = true;
-        callback(firstQuartile);
-      },
+        passFirstQuartile = true
+        callback(firstQuartile)
+      }
     },
     midpoint: {
-      isFired: (currentTime, duration) => !passMidPoint && isPassMidPoint(currentTime, duration),
+      isFired: (currentTime, duration) =>
+        !passMidPoint && isPassMidPoint(currentTime, duration),
       callback: () => {
-        passMidPoint = true;
-        callback(midpoint);
-      },
+        passMidPoint = true
+        callback(midpoint)
+      }
     },
     thirdQuartile: {
-      isFired: (currentTime, duration) => !passThirdQuartile && isPassThirdQuartile(currentTime, duration),
+      isFired: (currentTime, duration) =>
+        !passThirdQuartile && isPassThirdQuartile(currentTime, duration),
       callback: () => {
-        passThirdQuartile = true;
-        callback(thirdQuartile);
-      },
+        passThirdQuartile = true
+        callback(thirdQuartile)
+      }
     },
     complete: {
-      isFired: (currentTime, duration) => !completed && isCompleted(currentTime, duration),
+      isFired: (currentTime, duration) =>
+        !completed && isCompleted(currentTime, duration),
       callback: () => {
-        completed = true;
-        callback(complete);
-      },
-    },
-  };
+        completed = true
+        callback(complete)
+      }
+    }
+  }
 
   const timeUpdateHandler = (): void => {
     const duration = videoElement.duration
@@ -77,8 +81,8 @@ const onTimeUpdate = (
 
     for (const event in events) {
       if (events[event].isFired(currentTime, duration)) {
-        events[event].callback();
-        break;
+        events[event].callback()
+        break
       }
     }
 

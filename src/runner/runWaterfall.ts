@@ -58,7 +58,11 @@ const transformVastResponse = (
   return vastChain
 }
 
-const handleVastError = (error: VastError, vastChain?: VastChain, tracker?: PixelTracker): void => {
+const handleVastError = (
+  error: VastError,
+  vastChain?: VastChain,
+  tracker?: PixelTracker
+): void => {
   let errorCode = vastChain?.[0]?.errorCode || error?.code
 
   if (vastChain && errorCode) {
@@ -144,7 +148,7 @@ const waterfall = async (
       options.timeout -= Date.now() - runEpoch
     }
 
-    if (runEpoch && (options.timeout && options.timeout <= 0)) {
+    if (runEpoch && options.timeout && options.timeout <= 0) {
       onRunFinish()
 
       return

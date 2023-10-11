@@ -1,6 +1,9 @@
 import updateMedia from '../updateMedia'
 
-const createMockVideoElement = ({currentTime = 0, playing = false}): HTMLVideoElement => {
+const createMockVideoElement = ({
+  currentTime = 0,
+  playing = false
+}): HTMLVideoElement => {
   const videoElement = document.createElement('video')
 
   videoElement.pause = jest.fn()

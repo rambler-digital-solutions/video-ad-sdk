@@ -36,8 +36,8 @@ const vastChain: VastChain = [
 
 test('trackError must track the errors using pixelTracker fn', () => {
   const errorURI = [
-    ...getVastErrorURI(noAdParsedXML) as string[],
-    ...getAdErrorURI(wrapperAd) as string[]
+    ...(getVastErrorURI(noAdParsedXML) as string[]),
+    ...(getAdErrorURI(wrapperAd) as string[])
   ]
 
   trackError(vastChain, {errorCode: vastChain[0].errorCode})
@@ -51,8 +51,8 @@ test('trackError must track the errors using pixelTracker fn', () => {
 test('trackError must accept an optional track function', () => {
   const mockTrack = jest.fn()
   const errorURI = [
-    ...getVastErrorURI(noAdParsedXML) as string[],
-    ...getAdErrorURI(wrapperAd) as string[]
+    ...(getVastErrorURI(noAdParsedXML) as string[]),
+    ...(getAdErrorURI(wrapperAd) as string[])
   ]
 
   trackError(vastChain, {

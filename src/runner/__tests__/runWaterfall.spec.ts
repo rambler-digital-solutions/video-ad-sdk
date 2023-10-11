@@ -209,7 +209,9 @@ describe('runWaterfall', () => {
         }
       ]
 
-      ;(requestAd as jest.Mock).mockReturnValue(Promise.resolve(vastChainWithError))
+      ;(requestAd as jest.Mock).mockReturnValue(
+        Promise.resolve(vastChainWithError)
+      )
 
       await new Promise((resolve) => {
         runWaterfall(adTag, placeholder, {
@@ -235,7 +237,6 @@ describe('runWaterfall', () => {
       const vastChainError = new VastError('boom')
 
       vastChainError.code = ErrorCode.UNKNOWN_ERROR
-
       ;(requestAd as jest.Mock).mockReturnValue(Promise.resolve(vastAdChain))
 
       await new Promise((resolve) => {
@@ -348,8 +349,12 @@ describe('runWaterfall', () => {
 
       ;(run as jest.Mock).mockReturnValue(Promise.reject(runError))
       ;(requestAd as jest.Mock).mockReturnValue(Promise.resolve(vastAdChain))
-      ;(requestNextAd as jest.Mock).mockReturnValueOnce(Promise.resolve(vastAdChain))
-      ;(requestNextAd as jest.Mock).mockReturnValueOnce(Promise.reject(requestError))
+      ;(requestNextAd as jest.Mock).mockReturnValueOnce(
+        Promise.resolve(vastAdChain)
+      )
+      ;(requestNextAd as jest.Mock).mockReturnValueOnce(
+        Promise.reject(requestError)
+      )
 
       runWaterfall(adTag, placeholder, {
         onError,
@@ -444,8 +449,12 @@ describe('runWaterfall', () => {
 
       ;(run as jest.Mock).mockReturnValue(Promise.reject(runError))
       ;(requestAd as jest.Mock).mockReturnValue(Promise.resolve(vastAdChain))
-      ;(requestNextAd as jest.Mock).mockReturnValueOnce(Promise.resolve(vastAdChain))
-      ;(requestNextAd as jest.Mock).mockReturnValueOnce(Promise.reject(requestError))
+      ;(requestNextAd as jest.Mock).mockReturnValueOnce(
+        Promise.resolve(vastAdChain)
+      )
+      ;(requestNextAd as jest.Mock).mockReturnValueOnce(
+        Promise.reject(requestError)
+      )
 
       runWaterfall(adTag, placeholder, {
         onAdReady: noop,
@@ -480,7 +489,6 @@ describe('runWaterfall', () => {
 
       ;(Date.now as jest.Mock).mockReturnValueOnce(1000)
       ;(Date.now as jest.Mock).mockReturnValueOnce(1100)
-
       ;(run as jest.Mock).mockReturnValue(Promise.resolve(adUnit))
       ;(requestAd as jest.Mock).mockReturnValue(Promise.resolve(vastAdChain))
 
@@ -527,11 +535,14 @@ describe('runWaterfall', () => {
       ;(Date.now as jest.Mock).mockReturnValueOnce(1400)
       ;(Date.now as jest.Mock).mockReturnValueOnce(1500)
       ;(Date.now as jest.Mock).mockReturnValueOnce(1600)
-
       ;(run as jest.Mock).mockReturnValue(Promise.reject(runError))
       ;(requestAd as jest.Mock).mockReturnValue(Promise.resolve(vastAdChain))
-      ;(requestNextAd as jest.Mock).mockReturnValueOnce(Promise.resolve(vastAdChain))
-      ;(requestNextAd as jest.Mock).mockReturnValueOnce(Promise.reject(requestError))
+      ;(requestNextAd as jest.Mock).mockReturnValueOnce(
+        Promise.resolve(vastAdChain)
+      )
+      ;(requestNextAd as jest.Mock).mockReturnValueOnce(
+        Promise.reject(requestError)
+      )
 
       runWaterfall(adTag, placeholder, {
         ...opts,
@@ -629,10 +640,13 @@ describe('runWaterfall', () => {
       ;(Date.now as jest.Mock).mockReturnValueOnce(1000)
       ;(Date.now as jest.Mock).mockReturnValueOnce(1100)
       ;(Date.now as jest.Mock).mockReturnValueOnce(2100)
-
-      ;(run as jest.Mock).mockReturnValue(Promise.reject(new Error('Ad start timeout simulation')))
+      ;(run as jest.Mock).mockReturnValue(
+        Promise.reject(new Error('Ad start timeout simulation'))
+      )
       ;(requestAd as jest.Mock).mockReturnValue(Promise.resolve(vastAdChain))
-      ;(requestNextAd as jest.Mock).mockReturnValueOnce(Promise.resolve(vastAdChain))
+      ;(requestNextAd as jest.Mock).mockReturnValueOnce(
+        Promise.resolve(vastAdChain)
+      )
 
       runWaterfall(adTag, placeholder, {
         ...opts,

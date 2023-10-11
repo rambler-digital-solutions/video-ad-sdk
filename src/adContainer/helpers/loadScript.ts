@@ -44,10 +44,12 @@ const loadScript = (
     script.onload = () => resolve(script)
 
     if (!scriptPlaceholder) {
-      scriptPlaceholder = (document.currentScript
-        ? /* istanbul ignore next */
-          document.currentScript.parentNode
-        : document.head) as HTMLElement
+      scriptPlaceholder = (
+        document.currentScript
+          ? /* istanbul ignore next */
+            document.currentScript.parentNode
+          : document.head
+      ) as HTMLElement
     }
 
     script.src = src

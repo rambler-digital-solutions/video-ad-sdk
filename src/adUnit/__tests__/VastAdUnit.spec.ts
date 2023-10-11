@@ -79,9 +79,7 @@ describe('VastAdUnit', () => {
         XML: vastWrapperXML
       }
     ]
-    videoAdContainer = createVideoAdContainer(
-      document.createElement('div')
-    )
+    videoAdContainer = createVideoAdContainer(document.createElement('div'))
 
     const {videoElement} = videoAdContainer
 
@@ -189,7 +187,6 @@ describe('VastAdUnit', () => {
 
     expect(retrieveIcons).toHaveBeenCalledTimes(1)
     expect(addIcons).not.toHaveBeenCalled()
-
     ;(retrieveIcons as jest.Mock).mockImplementation(() => icons)
     adUnit = new VastAdUnit(vastChain, videoAdContainer)
 
@@ -355,20 +352,22 @@ describe('VastAdUnit', () => {
 
     expect(adUnit.assetUri).toBe('https://test.example.com/test768x432.mp4')
 
-    videoAdContainer.element.getBoundingClientRect = () => ({
-      height: 300,
-      width: 200
-    } as DOMRect)
+    videoAdContainer.element.getBoundingClientRect = () =>
+      ({
+        height: 300,
+        width: 200
+      }) as DOMRect
     adUnit = new VastAdUnit(vastChain, videoAdContainer)
 
     await adUnit.start()
 
     expect(adUnit.assetUri).toBe('https://test.example.com/test640x362.mp4')
 
-    videoAdContainer.element.getBoundingClientRect = () => ({
-      height: 1000,
-      width: 2000
-    } as DOMRect)
+    videoAdContainer.element.getBoundingClientRect = () =>
+      ({
+        height: 1000,
+        width: 2000
+      }) as DOMRect
     adUnit = new VastAdUnit(vastChain, videoAdContainer)
 
     await adUnit.start()
@@ -483,7 +482,9 @@ describe('VastAdUnit', () => {
     const adUnit = new VastAdUnit(vastChain, videoAdContainer)
 
     expect(() => adUnit.onFinish(undefined as any)).toThrow(TypeError)
-    expect(() => adUnit.onFinish(undefined as any)).toThrow('Expected a callback function')
+    expect(() => adUnit.onFinish(undefined as any)).toThrow(
+      'Expected a callback function'
+    )
   })
 
   test('onFinish must call the passed callback once the ad has completed', () => {
@@ -536,7 +537,9 @@ describe('VastAdUnit', () => {
     const adUnit = new VastAdUnit(vastChain, videoAdContainer)
 
     expect(() => adUnit.onError(undefined as any)).toThrow(TypeError)
-    expect(() => adUnit.onError(undefined as any)).toThrow('Expected a callback function')
+    expect(() => adUnit.onError(undefined as any)).toThrow(
+      'Expected a callback function'
+    )
   })
 
   test('onError must be called if there was an issue viewing the ad', async () => {
@@ -706,7 +709,6 @@ describe('VastAdUnit', () => {
 
   test('cancel must remove the icons of the vastChain', async () => {
     ;(canPlay as jest.Mock).mockReturnValue(true)
-
     ;(retrieveIcons as jest.Mock).mockImplementation(() => [
       {
         height: 20,
@@ -739,7 +741,6 @@ describe('VastAdUnit', () => {
       const adUnit = new VastAdUnit(vastChain, videoAdContainer)
 
       await adUnit.start()
-
       ;(videoElement as any)[vpMethod].mockClear()
       ;(adUnit as any)[method]()
       expect((videoElement as any)[vpMethod]).toHaveBeenCalledTimes(1)

@@ -1,6 +1,9 @@
 import updateIcon from '../updateIcon'
 
-const mockClientRect = (element: HTMLElement, mockValue: Partial<DOMRect>): void => {
+const mockClientRect = (
+  element: HTMLElement,
+  mockValue: Partial<DOMRect>
+): void => {
   element.getBoundingClientRect = jest.fn(() => mockValue as DOMRect)
 }
 
@@ -48,7 +51,7 @@ beforeEach(() => {
 afterEach(() => {
   ;(placeholder as any) = null
   icon = null
-  ;(iconElement as any)  = null
+  ;(iconElement as any) = null
   drawnIcons = null
   config = null
 })

@@ -43,7 +43,7 @@ describe('waitFor', () => {
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
 
     jest.runOnlyPendingTimers()
-    
+
     try {
       await promiseWithCallback
     } catch (error: any) {

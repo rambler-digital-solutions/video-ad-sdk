@@ -28,7 +28,6 @@ beforeEach(async () => {
     value: 10,
     writable: true
   })
-
   ;(createResource as jest.Mock).mockImplementation(() => {
     const resourceElement = document.createElement('img')
 
@@ -41,7 +40,6 @@ beforeEach(async () => {
 
     return resourceElement
   })
-
   ;(canBeRendered as jest.Mock).mockImplementation(() => true)
 })
 

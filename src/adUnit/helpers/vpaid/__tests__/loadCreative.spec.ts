@@ -55,7 +55,9 @@ describe('loadCreative', () => {
     }
 
     videoAdContainer.addScript = jest.fn()
-    ;(videoAdContainer.addScript as jest.Mock).mockReturnValue(Promise.resolve('success'))
+    ;(videoAdContainer.addScript as jest.Mock).mockReturnValue(
+      Promise.resolve('success')
+    )
     videoAdContainer.executionContext = {
       getVPAIDAd: () => mockVpaidCreative
     } as any

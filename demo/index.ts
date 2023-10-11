@@ -4,8 +4,12 @@ import './demo.css'
 document.addEventListener('DOMContentLoaded', () => {
   const textArea = document.querySelector('#adTag') as HTMLTextAreaElement
   const testBtn = document.querySelector('.vast-test-btn') as HTMLButtonElement
-  const videoElement = document.querySelector('.vast-media video') as HTMLVideoElement
-  const videoAdContainer = document.querySelector('.video-ad-container') as HTMLDivElement
+  const videoElement = document.querySelector(
+    '.vast-media video'
+  ) as HTMLVideoElement
+  const videoAdContainer = document.querySelector(
+    '.video-ad-container'
+  ) as HTMLDivElement
   let adUnit: VideoAdUnit
 
   const onAdReady = (newAdUnit: VideoAdUnit): void => {

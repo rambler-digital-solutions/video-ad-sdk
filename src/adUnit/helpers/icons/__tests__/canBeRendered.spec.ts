@@ -4,7 +4,10 @@ import canBeRendered, {
   withoutOverlaps
 } from '../canBeRendered'
 
-const mockClientRect = (element: HTMLElement, mockValue: Partial<DOMRect>): void => {
+const mockClientRect = (
+  element: HTMLElement,
+  mockValue: Partial<DOMRect>
+): void => {
   element.getBoundingClientRect = jest.fn(() => mockValue as DOMRect)
 }
 

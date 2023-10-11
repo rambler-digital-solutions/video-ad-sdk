@@ -141,7 +141,9 @@ describe('helpers', () => {
   describe('getAll', () => {
     test('must get all the children of an element by default', () => {
       expect(getAll(data)).toBe(data.elements)
-      expect(getAll(get(data, 'note') as ParsedXML)).toEqual(data.elements?.[0].elements)
+      expect(getAll(get(data, 'note') as ParsedXML)).toEqual(
+        data.elements?.[0].elements
+      )
       expect(getAll({} as ParsedXML)).toEqual([])
     })
 

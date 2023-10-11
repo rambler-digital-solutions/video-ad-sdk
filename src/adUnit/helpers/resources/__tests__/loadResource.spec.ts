@@ -29,7 +29,9 @@ test('loadResource must return a promise', async () => {
     placeholder
   })
 
-  const iconElement = placeholder.querySelector('.mock-resource-element') as HTMLElement
+  const iconElement = placeholder.querySelector(
+    '.mock-resource-element'
+  ) as HTMLElement
 
   expect(iconElement.style.zIndex).toBe('-9999')
 
@@ -50,7 +52,9 @@ test('loadResource must reject the promise if there is a problem loading the ico
     placeholder
   })
 
-  const iconElement = placeholder.querySelector('.mock-resource-element') as HTMLElement
+  const iconElement = placeholder.querySelector(
+    '.mock-resource-element'
+  ) as HTMLElement
 
   expect(iconElement.style.zIndex).toBe('-9999')
 

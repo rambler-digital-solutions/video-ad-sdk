@@ -91,11 +91,11 @@ test('requestNextAd must request the next ad on the waterfall', async () => {
   ]
 
   const wrapperResponse = new Response(vastWrapperXML, {
-    status: 200,
+    status: 200
   })
 
   const inlineResponse = new Response(vastInlineXML, {
-    status: 200,
+    status: 200
   })
 
   const nextWrapperResponse = wrapperResponse.clone()

@@ -57,7 +57,9 @@ describe('run', () => {
     )
     adUnit = new VastAdUnit(vastAdChain, adContainer, options)
     ;(createVideoAdContainer as jest.Mock).mockImplementation(() => adContainer)
-    ;(startVideoAd as jest.Mock).mockImplementation(() => Promise.resolve(adUnit))
+    ;(startVideoAd as jest.Mock).mockImplementation(() =>
+      Promise.resolve(adUnit)
+    )
   })
 
   afterEach(() => {
@@ -104,7 +106,9 @@ describe('run', () => {
     const adUnitError = new Error('boom')
 
     adContainer.destroy = jest.fn()
-    ;(startVideoAd as jest.Mock).mockImplementation(() => Promise.reject(adUnitError))
+    ;(startVideoAd as jest.Mock).mockImplementation(() =>
+      Promise.reject(adUnitError)
+    )
 
     try {
       await run(vastAdChain, placeholder, {
@@ -118,7 +122,9 @@ describe('run', () => {
   describe('with timeout', () => {
     test('must throw and destroy the adContainer on timeout', async () => {
       adContainer.destroy = jest.fn()
-      ;(startVideoAd as jest.Mock).mockImplementation(() => new Promise(() => {}))
+      ;(startVideoAd as jest.Mock).mockImplementation(
+        () => new Promise(() => {})
+      )
 
       try {
         await run(vastAdChain, placeholder, {

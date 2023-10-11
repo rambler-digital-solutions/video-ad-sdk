@@ -64,7 +64,9 @@ describe('VideoAdUnit', () => {
     ]
     videoAdContainer = new VideoAdContainer(document.createElement('DIV'))
     stopPreventManualProgress = jest.fn()
-    ;(preventManualProgress as jest.Mock).mockReturnValue(stopPreventManualProgress)
+    ;(preventManualProgress as jest.Mock).mockReturnValue(
+      stopPreventManualProgress
+    )
     viewableImpression = false
     ;(getViewable as jest.Mock).mockImplementation(() => viewableImpression)
     origScreen = window.screen
@@ -269,7 +271,9 @@ describe('VideoAdUnit', () => {
     })
 
     test("must throw if you don't pass a callback function ", () => {
-      expect(() => adUnit.onFinish(undefined as any)).toThrow('Expected a callback function')
+      expect(() => adUnit.onFinish(undefined as any)).toThrow(
+        'Expected a callback function'
+      )
     })
 
     test('must be called if the ad unit finishes', () => {
@@ -310,7 +314,9 @@ describe('VideoAdUnit', () => {
     })
 
     test("must throw if you don't pass a callback function ", () => {
-      expect(() => adUnit.onError(undefined as any)).toThrow('Expected a callback function')
+      expect(() => adUnit.onError(undefined as any)).toThrow(
+        'Expected a callback function'
+      )
     })
   })
 
@@ -365,13 +371,15 @@ describe('VideoAdUnit', () => {
     let unsubscribe: any
 
     beforeEach(() => {
-      ;(onElementResize as jest.Mock).mockImplementation((element, callback) => {
-        resizeElement = element
-        simulateResize = callback
-        unsubscribe = jest.fn()
+      ;(onElementResize as jest.Mock).mockImplementation(
+        (element, callback) => {
+          resizeElement = element
+          simulateResize = callback
+          unsubscribe = jest.fn()
 
-        return unsubscribe
-      })
+          return unsubscribe
+        }
+      )
     })
 
     test('must do nothing if false', () => {
@@ -464,12 +472,14 @@ describe('VideoAdUnit', () => {
     let unsubscribe: any
 
     beforeEach(() => {
-      ;(onElementVisibilityChange as jest.Mock).mockImplementation((_element, callback) => {
-        simulateVisibilityChange = callback
-        unsubscribe = jest.fn()
+      ;(onElementVisibilityChange as jest.Mock).mockImplementation(
+        (_element, callback) => {
+          simulateVisibilityChange = callback
+          unsubscribe = jest.fn()
 
-        return unsubscribe
-      })
+          return unsubscribe
+        }
+      )
     })
 
     test('must do nothing if false', () => {
@@ -548,13 +558,14 @@ describe('VideoAdUnit', () => {
 
     beforeEach(() => {
       viewableImpression = true
+      ;(onElementVisibilityChange as jest.Mock).mockImplementation(
+        (_element, callback) => {
+          simulateVisibilityChange = callback
+          unsubscribe = jest.fn()
 
-      ;(onElementVisibilityChange as jest.Mock).mockImplementation((_element, callback) => {
-        simulateVisibilityChange = callback
-        unsubscribe = jest.fn()
-
-        return unsubscribe
-      })
+          return unsubscribe
+        }
+      )
     })
 
     test('must emit viewable when the ad unit meets criteria for a viewable impression', async () => {

@@ -43,7 +43,9 @@ test('onProgress must call the callback with uri of the event that fulfilled the
       uri: 'http://test.example.com/progress4'
     }
   ]
-  const disconnect = onProgress({videoElement} as any, callback, {progressEvents})
+  const disconnect = onProgress({videoElement} as any, callback, {
+    progressEvents
+  })
 
   videoElement.currentTime = 5
   videoElement.dispatchEvent(new Event('timeupdate'))

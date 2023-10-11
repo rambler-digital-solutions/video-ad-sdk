@@ -20,7 +20,9 @@ describe('VideoAdContainer', () => {
   })
 
   test("must complain if you don't pass a placeholder element", () => {
-    expect(() => new VideoAdContainer(undefined as unknown as HTMLElement)).toThrowError(TypeError)
+    expect(
+      () => new VideoAdContainer(undefined as unknown as HTMLElement)
+    ).toThrowError(TypeError)
   })
 
   test('must use the passed videoElement', () => {
@@ -55,7 +57,7 @@ describe('VideoAdContainer', () => {
 
   describe('addScript', () => {
     test('must create an iframe and add the scripts to it', async () => {
-      (loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
+      ;(loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
       const src = 'http://example.com/resource'
       const scriptOpts: any = {foo: 'bar'}
@@ -66,7 +68,9 @@ describe('VideoAdContainer', () => {
       expect(adContainerElement.querySelector('iframe')).toBeNull()
 
       const script = await videoAdContainer.addScript(src, scriptOpts)
-      const iframe = adContainerElement.querySelector('iframe') as HTMLIFrameElement
+      const iframe = adContainerElement.querySelector(
+        'iframe'
+      ) as HTMLIFrameElement
       const iframeBody = getContentDocument(iframe)?.body
 
       expect(script).toBe('SCRIPT_MOCK')
@@ -83,7 +87,7 @@ describe('VideoAdContainer', () => {
     })
 
     test('must reuse the iframe to add scripts', async () => {
-      (loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
+      ;(loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
       const src = 'http://example.com/resource'
       const videoAdContainer = new VideoAdContainer(placeholder)
@@ -99,7 +103,7 @@ describe('VideoAdContainer', () => {
     })
 
     test('must set the execution context', async () => {
-      (loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
+      ;(loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
       const src = 'http://example.com/resource'
       const videoAdContainer = new VideoAdContainer(placeholder)
@@ -110,7 +114,9 @@ describe('VideoAdContainer', () => {
 
       await videoAdContainer.addScript(src)
 
-      const iframe = adContainerElement.querySelector('iframe') as HTMLIFrameElement
+      const iframe = adContainerElement.querySelector(
+        'iframe'
+      ) as HTMLIFrameElement
 
       expect(videoAdContainer.executionContext).toBe(iframe.contentWindow)
     })

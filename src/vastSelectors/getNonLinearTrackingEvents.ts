@@ -14,24 +14,23 @@ const getNonLinearTrackingEvents = (
   eventName?: string
 ): Optional<VastTrackingEvent[]> => {
   const creativeElement = ad && getLinearCreative(ad)
-  const nonLinearAdsElement = creativeElement && get(creativeElement, 'NonLinearAds')
+  const nonLinearAdsElement =
+    creativeElement && get(creativeElement, 'NonLinearAds')
   const trackingEventsElement =
     nonLinearAdsElement && get(nonLinearAdsElement, 'TrackingEvents')
   const trackingEventElements =
     trackingEventsElement && getAll(trackingEventsElement, 'Tracking')
 
   if (trackingEventElements && trackingEventElements.length > 0) {
-    const trackingEvents = trackingEventElements.map(
-      (trackingEventElement) => {
-        const {event} = getAttributes(trackingEventElement)
-        const uri = getText(trackingEventElement)
+    const trackingEvents = trackingEventElements.map((trackingEventElement) => {
+      const {event} = getAttributes(trackingEventElement)
+      const uri = getText(trackingEventElement)
 
-        return {
-          event,
-          uri
-        }
+      return {
+        event,
+        uri
       }
-    )
+    })
 
     if (!eventName) {
       return trackingEvents

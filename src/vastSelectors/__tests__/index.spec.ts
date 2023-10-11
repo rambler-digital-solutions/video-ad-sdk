@@ -36,9 +36,16 @@ import {
   isInline,
   isWrapper
 } from '../'
-import {ParsedXML, ParsedAd, Attributes, MediaFile, InteractiveFile} from '../../types'
+import {
+  ParsedXML,
+  ParsedAd,
+  Attributes,
+  MediaFile,
+  InteractiveFile
+} from '../../types'
 
-const clone = <T extends Record<string, any>>(obj: T): T => JSON.parse(JSON.stringify(obj))
+const clone = <T extends Record<string, any>>(obj: T): T =>
+  JSON.parse(JSON.stringify(obj))
 
 test('getVastErrorURI must return the error uri of the VAST element', () => {
   expect(getVastErrorURI(inlineParsedXML)).toBeUndefined()
@@ -101,13 +108,11 @@ test('hasAdPod must return true if the passed ads have an ad pod and false other
 test('hasAdPod must return false if the there is only one ad with a sequence', () => {
   const podAds = getAds(podParsedXML)
 
-  if (podParsedXML.elements)
-    podParsedXML.elements[0].elements = [podAds[1]]
+  if (podParsedXML.elements) podParsedXML.elements[0].elements = [podAds[1]]
 
   expect(hasAdPod(podParsedXML)).toBe(false)
 
-  if (podParsedXML.elements)
-  podParsedXML.elements[0].elements = podAds
+  if (podParsedXML.elements) podParsedXML.elements[0].elements = podAds
 })
 
 test('getPodAdSequence mus return the sequence of the ad or false otherwise', () => {
@@ -240,13 +245,17 @@ test('getMediaFiles must add the apiFramework if present', () => {
 })
 
 test('getInteractiveCreativeFiles must return undefined for wrong ads', () => {
-  expect(getInteractiveCreativeFiles(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(
+    getInteractiveCreativeFiles(undefined as unknown as ParsedAd)
+  ).toBeUndefined()
   expect(getInteractiveCreativeFiles({} as ParsedAd)).toBeUndefined()
   expect(getInteractiveCreativeFiles(wrapperAd)).toBeUndefined()
 })
 
 test('getInteractiveCreativeFiles must return the mediafiles', () => {
-  const interactiveFiles = getInteractiveCreativeFiles(vpaidInlineAd) as InteractiveFile[]
+  const interactiveFiles = getInteractiveCreativeFiles(
+    vpaidInlineAd
+  ) as InteractiveFile[]
 
   expect(interactiveFiles).toBeInstanceOf(Array)
   expect(interactiveFiles.length).toBe(2)
@@ -263,7 +272,9 @@ test('getInteractiveCreativeFiles must return the mediafiles', () => {
 })
 
 test('getLinearTrackingEvents must return undefined if there are no linear tracking events', () => {
-  expect(getLinearTrackingEvents(undefined as unknown as ParsedAd)).toBeUndefined()
+  expect(
+    getLinearTrackingEvents(undefined as unknown as ParsedAd)
+  ).toBeUndefined()
   expect(getLinearTrackingEvents({} as ParsedAd)).toBeUndefined()
   expect(getLinearTrackingEvents(noAdParsedXML)).toBeUndefined()
 })
@@ -596,7 +607,9 @@ test('getInteractiveFiles must return undefined if there is no vpaid ad', () => 
 })
 
 test('getInteractiveFiles must return the interactive files', () => {
-  const interactiveFiles = getInteractiveFiles(vpaidInlineAd) as InteractiveFile[]
+  const interactiveFiles = getInteractiveFiles(
+    vpaidInlineAd
+  ) as InteractiveFile[]
 
   expect(interactiveFiles).toBeInstanceOf(Array)
   expect(interactiveFiles.length).toBe(2)
@@ -613,7 +626,9 @@ test('getInteractiveFiles must return the interactive files', () => {
 })
 
 test('getInteractiveFiles must return vast2 interactive files', () => {
-  const interactiveFiles = getInteractiveFiles(legacyVpaidInlineAd) as InteractiveFile[]
+  const interactiveFiles = getInteractiveFiles(
+    legacyVpaidInlineAd
+  ) as InteractiveFile[]
 
   expect(interactiveFiles).toBeInstanceOf(Array)
   expect(interactiveFiles.length).toBe(2)

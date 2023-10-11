@@ -2,7 +2,10 @@ import {hasAdPod, getAds, getPodAdSequence, isPodAd} from '../../vastSelectors'
 import {ParsedAd, VastResponse, RequestNextAdOptions} from '../../types'
 import {hasAdBeenRequested} from './adUtils'
 
-const getNextPod = (currentPod: ParsedAd, ads: ParsedAd[]): Optional<ParsedAd> => {
+const getNextPod = (
+  currentPod: ParsedAd,
+  ads: ParsedAd[]
+): Optional<ParsedAd> => {
   const nextPodSequence = (getPodAdSequence(currentPod) || 0) + 1
 
   return ads.find((ad) => getPodAdSequence(ad) === nextPodSequence)

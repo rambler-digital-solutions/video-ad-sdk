@@ -313,7 +313,8 @@ export const getViewUndetermined = (ad: ParsedAd): Optional<string[]> => {
  */
 export const getMediaFiles = (ad: ParsedAd): Optional<MediaFile[]> => {
   const creativeElement = ad && getLinearCreative(ad)
-  const universalAdIdElement = creativeElement && get(creativeElement, 'UniversalAdId')
+  const universalAdIdElement =
+    creativeElement && get(creativeElement, 'UniversalAdId')
   const universalAdId = universalAdIdElement && getText(universalAdIdElement)
   const linearElement = creativeElement && get(creativeElement, 'Linear')
   const mediaFilesElement = linearElement && get(linearElement, 'MediaFiles')
@@ -394,7 +395,9 @@ export const getInteractiveCreativeFiles = (
  * @param ad VAST ad object.
  * @returns array of media files
  */
-export const getInteractiveFiles = (ad: ParsedAd): Optional<InteractiveFile[]> => {
+export const getInteractiveFiles = (
+  ad: ParsedAd
+): Optional<InteractiveFile[]> => {
   let interactiveFiles = getInteractiveCreativeFiles(ad)
 
   if (interactiveFiles) {

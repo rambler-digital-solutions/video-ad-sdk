@@ -20,8 +20,8 @@ const findBestMedia = (
 ): Optional<MediaFile> => {
   const screenRect = container.getBoundingClientRect()
   const mediaFiles = getMediaFiles(inlineAd)
-  const supportedMediaFiles = mediaFiles?.filter(
-    (mediaFile) => canPlay(videoElement, mediaFile)
+  const supportedMediaFiles = mediaFiles?.filter((mediaFile) =>
+    canPlay(videoElement, mediaFile)
   )
 
   return supportedMediaFiles && getMediaFile(supportedMediaFiles, screenRect)

@@ -60,7 +60,9 @@ test('renderIcons must render the passed icons and return an array with the rend
     width: 5
   }
 
-  ;(renderIcon as jest.Mock).mockImplementation(() => Promise.resolve(updatedIcon))
+  ;(renderIcon as jest.Mock).mockImplementation(() =>
+    Promise.resolve(updatedIcon)
+  )
 
   expect(
     renderIcons(icons, {

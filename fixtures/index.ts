@@ -48,11 +48,15 @@ export const hybridInlineXML = fs.readFileSync(
 export const wrapperParsedXML = parseXml(vastWrapperXML) as ParsedXML
 export const inlineParsedXML = parseXml(vastInlineXML) as ParsedXML
 export const vpaidInlineParsedXML = parseXml(vastVpaidInlineXML) as ParsedXML
-export const legacyVpaidInlineParsedXML = parseXml(legacyVastVpaidInlineXML) as ParsedXML
+export const legacyVpaidInlineParsedXML = parseXml(
+  legacyVastVpaidInlineXML
+) as ParsedXML
 export const podParsedXML = parseXml(vastPodXML) as ParsedXML
 export const noAdParsedXML = parseXml(vastNoAdXML) as ParsedXML
 export const waterfallParsedXML = parseXml(vastWaterfallXML) as ParsedXML
-export const waterfallWithInlineParsedXML = parseXml(vastWaterfallWithInlineXML) as ParsedXML
+export const waterfallWithInlineParsedXML = parseXml(
+  vastWaterfallWithInlineXML
+) as ParsedXML
 export const vastInvalidParsedXML = parseXml(vastInvalidXML) as ParsedXML
 export const hybridInlineParsedXML = parseXml(hybridInlineXML) as ParsedXML
 
@@ -60,4 +64,6 @@ export const wrapperAd = getFirstAd(wrapperParsedXML) as ParsedAd
 export const inlineAd = getFirstAd(inlineParsedXML) as ParsedAd
 export const hybridInlineAd = getFirstAd(hybridInlineParsedXML) as ParsedAd
 export const vpaidInlineAd = getFirstAd(vpaidInlineParsedXML) as ParsedAd
-export const legacyVpaidInlineAd = getFirstAd(legacyVpaidInlineParsedXML) as ParsedAd
+export const legacyVpaidInlineAd = getFirstAd(
+  legacyVpaidInlineParsedXML
+) as ParsedAd

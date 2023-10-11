@@ -95,7 +95,9 @@ describe('requestAd', () => {
       }
     }
 
-    global.fetch = jest.fn(() => Promise.resolve(response as unknown as Response))
+    global.fetch = jest.fn(() =>
+      Promise.resolve(response as unknown as Response)
+    )
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
     const lastVastResponse = vastChain[0]
@@ -113,7 +115,7 @@ describe('requestAd', () => {
 
   test('must return a chain with error code 100 if there is a problem parsing the xml', async () => {
     const response = new Response('not xml', {
-      status: 200,
+      status: 200
     })
 
     global.fetch = jest.fn(() => Promise.resolve(response))
@@ -134,7 +136,7 @@ describe('requestAd', () => {
 
   test('must return a chain with error 303 if there is no ad in the VAST response', async () => {
     const response = new Response(vastNoAdXML, {
-      status: 200,
+      status: 200
     })
 
     global.fetch = jest.fn(() => Promise.resolve(response))
@@ -154,14 +156,14 @@ describe('requestAd', () => {
   })
 
   test('must do do the wrapper chain requests until it finds an inline ad', async () => {
-    const wrapperResponse = new Response( vastWrapperXML, {
-      status: 200,
+    const wrapperResponse = new Response(vastWrapperXML, {
+      status: 200
     })
 
     const middleWrapperResponse = wrapperResponse.clone()
 
     const inlineResponse = new Response(vastInlineXML, {
-      status: 200,
+      status: 200
     })
 
     global.fetch = jest
@@ -205,7 +207,7 @@ describe('requestAd', () => {
 
   test('must set errorCode 101 if neither wrapper neither inline can be find inside the ad', async () => {
     const invalidVastResponse = new Response(vastInvalidXML, {
-      status: 200,
+      status: 200
     })
 
     global.fetch = jest
@@ -247,7 +249,7 @@ describe('requestAd', () => {
     ]
 
     const podResponse = new Response(vastPodXML, {
-      status: 200,
+      status: 200
     })
 
     global.fetch = jest
@@ -296,11 +298,11 @@ describe('requestAd', () => {
     const parsedWrapperXML = parseXml(newWrapperXML)
     const newWrapperAd = getFirstAd(parsedWrapperXML) as ParsedAd
     const wrapperResponse = new Response(newWrapperXML, {
-      status: 200,
+      status: 200
     })
 
     const podResponse = new Response(vastPodXML, {
-      status: 200,
+      status: 200
     })
 
     global.fetch = jest
@@ -342,11 +344,11 @@ describe('requestAd', () => {
     const parsedWrapperXML = parseXml(newWrapperXML)
     const newWrapperAd = getFirstAd(parsedWrapperXML) as ParsedAd
     const wrapperResponse = new Response(newWrapperXML, {
-      status: 200,
+      status: 200
     })
 
     const anotherWrapperResponse = new Response(vastWrapperXML, {
-      status: 200,
+      status: 200
     })
 
     global.fetch = jest
@@ -395,13 +397,13 @@ describe('requestAd', () => {
       ;(setTimeout as unknown as jest.Mock).mockClear()
 
       const wrapperResponse = new Response(vastWrapperXML, {
-        status: 200,
+        status: 200
       })
 
       const middleWrapperResponse = wrapperResponse.clone()
 
       const inlineResponse = new Response(vastInlineXML, {
-        status: 200,
+        status: 200
       })
 
       global.fetch = jest
@@ -409,7 +411,6 @@ describe('requestAd', () => {
         .mockImplementationOnce(() => Promise.resolve(wrapperResponse))
         .mockImplementationOnce(() => Promise.resolve(middleWrapperResponse))
         .mockImplementationOnce(() => Promise.resolve(inlineResponse))
-
       ;(Date.now as jest.Mock).mockReturnValueOnce(1000)
       ;(Date.now as jest.Mock).mockReturnValueOnce(1100)
       ;(Date.now as jest.Mock).mockReturnValueOnce(1200)
@@ -461,7 +462,6 @@ describe('requestAd', () => {
       global.fetch = jest
         .fn()
         .mockImplementationOnce(() => new Promise(() => {}))
-
       ;(Date.now as jest.Mock).mockReturnValueOnce(1000)
       ;(Date.now as jest.Mock).mockReturnValueOnce(1100)
 

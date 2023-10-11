@@ -1,4 +1,7 @@
-import {createVideoAdContainer, VideoAdContainer} from '../../../../../adContainer'
+import {
+  createVideoAdContainer,
+  VideoAdContainer
+} from '../../../../../adContainer'
 import {linearEvents} from '../../../../../tracker'
 import onSkip from '../onSkip'
 
@@ -55,7 +58,9 @@ test('onSkip must call the callback with skip if the user clicks in the control'
   videoElement.dispatchEvent(new Event('timeupdate'))
   expect(callback).toHaveBeenCalledTimes(0)
 
-  const skipControl = element.querySelector('.mol-vast-skip-control') as HTMLAnchorElement
+  const skipControl = element.querySelector(
+    '.mol-vast-skip-control'
+  ) as HTMLAnchorElement
 
   skipControl.click()
 
@@ -82,7 +87,9 @@ test('onSkip must be possible to pass a skipControl factory method', () => {
   expect(callback).toHaveBeenCalledTimes(0)
   expect(element.querySelector('.mol-vast-skip-control')).toBeNull()
 
-  const skipControl = element.querySelector('.custom-skip-control') as HTMLButtonElement
+  const skipControl = element.querySelector(
+    '.custom-skip-control'
+  ) as HTMLButtonElement
 
   skipControl.click()
 

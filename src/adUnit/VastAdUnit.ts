@@ -75,10 +75,7 @@ class VastAdUnit extends VideoAdUnit {
 
       await this[_protected].drawIcons?.()
 
-      if (
-        this[_protected].hasPendingIconRedraws?.() &&
-        !this.isFinished()
-      ) {
+      if (this[_protected].hasPendingIconRedraws?.() && !this.isFinished()) {
         const {videoElement} = this.videoAdContainer
 
         once(videoElement, 'timeupdate', this[_private].drawIcons)

@@ -125,20 +125,18 @@ describe('VpaidAdUnit', () => {
 
     beforeEach(() => {
       mockCreativeAd = new MockVpaidCreativeAd()
-
       ;(initAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adLoaded)
       })
-
       ;(mockCreativeAd.startAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adStarted)
       })
-
       ;(mockCreativeAd.stopAd as jest.Mock).mockImplementationOnce(() => {
         mockCreativeAd.emit(adStopped)
       })
-
-      ;(loadCreative as jest.Mock).mockReturnValue(Promise.resolve(mockCreativeAd))
+      ;(loadCreative as jest.Mock).mockReturnValue(
+        Promise.resolve(mockCreativeAd)
+      )
       ;(retrieveIcons as jest.Mock).mockReturnValue(undefined)
 
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
@@ -310,7 +308,6 @@ describe('VpaidAdUnit', () => {
       jest.useFakeTimers()
 
       mockCreativeAd = new MockVpaidCreativeAd()
-
       ;(initAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adLoaded)
       })
@@ -326,8 +323,9 @@ describe('VpaidAdUnit', () => {
       mockCreativeAd.resizeAd.mockImplementationOnce(() => {
         mockCreativeAd.emit(adSizeChange)
       })
-
-      ;(loadCreative as jest.Mock).mockReturnValue(Promise.resolve(mockCreativeAd))
+      ;(loadCreative as jest.Mock).mockReturnValue(
+        Promise.resolve(mockCreativeAd)
+      )
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
     })
 
@@ -517,7 +515,6 @@ describe('VpaidAdUnit', () => {
 
     beforeEach(() => {
       mockCreativeAd = new MockVpaidCreativeAd()
-
       ;(initAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adLoaded)
       })
@@ -545,8 +542,9 @@ describe('VpaidAdUnit', () => {
       mockCreativeAd.resizeAd.mockImplementationOnce(() => {
         mockCreativeAd.emit(adSizeChange)
       })
-
-      ;(loadCreative as jest.Mock).mockReturnValue(Promise.resolve(mockCreativeAd))
+      ;(loadCreative as jest.Mock).mockReturnValue(
+        Promise.resolve(mockCreativeAd)
+      )
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
     })
 
@@ -659,7 +657,9 @@ describe('VpaidAdUnit', () => {
       test("must throw if you don't pass a callback function ", async () => {
         await adUnit.start()
 
-        expect(() => adUnit.onFinish(undefined as any)).toThrow('Expected a callback function')
+        expect(() => adUnit.onFinish(undefined as any)).toThrow(
+          'Expected a callback function'
+        )
       })
 
       test('must be called if the ad unit gets canceled', async () => {
@@ -684,7 +684,6 @@ describe('VpaidAdUnit', () => {
         await adUnit.start()
 
         expect(callback).not.toHaveBeenCalled()
-
         ;(adUnit.creativeAd as any).emit(adVideoComplete)
         ;(adUnit.creativeAd as any).emit(adStopped)
 
@@ -699,7 +698,6 @@ describe('VpaidAdUnit', () => {
         await adUnit.start()
 
         expect(callback).not.toHaveBeenCalled()
-
         ;(adUnit.creativeAd as any).emit(adStopped)
 
         expect(callback).toHaveBeenCalledTimes(1)
@@ -713,7 +711,6 @@ describe('VpaidAdUnit', () => {
         await adUnit.start()
 
         expect(callback).not.toHaveBeenCalled()
-
         ;(adUnit.creativeAd as any).emit(adUserClose)
 
         expect(callback).toHaveBeenCalledTimes(1)
@@ -724,7 +721,9 @@ describe('VpaidAdUnit', () => {
       test("must throw if you don't pass a callback function ", async () => {
         await adUnit.start()
 
-        expect(() => adUnit.onError(undefined as any)).toThrow('Expected a callback function')
+        expect(() => adUnit.onError(undefined as any)).toThrow(
+          'Expected a callback function'
+        )
       })
 
       test('must call the callback if there is a problem starting the ad', async () => {
@@ -736,7 +735,6 @@ describe('VpaidAdUnit', () => {
         const callback = jest.fn()
 
         adUnit.onError(callback)
-
         ;(handshake as jest.Mock).mockImplementationOnce(() => {
           throw handshakeVersionError
         })
@@ -761,7 +759,6 @@ describe('VpaidAdUnit', () => {
         await adUnit.start()
 
         expect(callback).not.toHaveBeenCalled()
-
         ;(adUnit.creativeAd as any).emit(adError)
 
         expect(callback).toHaveBeenCalledTimes(1)
@@ -784,7 +781,6 @@ describe('VpaidAdUnit', () => {
 
     beforeEach(() => {
       mockCreativeAd = new MockVpaidCreativeAd()
-
       ;(initAd as jest.Mock).mockImplementation(() => {
         mockCreativeAd.emit(adLoaded)
       })
@@ -796,8 +792,9 @@ describe('VpaidAdUnit', () => {
       mockCreativeAd.stopAd.mockImplementationOnce(() => {
         mockCreativeAd.emit(adStopped)
       })
-
-      ;(loadCreative as jest.Mock).mockReturnValue(Promise.resolve(mockCreativeAd))
+      ;(loadCreative as jest.Mock).mockReturnValue(
+        Promise.resolve(mockCreativeAd)
+      )
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
     })
 
@@ -807,7 +804,6 @@ describe('VpaidAdUnit', () => {
 
         adUnit.on(vpaidEvt, callback)
         await adUnit.start()
-
         ;(adUnit.creativeAd as any).emit(vpaidEvt)
 
         expect(callback).toHaveBeenCalledWith({
@@ -899,7 +895,6 @@ describe('VpaidAdUnit', () => {
 
           adUnit.on(vastEvt, callback)
           await adUnit.start()
-
           ;(adUnit.creativeAd as any).emit(vpaidEvt, payload)
           expect(callback).toHaveBeenCalledWith({
             adUnit,
@@ -914,7 +909,6 @@ describe('VpaidAdUnit', () => {
 
       adUnit.on(start, callback)
       await adUnit.start()
-
       ;(adUnit.creativeAd as any).emit(adVideoStart)
       ;(adUnit.creativeAd as any).emit(adVideoStart)
       ;(adUnit.creativeAd as any).emit(adVideoStart)
@@ -926,7 +920,6 @@ describe('VpaidAdUnit', () => {
 
       adUnit.on(start, callback)
       await adUnit.start()
-
       ;(adUnit.creativeAd as any).emit(adImpression)
       expect(callback).toHaveBeenCalledTimes(1)
       expect(callback).toHaveBeenCalledWith({
@@ -950,13 +943,10 @@ describe('VpaidAdUnit', () => {
       it('must return true if the creative is paused and false otherwise', async () => {
         await adUnit.start()
         expect(adUnit.paused()).toBe(true)
-
         ;(adUnit.creativeAd as any).emit(adVideoStart)
         expect(adUnit.paused()).toBe(false)
-
         ;(adUnit.creativeAd as any).emit(adPaused)
         expect(adUnit.paused()).toBe(true)
-
         ;(adUnit.creativeAd as any).emit(adPlaying)
         expect(adUnit.paused()).toBe(false)
 
@@ -979,7 +969,6 @@ describe('VpaidAdUnit', () => {
 
       test('must not open a new tab if `playerHandles` is false', async () => {
         await adUnit.start()
-
         ;(adUnit.creativeAd as any).emit(
           adClickThru,
           'https://test.example.com/clickUrl',
@@ -1098,7 +1087,6 @@ describe('VpaidAdUnit', () => {
 
         adUnit.on(vastEvt, callback)
         await adUnit.start()
-
         ;(adUnit.creativeAd as any).emit(adError)
 
         expect(callback).toHaveBeenCalledWith({
@@ -1225,10 +1213,14 @@ describe('VpaidAdUnit', () => {
       it('must return the creative current time', async () => {
         await adUnit.start()
         ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(30)
-        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(25)
+        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(
+          25
+        )
 
         expect(adUnit.currentTime()).toBe(5)
-        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(5)
+        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(
+          5
+        )
 
         expect(adUnit.currentTime()).toBe(25)
       })
@@ -1236,11 +1228,15 @@ describe('VpaidAdUnit', () => {
       it('must return 0 if the creative returns a negative adRemainingTime', async () => {
         await adUnit.start()
         ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(-1)
-        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(-1)
+        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(
+          -1
+        )
 
         expect(adUnit.currentTime()).toBe(0)
         ;(adUnit.creativeAd?.[getAdDuration] as jest.Mock).mockReturnValue(-2)
-        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(-2)
+        ;(adUnit.creativeAd?.[getAdRemainingTime] as jest.Mock).mockReturnValue(
+          -2
+        )
 
         expect(adUnit.currentTime()).toBe(0)
       })

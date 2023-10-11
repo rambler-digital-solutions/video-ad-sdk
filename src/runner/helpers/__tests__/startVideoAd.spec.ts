@@ -26,7 +26,11 @@ import {adStopped, adUserClose} from '../../../adUnit/helpers/vpaid/api'
 jest.mock('../../../adUnit/createVideoAdUnit')
 jest.mock('../../../adUnit/helpers/media/canPlay')
 
-const createAdUnitMock = (adChain: VastChain, adContainer: VideoAdContainer, opts: VastAdUnitOptions): VastAdUnit => {
+const createAdUnitMock = (
+  adChain: VastChain,
+  adContainer: VideoAdContainer,
+  opts: VastAdUnitOptions
+): VastAdUnit => {
   const vastAdUnit = new VastAdUnit(adChain, adContainer, opts)
   const errorCallbacks: any[] = []
 
@@ -43,7 +47,11 @@ const createAdUnitMock = (adChain: VastChain, adContainer: VideoAdContainer, opt
   return vastAdUnit
 }
 
-const createVPAIDAdUnitMock = (adChain: VastChain, adContainer: VideoAdContainer, opts: VpaidAdUnitOptions): VpaidAdUnit => {
+const createVPAIDAdUnitMock = (
+  adChain: VastChain,
+  adContainer: VideoAdContainer,
+  opts: VpaidAdUnitOptions
+): VpaidAdUnit => {
   const vastAdUnit = new VpaidAdUnit(adChain, adContainer, opts)
   const errorCallbacks: any[] = []
 
@@ -139,7 +147,9 @@ describe('startVideoAd', () => {
     expect((startVideoAd as any)()).rejects.toBeInstanceOf(TypeError)
     expect((startVideoAd as any)([])).rejects.toBeInstanceOf(TypeError)
     expect((startVideoAd as any)(vastAdChain)).rejects.toBeInstanceOf(TypeError)
-    expect((startVideoAd as any)(vastAdChain, {})).rejects.toBeInstanceOf(TypeError)
+    expect((startVideoAd as any)(vastAdChain, {})).rejects.toBeInstanceOf(
+      TypeError
+    )
   })
 
   test('must fail if there is a problem creating the ad Unit', () => {

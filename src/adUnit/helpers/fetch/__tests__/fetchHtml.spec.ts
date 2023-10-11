@@ -1,5 +1,4 @@
 import fetchHtml from '../fetchHtml'
-
 ;['text/plain', 'text/html'].forEach((contentType) => {
   test(`fetchHtml must resolve with the html fragment with content-type ${contentType}`, async () => {
     const htmlFragment = '<div></div>'
@@ -45,7 +44,7 @@ test("fetchHtml must throw an error if the response's Content-Type is not valid"
   const htmlFragment = '<div></div>'
   const invalidResponse = new Response(htmlFragment, {
     headers: {
-       'content-type': 'text/json'
+      'content-type': 'text/json'
     },
     status: 200
   })
