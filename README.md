@@ -9,7 +9,7 @@ To run video ads in the browser there are many alternatives. The most famous one
 ## Install
 
 ```
-yarn install video-ad-sdk
+yarn add video-ad-sdk
 ```
 
 ## Demo
