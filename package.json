@@ -41,7 +41,7 @@
   "dependencies": {
     "lodash.debounce": "^4.0.8",
     "sane-domparser-error": "^0.2.0",
-    "tslib": "^2.2.0"
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.0.0",
@@ -56,7 +56,6 @@
     "@types/mockdate": "^2",
     "@types/node": "^20.8.2",
     "braintree-jsdoc-template": "^3.3.0",
-    "codecov": "^3.1.0",
     "cross-env": "^5.2.0",
     "css-loader": "^1.0.1",
     "eslint": "^8.50.0",
@@ -72,7 +71,6 @@
     "mol-conventional-changelog": "^1.2.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "prettier": "^3.0.3",
-    "rimraf": "^2.6.2",
     "rollup": "^2.44.0",
     "rollup-plugin-size-snapshot": "^0.12.0",
     "rollup-plugin-sourcemaps": "^0.6.3",

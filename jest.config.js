@@ -1,25 +1,21 @@
+/** @type {import('jest').Config} */
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  moduleDirectories: ['packages', 'node_modules'],
   collectCoverage: true,
-  collectCoverageFrom: [
-    '**/src/**/*.js',
-    '**/src/**/*.jsx',
-    '**/src/**/*.tsx',
-    '**/src/**/*.ts',
-    '!**/src/**/*.d.ts',
-    '!**/src/**/__tests__/**/*',
-    '!**/src/**/__storybook__/**/*',
-    '!**/src/**/__karma__/**/*'
-  ],
-  coverageDirectory: './coverage/',
-  coverageReporters: ['json', 'lcov', 'text', 'clover', 'html'],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  coverageReporters: ['text'],
+  coverageThreshold: {
+    global: {
+      statements: 98,
+      branches: 90,
+      functions: 97,
+      lines: 98
+    }
+  },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testRegex: '__tests__/.*\\.spec\\.(jsx?|tsx?)$',
   testEnvironmentOptions: {
     url: 'http://localhost'
-  },
-  transformIgnorePatterns: ['node_modules']
+  }
 }
