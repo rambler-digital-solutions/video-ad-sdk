@@ -83,7 +83,7 @@ const vpaidGeneralError = (payload: Error | unknown): AdUnitError => {
 
 interface Private {
   evtHandler: Record<string, (...args: any[]) => void>
-  handleVpaidEvt(event: string, ...args: any[]): void
+  handleVpaidEvent(event: string, ...args: any[]): void
   handleClickThrough(url: string): void
   getIcons(): void
   drawIcons(): Promise<void>
@@ -143,7 +143,7 @@ class VpaidAdUnit extends VideoAdUnit {
       [adImpression]: () => {
         // NOTE: some ads forget to trigger the adVideoStart event. :(
         if (!this[_private].videoStart) {
-          this[_private].handleVpaidEvt(adVideoStart)
+          this[_private].handleVpaidEvent(adVideoStart)
         }
 
         this.emit(impression, {
@@ -271,7 +271,7 @@ class VpaidAdUnit extends VideoAdUnit {
         }
       }
     },
-    handleVpaidEvt: (event, ...args) => {
+    handleVpaidEvent: (event, ...args) => {
       const handler = this[_private].evtHandler[event]
 
       if (handler) {
@@ -322,10 +322,7 @@ class VpaidAdUnit extends VideoAdUnit {
 
       await this[_protected].drawIcons?.()
 
-      if (
-        this[_protected].hasPendingIconRedraws?.() &&
-        !this.isFinished()
-      ) {
+      if (this[_protected].hasPendingIconRedraws?.() && !this.isFinished()) {
         setTimeout(this[_private].drawIcons, 500)
       }
     },
@@ -380,7 +377,7 @@ class VpaidAdUnit extends VideoAdUnit {
 
       for (const creativeEvt of VPAID_EVENTS) {
         this.creativeAd.subscribe(
-          this[_private].handleVpaidEvt.bind(this, creativeEvt),
+          this[_private].handleVpaidEvent.bind(this, creativeEvt),
           creativeEvt
         )
       }
@@ -416,7 +413,7 @@ class VpaidAdUnit extends VideoAdUnit {
         }
       }
     } catch (error) {
-      this[_private].handleVpaidEvt(adError, error)
+      this[_private].handleVpaidEvent(adError, error)
       throw error
     }
   }

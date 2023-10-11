@@ -18,6 +18,7 @@ import AdUnitError from './helpers/adUnitError'
 const {start, viewable, notViewable, viewUndetermined, iconClick, iconView} =
   linearEvents
 
+const _private = Symbol('_private')
 export const _protected = Symbol('_protected')
 
 interface Size {
@@ -26,13 +27,20 @@ interface Size {
   viewmode: string
 }
 
+interface Private {
+  addIcons(): void
+  setupViewableImpression(): void
+  setupViewability(): void
+  setupResponsive(): void
+  handleViewableImpression(event: string): void
+}
+
 interface Protected extends Partial<AddedIcons> {
   started: boolean
   viewable: boolean
   finished: boolean
   size?: Size
   finish(): void
-  handleViewableImpression(event: string): void
   onErrorCallbacks: Listener[]
   onFinishCallbacks: Listener[]
   throwIfCalled(): void
@@ -66,7 +74,141 @@ export interface VideoAdUnitOptions {
  * This class provides shared logic among all the ad units.
  */
 class VideoAdUnit extends Emitter {
+  private [_private]: Private = {
+    addIcons: () => {
+      if (!this.icons) {
+        return
+      }
+
+      const {drawIcons, hasPendingIconRedraws, removeIcons} = addIcons(
+        this.icons,
+        {
+          logger: this.logger,
+          onIconClick: (icon) =>
+            this.emit(iconClick, {
+              adUnit: this,
+              data: icon,
+              type: iconClick
+            }),
+          onIconView: (icon) =>
+            this.emit(iconView, {
+              adUnit: this,
+              data: icon,
+              type: iconView
+            }),
+          videoAdContainer: this.videoAdContainer
+        }
+      )
+
+      this[_protected].drawIcons = drawIcons
+      this[_protected].removeIcons = removeIcons
+      this[_protected].hasPendingIconRedraws = hasPendingIconRedraws
+      this[_protected].onFinishCallbacks.push(removeIcons)
+    },
+
+    setupViewableImpression: () => {
+      let timeoutId: number
+
+      const unsubscribe = onElementVisibilityChange(
+        this.videoAdContainer.element,
+        (visible) => {
+          if (this.isFinished() || this[_protected].viewable) {
+            return
+          }
+
+          if (typeof visible !== 'boolean') {
+            this[_private].handleViewableImpression(viewUndetermined)
+
+            return
+          }
+
+          if (visible) {
+            timeoutId = window.setTimeout(
+              this[_private].handleViewableImpression,
+              2000,
+              viewable
+            )
+          } else {
+            clearTimeout(timeoutId)
+          }
+        },
+        {viewabilityOffset: 0.5}
+      )
+
+      this[_protected].onFinishCallbacks.push(() => {
+        unsubscribe()
+        clearTimeout(timeoutId)
+
+        if (!this[_protected].viewable) {
+          this[_private].handleViewableImpression(notViewable)
+        }
+      })
+    },
+
+    handleViewableImpression: (event) => {
+      this[_protected].viewable = Boolean(event)
+
+      this.emit(event, {
+        adUnit: this,
+        type: event
+      })
+    },
+
+    setupViewability: () => {
+      const unsubscribe = onElementVisibilityChange(
+        this.videoAdContainer.element,
+        (visible) => {
+          if (this.isFinished()) {
+            return
+          }
+
+          if (typeof visible === 'boolean') {
+            if (visible) {
+              this.resume()
+            } else {
+              this.pause()
+            }
+          }
+        }
+      )
+
+      this[_protected].onFinishCallbacks.push(unsubscribe)
+    },
+
+    setupResponsive: () => {
+      const {element} = this.videoAdContainer
+
+      this[_protected].size = {
+        height: element.clientHeight,
+        viewmode: viewmode(element.clientWidth, element.clientHeight),
+        width: element.clientWidth
+      }
+
+      const unsubscribe = onElementResize(element, () => {
+        if (this.isFinished()) {
+          return
+        }
+
+        const prevSize = this[_protected].size
+        const height = element.clientHeight
+        const width = element.clientWidth
+
+        if (height !== prevSize?.height || width !== prevSize?.width) {
+          this.resize(width, height, viewmode(width, height))
+        }
+      })
+
+      this[_protected].onFinishCallbacks.push(unsubscribe)
+    }
+  }
+
   protected [_protected]: Protected = {
+    finished: false,
+    started: false,
+    viewable: false,
+    onErrorCallbacks: [],
+    onFinishCallbacks: [],
+
     finish: () => {
       if (!this.isFinished()) {
         this[_protected].finished = true
@@ -78,27 +220,16 @@ class VideoAdUnit extends Emitter {
         })
       }
     },
-    finished: false,
-    handleViewableImpression: (event) => {
-      this[_protected].viewable = Boolean(event)
 
-      this.emit(event, {
-        adUnit: this,
-        type: event
-      })
-    },
-    onErrorCallbacks: [],
-    onFinishCallbacks: [],
-    started: false,
     throwIfCalled: () => {
       throw new Error('VideoAdUnit method must be implemented on child class')
     },
+
     throwIfFinished: () => {
       if (this.isFinished()) {
         throw new Error('VideoAdUnit is finished')
       }
-    },
-    viewable: false
+    }
   }
 
   /** Ad unit type */
@@ -134,8 +265,6 @@ class VideoAdUnit extends Emitter {
   ) {
     super(logger)
 
-    const {onFinishCallbacks, handleViewableImpression} = this[_protected]
-
     /** Reference to the {@link VastChain} used to load the ad. */
     this.vastChain = vastChain
 
@@ -147,130 +276,24 @@ class VideoAdUnit extends Emitter {
 
     this.pauseOnAdClick = pauseOnAdClick
 
-    onFinishCallbacks.push(
+    this[_protected].onFinishCallbacks.push(
       preventManualProgress(this.videoAdContainer.videoElement)
     )
 
-    if (this.icons) {
-      const {drawIcons, hasPendingIconRedraws, removeIcons} = addIcons(
-        this.icons,
-        {
-          logger,
-          onIconClick: (icon) =>
-            this.emit(iconClick, {
-              adUnit: this,
-              data: icon,
-              type: iconClick
-            }),
-          onIconView: (icon) =>
-            this.emit(iconView, {
-              adUnit: this,
-              data: icon,
-              type: iconView
-            }),
-          videoAdContainer
-        }
-      )
-
-      this[_protected].drawIcons = drawIcons
-      this[_protected].removeIcons = removeIcons
-      this[_protected].hasPendingIconRedraws = hasPendingIconRedraws
-
-      onFinishCallbacks.push(removeIcons)
-    }
+    this[_private].addIcons()
 
     const viewableImpression = vastChain.some(({ad}) => ad && getViewable(ad))
 
     if (viewableImpression) {
-      this.once(start, () => {
-        let timeoutId: number
-
-        const unsubscribe = onElementVisibilityChange(
-          this.videoAdContainer.element,
-          (visible) => {
-            if (this.isFinished() || this[_protected].viewable) {
-              return
-            }
-
-            if (typeof visible !== 'boolean') {
-              handleViewableImpression(viewUndetermined)
-
-              return
-            }
-
-            if (visible) {
-              timeoutId = window.setTimeout(
-                handleViewableImpression,
-                2000,
-                viewable
-              )
-            } else {
-              clearTimeout(timeoutId)
-            }
-          },
-          {viewabilityOffset: 0.5}
-        )
-
-        onFinishCallbacks.push(() => {
-          unsubscribe()
-          clearTimeout(timeoutId)
-
-          if (!this[_protected].viewable) {
-            handleViewableImpression(notViewable)
-          }
-        })
-      })
+      this.once(start, this[_private].setupViewableImpression)
     }
 
     if (viewability) {
-      this.once(start, () => {
-        const unsubscribe = onElementVisibilityChange(
-          this.videoAdContainer.element,
-          (visible) => {
-            if (this.isFinished()) {
-              return
-            }
-
-            if (typeof visible === 'boolean') {
-              if (visible) {
-                this.resume()
-              } else {
-                this.pause()
-              }
-            }
-          }
-        )
-
-        onFinishCallbacks.push(unsubscribe)
-      })
+      this.once(start, this[_private].setupViewability)
     }
 
     if (responsive) {
-      this.once(start, () => {
-        const {element} = this.videoAdContainer
-
-        this[_protected].size = {
-          height: element.clientHeight,
-          viewmode: viewmode(element.clientWidth, element.clientHeight),
-          width: element.clientWidth
-        }
-
-        const unsubscribe = onElementResize(element, () => {
-          if (this.isFinished()) {
-            return
-          }
-
-          const prevSize = this[_protected].size
-          const height = element.clientHeight
-          const width = element.clientWidth
-
-          if (height !== prevSize?.height || width !== prevSize?.width) {
-            this.resize(width, height, viewmode(width, height))
-          }
-        })
-
-        onFinishCallbacks.push(unsubscribe)
-      })
+      this.once(start, this[_private].setupResponsive)
     }
   }
 
