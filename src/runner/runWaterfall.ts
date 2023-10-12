@@ -1,5 +1,5 @@
 import {trackError, isVastErrorCode, ErrorCode} from '../tracker'
-import {requestAd, requestNextAd} from '../vastRequest'
+import {requestAd, requestNextAd, RequestAdOptions} from '../vastRequest'
 import VastError from '../vastRequest/helpers/vastError'
 import {getInteractiveFiles} from '../vastSelectors'
 import {VastAdUnit, VpaidAdUnit} from '../adUnit'
@@ -200,11 +200,7 @@ export interface RunWaterfallHooks extends Hooks {
 /**
  * Options map to start one of the ads with {@link runWaterfall}
  */
-export interface RunWaterfallOptions extends RunOptions {
-  /**
-   * Sets the maximum number of wrappers allowed in the {@link VastChain}. Defaults to `5`.
-   */
-  wrapperLimit?: number
+export interface RunWaterfallOptions extends RunOptions, RequestAdOptions {
   /**
    * If false and it gets a VPAID ad, it will throw an error before starting the ad and continue down in the waterfall. Defaults to `true`.
    */

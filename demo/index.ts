@@ -75,7 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
       onError,
       onRunFinish,
       timeout: 15000,
-      videoElement
+      videoElement,
+      credentials: 'omit'
     })
   }
 
