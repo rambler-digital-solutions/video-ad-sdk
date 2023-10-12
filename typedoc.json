@@ -1,0 +1,10 @@
+{
+  "extends": "@rambler-tech/typedoc-config",
+  "name": "Video Ad SDK",
+  "readme": "README.md",
+  "entryPoints": ["src/index.ts"],
+  "out": "public/docs",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeNotDocumented": true
+}

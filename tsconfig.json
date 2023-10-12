@@ -1,0 +1,13 @@
+{
+  "extends": "@rambler-tech/ts-config/base",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "outDir": "dist",
+    "sourceMap": false,
+    "declaration": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+}

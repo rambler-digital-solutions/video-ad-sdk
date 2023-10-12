@@ -1,0 +1,85 @@
+import {
+  vpaidInlineAd,
+  vpaidInlineParsedXML,
+  vastVpaidInlineXML
+} from '../../../../../fixtures'
+import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
+import {VastChain} from '../../../../types'
+import initAd from '../initAd'
+import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd'
+
+jest.mock('../loadCreative')
+jest.mock('../handshake')
+
+describe('initAd', () => {
+  let vpaidChain: VastChain
+  let videoAdContainer: VideoAdContainer
+  let origScreen: Screen
+
+  beforeEach(() => {
+    vpaidChain = [
+      {
+        ad: vpaidInlineAd,
+        parsedXML: vpaidInlineParsedXML,
+        requestTag: 'https://test.example.com/vastadtaguri',
+        XML: vastVpaidInlineXML
+      }
+    ]
+    videoAdContainer = new VideoAdContainer(document.createElement('DIV'))
+    origScreen = window.screen
+    Object.defineProperty(window, 'screen', {
+      value: {
+        height: 800,
+        width: 1200
+      },
+      writable: true
+    })
+  })
+
+  afterEach(() => {
+    Object.defineProperty(window, 'screen', {
+      value: origScreen,
+      writable: true
+    })
+  })
+
+  test('must init the creative', async () => {
+    const mockCreativeAd: any = new MockVpaidCreativeAd()
+
+    initAd(mockCreativeAd, videoAdContainer, vpaidChain)
+
+    expect(mockCreativeAd.initAd).toHaveBeenCalledTimes(1)
+    expect(mockCreativeAd.initAd).toHaveBeenCalledWith(
+      0,
+      0,
+      'thumbnail',
+      -1,
+      {
+        AdParameters: 'AD_PARAMETERS_DATA <![CDATA[nested cdata]]>',
+        xmlEncoded: false
+      },
+      {
+        slot: videoAdContainer.slotElement,
+        videoSlot: videoAdContainer.videoElement,
+        videoSlotCanAutoPlay: false
+      }
+    )
+
+    const {slot} = mockCreativeAd.initAd.mock.calls[0][5]
+
+    expect(slot).toBeInstanceOf(HTMLDivElement)
+    expect(slot.style).toEqual(
+      expect.objectContaining({
+        border: '0px',
+        cursor: 'pointer',
+        height: '0px',
+        left: '0px',
+        margin: '0px',
+        padding: '0px',
+        position: 'absolute',
+        top: '0px',
+        width: '0px'
+      })
+    )
+  })
+})

@@ -1,13 +1,15 @@
 {
   "extends": [
-    "mailonline",
-    "mailonline/jest"
+    "@rambler-tech/eslint-config",
+    "@rambler-tech/eslint-config/ts",
+    "prettier"
   ],
-  "root": true,
-  "rules": {
-    "jsdoc/require-description-complete-sentence": "off",
-    "max-len": ["warn", {  "code": 160, "ignoreComments": true }],
-    "id-match": "off",
-    "jsdoc/check-tag-names": "off"
-  }
+  "overrides": [
+    {
+      "files": "*.spec.ts",
+      "rules": {
+        "sonarjs/no-duplicate-string": "off"
+      }
+    }
+  ]
 }

@@ -16,37 +16,51 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '10.x'
+          cache: yarn
+          node-version: '18.x'
       - run: yarn
       - run: yarn test
-      - run: yarn codecov
 
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '10.x'
+          cache: yarn
+          node-version: '18.x'
       - run: yarn
       - run: yarn lint
-      - run: yarn build
+      - run: yarn typecheck
+
+  size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: yarn
+          node-version: '18.x'
+      - run: yarn
+      - run: yarn sizecheck
 
   commitlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '10.x'
+          cache: yarn
+          node-version: '18.x'
       - run: yarn
       - uses: wagoid/commitlint-github-action@v3
         env:
