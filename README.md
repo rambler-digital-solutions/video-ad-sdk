@@ -6,8 +6,37 @@ To run video ads in the browser there are many alternatives. The most famous one
 
 ## Install
 
+```sh
+npm install video-ad-sdk
 ```
+
+or
+
+```sh
 yarn add video-ad-sdk
+```
+
+## Usage
+
+Try to start one of the ads returned by the `adTag`
+
+```ts
+const adTag = 'https://adserver.com/vastadtaguri'
+
+const videoAdContainer = document.querySelector('.video-ad-container')
+
+const onAdReady = (adUnit) => {
+  // ad is ready
+}
+
+const onError = (error) => {
+  // ad is failed
+}
+
+runWaterfall(adTag, videoAdContainer, {
+  onAdReady,
+  onError
+})
 ```
 
 ## Demo
@@ -18,7 +47,9 @@ Demo [here](https://rambler-digital-solutions.github.io/video-ad-sdk/demo/)!
 
 Currently we only have the API which you can check [here](https://rambler-digital-solutions.github.io/video-ad-sdk/docs/).
 
-## Testing
+## Contributing
+
+### Start
 
 After you clone the repo you just need to run [`yarn`](https://yarnpkg.com/lang/en/docs/cli/#toc-default-command)'s default command to install and build the packages
 
@@ -26,10 +57,40 @@ After you clone the repo you just need to run [`yarn`](https://yarnpkg.com/lang/
 yarn
 ```
 
-Then to run the tests
+### Testing
+
+We have a test suite consisting of a bunch of unit tests to verify utils keep working as expected. Test suit is run in CI on every commit.
+
+To run the tests
 
 ```
 yarn test
+```
+
+To run the tests in watch mode
+
+```sh
+yarn test:watch
+```
+
+### Code quality
+
+To run linting the codebase
+
+```sh
+yarn lint
+```
+
+To check typings
+
+```sh
+yarn typecheck
+```
+
+To check bundle size
+
+```sh
+yarn sizecheck
 ```
 
 ## Discussion
@@ -38,4 +99,4 @@ Please open an issue if you have any questions or concerns.
 
 ## License
 
-This project is licensed under the MIT license. For more information see [LICENSE](./LICENSE).
+MIT
