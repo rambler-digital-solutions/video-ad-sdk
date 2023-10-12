@@ -21,6 +21,8 @@ yarn add video-ad-sdk
 Try to start one of the ads returned by the `adTag`
 
 ```ts
+import {runWaterfall} from 'video-ad-sdk'
+
 const adTag = 'https://adserver.com/vastadtaguri'
 
 const videoAdContainer = document.querySelector('.video-ad-container')
