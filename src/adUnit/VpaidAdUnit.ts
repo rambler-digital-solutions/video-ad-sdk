@@ -335,7 +335,7 @@ class VpaidAdUnit extends VideoAdUnit {
   public creativeAd?: VpaidCreativeAdUnit
 
   /**
-   * Creates a {VpaidAdUnit}.
+   * Creates a {@link VpaidAdUnit}.
    *
    * @param vastChain The {@link VastChain} with all the {@link VastResponse}
    * @param videoAdContainer container instance to place the ad

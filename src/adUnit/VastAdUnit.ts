@@ -94,7 +94,7 @@ class VastAdUnit extends VideoAdUnit {
   private hooks: Hooks
 
   /**
-   * Creates a {VastAdUnit}.
+   * Creates a {@link VastAdUnit}.
    *
    * @param vastChain The {@link VastChain} with all the {@link VastResponse}
    * @param videoAdContainer - container instance to place the ad

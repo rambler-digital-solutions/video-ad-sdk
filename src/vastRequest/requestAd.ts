@@ -14,12 +14,32 @@ import {
   WrapperOptions,
   ParsedAd,
   ParsedXML,
-  RequestAdOptions,
-  Optional
+  Optional,
+  PixelTracker
 } from '../types'
 import fetch from './helpers/fetch'
 import VastError from './helpers/vastError'
 import {markAdAsRequested} from './helpers/adUtils'
+
+/**
+ * Options map to {@link requestAd}
+ */
+export interface RequestAdOptions extends RequestInit {
+  /**
+   * Sets the maximum number of wrappers allowed in the {@link VastChain}.
+   * Defaults to `5`.
+   */
+  wrapperLimit?: number
+  /**
+   * Timeout number in milliseconds. If set, the request will timeout if it is not fulfilled before the specified time.
+   */
+  timeout?: number
+  /**
+   * Optional function to track whatever errors occur during the loading.
+   * Defaults to `video-ad-tracker` track method.
+   */
+  tracker?: PixelTracker
+}
 
 const validateChain = (
   vastChain: VastChain,
