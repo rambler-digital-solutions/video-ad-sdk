@@ -1,28 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const TerserPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const {name: pkgName} = require('./package.json')
 
 const devMode = process.env.NODE_ENV !== 'production'
 
 module.exports = {
-  entry: {demo: './demo/index'},
-  devtool: 'source-map',
-  devServer: {
-    publicPath: '/',
-    contentBase: [
-      path.join(__dirname, 'node_modules'),
-      path.join(__dirname, 'ghPage')
-    ],
-    compress: true,
-    https: true,
-    port: 9000,
-    headers: {
-      'Access-Control-Allow-Origin': '*'
-    }
+  mode: process.env.NODE_ENV,
+  devtool: devMode ? 'eval-source-map' : 'source-map',
+  target: ['web', 'es5'],
+  entry: {
+    demo: './demo'
   },
   externals: {
     'video.js': {
@@ -47,42 +36,49 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: !devMode,
-    minimizer: [
-      new TerserPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: true
-      }),
-      new OptimizeCSSAssetsPlugin({})
-    ]
+    splitChunks: {
+      cacheGroups: {
+        defaultVendors: {
+          reuseExistingChunk: true
+        }
+      }
+    },
+    removeEmptyChunks: true
   },
   output: {
     libraryTarget: 'umd',
     devtoolFallbackModuleFilenameTemplate: `webpack:///${pkgName}/[resource-path]?[hash]`,
     devtoolModuleFilenameTemplate: `webpack:///${pkgName}/[resource-path]`,
     publicPath: devMode ? 'http://localhost:9000/' : '../',
-    path: path.resolve(__dirname, 'pages/demo/')
+    path: path.resolve(__dirname, 'public/demo/')
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'MOL Video Ad SDK Suite Inspector',
+      title: 'Video Ad SDK Suite Inspector',
       template: './demo/index.html',
       filename: 'index.html',
       minify: false,
       chunks: []
     }),
     new MiniCssExtractPlugin({
-      filename: '[name].css'
+      filename: 'demo.css'
     })
   ],
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.js', '.ts'],
     modules: ['node_modules'],
     alias: {
       'video-ad-sdk': devMode
         ? path.resolve(__dirname, 'src/index.js')
-        : path.resolve(__dirname, 'dist/main.esm.js')
+        : path.resolve(__dirname, 'dist/index.js')
+    }
+  },
+  devServer: {
+    compress: true,
+    server: 'https',
+    port: 9000,
+    headers: {
+      'Access-Control-Allow-Origin': '*'
     }
   }
 }

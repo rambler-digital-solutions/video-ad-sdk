@@ -1,6 +1,8 @@
-import {Cancel} from '../../../types'
+import {CancelFunction} from '../../../types'
 
-const preventManualProgress = (videoElement: HTMLVideoElement): Cancel => {
+const preventManualProgress = (
+  videoElement: HTMLVideoElement
+): CancelFunction => {
   // IOS video clock is very unreliable and we need a 3 seconds threshold to ensure that the user forwarded/rewound the ad
   const PROGRESS_THRESHOLD = 3
   let previousTime = 0

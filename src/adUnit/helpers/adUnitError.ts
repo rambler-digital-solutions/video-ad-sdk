@@ -1,3 +1,6 @@
+/**
+ * Ad unit error
+ */
 class AdUnitError extends Error {
   code?: number
 

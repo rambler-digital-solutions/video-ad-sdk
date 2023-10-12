@@ -1,7 +1,7 @@
 import {VideoAdContainer} from '../../../../adContainer'
 import {
   MetricHandlerData,
-  Cancel,
+  CancelFunction,
   VastTrackingEvent,
   ParsedOffset
 } from '../../../../types'
@@ -46,7 +46,7 @@ const onProgress = (
   {videoElement}: VideoAdContainer,
   callback: (event: string, data: ProgressData) => void,
   {progressEvents = []}: MetricHandlerData = {}
-): Cancel => {
+): CancelFunction => {
   const {duration} = videoElement
   const durationInMs = secondsToMilliseconds(duration)
   let playedMs = 0

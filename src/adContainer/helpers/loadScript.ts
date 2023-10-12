@@ -1,3 +1,6 @@
+/**
+ * Options map to load script
+ */
 export interface LoadScriptOptions {
   /**
    * Type of the script. Defaults to 'text/javascript'.

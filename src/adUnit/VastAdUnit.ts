@@ -18,6 +18,9 @@ interface Private {
   drawIcons(): Promise<void>
 }
 
+/**
+ * Options map to create a {@link VastAdUnit}
+ */
 export interface VastAdUnitOptions extends VideoAdUnitOptions {
   /**
    * Optional map with hooks to configure the behaviour of the ad.

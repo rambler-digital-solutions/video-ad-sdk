@@ -4,7 +4,7 @@ import {RenderIconOptions} from './renderIcon'
 const calculateArea = ({
   height,
   width
-}: Pick<ClientRect, 'width' | 'height'>): number => height * width
+}: Pick<DOMRect, 'width' | 'height'>): number => height * width
 
 export type CanBeRenderedOptions = Pick<
   RenderIconOptions,

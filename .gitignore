@@ -10,6 +10,6 @@ dist/
 docs/
 node_modules/
 package-lock.json
-pages/
+public/
 .npmrc
 .yarnrc

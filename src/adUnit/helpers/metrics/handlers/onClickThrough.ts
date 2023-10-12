@@ -1,6 +1,6 @@
 import {linearEvents} from '../../../../tracker'
 import {VideoAdContainer} from '../../../../adContainer'
-import {MetricHandlerData, Cancel} from '../../../../types'
+import {MetricHandlerData, CancelFunction} from '../../../../types'
 
 const {clickThrough} = linearEvents
 
@@ -25,7 +25,7 @@ const onClickThrough = (
     pauseOnAdClick = true,
     createClickControl = createDefaultClickControl
   }: MetricHandlerData = {}
-): Cancel => {
+): CancelFunction => {
   const placeholder = element || videoElement.parentNode
   const anchor = createClickControl()
   const isVirtual = !document.body.contains(anchor)

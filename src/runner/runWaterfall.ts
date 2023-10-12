@@ -3,7 +3,7 @@ import {requestAd, requestNextAd} from '../vastRequest'
 import VastError from '../vastRequest/helpers/vastError'
 import {getInteractiveFiles} from '../vastSelectors'
 import {VastAdUnit, VpaidAdUnit} from '../adUnit'
-import {VastChain, Hooks, Cancel, PixelTracker} from '../types'
+import {VastChain, Hooks, CancelFunction, PixelTracker} from '../types'
 import isIOS from '../utils/isIOS'
 import run, {RunOptions} from './run'
 
@@ -163,7 +163,10 @@ const waterfall = async (
   }
 }
 
-interface ErrorData {
+/**
+ * Error data from the ad unit error.
+ */
+export interface ErrorData {
   /**
    * The {@link VastChain} that caused the error.
    */
@@ -174,7 +177,10 @@ interface ErrorData {
   adUnit?: VastAdUnit | VpaidAdUnit
 }
 
-interface RunWaterfallHooks extends Hooks {
+/**
+ * Hooks to configure the behaviour of the ad.
+ */
+export interface RunWaterfallHooks extends Hooks {
   /**
    * If provided it will be called passing the current {@link VastChain} for each valid vast response. Must throw if there is a problem with the vast response. If the Error instance has an `code` number then it will be tracked using the error macros in the Vast response. It will also call {@link runWaterfall~onError} with the thrown error.
    */
@@ -185,6 +191,9 @@ interface RunWaterfallHooks extends Hooks {
   transformVastResponse?(vastChain: VastChain): VastChain
 }
 
+/**
+ * Options map to start one of the ads with {@link runWaterfall}
+ */
 export interface RunWaterfallOptions extends RunOptions {
   /**
    * Sets the maximum number of wrappers allowed in the {@link VastChain}. Defaults to `5`.
@@ -223,13 +232,13 @@ export interface RunWaterfallOptions extends RunOptions {
  * @param adTag The VAST ad tag request url.
  * @param placeholder placeholder element that will contain the video ad.
  * @param options Options Map
- * @returns Cancel function. If called it will cancel the ad run. {@link runWaterfall~onRunFinish} will still be called;
+ * @returns CancelFunction function. If called it will cancel the ad run. {@link runWaterfall~onRunFinish} will still be called;
  */
 const runWaterfall = (
   adTag: string,
   placeholder: HTMLElement,
   options: RunWaterfallOptions
-): Cancel => {
+): CancelFunction => {
   let canceled = false
   let adUnit: VastAdUnit | VpaidAdUnit | undefined
   const isCanceled = (): boolean => canceled

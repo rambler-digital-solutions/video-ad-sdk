@@ -1,4 +1,4 @@
-export const enum NodeType {
+export enum NodeType {
   CDATA = 'cdata',
   DOCUMENT = 'document',
   ELEMENT = 'element',
@@ -7,6 +7,9 @@ export const enum NodeType {
 
 export type Attributes = Partial<Record<string, string>>
 
+/**
+ * JS XML deserialised object.
+ */
 export interface ParsedXML {
   type: NodeType
   name?: string
@@ -16,12 +19,7 @@ export interface ParsedXML {
 }
 
 /**
- * JS XML deserialised object.
- */
-export type ParsedVast = ParsedXML
-
-/**
- * Deserialised ad object from a {@link ParsedVast} object.
+ * Deserialised ad object from a {@link ParsedXML} object.
  */
 export type ParsedAd = ParsedXML
 
@@ -36,7 +34,7 @@ export interface VastResponse {
   /**
    * The XML parsed object.
    */
-  parsedXML?: ParsedVast
+  parsedXML?: ParsedXML
   /**
    * VAST error code number to identify the error.
    */
@@ -72,7 +70,7 @@ export type ParsedOffset = number | string
 
 /**
  * VastIcon.
- * For more info please take a look at the [VAST specification]{@link https://iabtechlab.com/standards/vast/}
+ * For more info please take a look at the [VAST specification](https://iabtechlab.com/standards/vast/)
  */
 export interface VastIcon {
   /**
@@ -164,7 +162,7 @@ export interface RenderedVastIcon extends VastIcon {
 }
 
 /**
- * From [VAST specification]{@link https://iabtechlab.com/standards/vast/}:
+ * From [VAST specification](https://iabtechlab.com/standards/vast/):
  *
  * Sometimes ad servers would like to collect metadata from the video player when tracking
  * event URIs are accessed. For example, the position of the video player playhead at the time
@@ -197,7 +195,7 @@ export type VastMacro = string // eslint-disable-line sonar/redundant-type-alias
 
 /**
  * VAST InteractiveFile representation
- * For more info please take a look at the [VAST specification]{@link https://iabtechlab.com/standards/vast/}
+ * For more info please take a look at the [VAST specification](https://iabtechlab.com/standards/vast/)
  */
 export interface InteractiveFile {
   /**
@@ -216,11 +214,11 @@ export interface InteractiveFile {
 
 /**
  * VAST MediaFile representation.
- * For more info please take a look at the [VAST specification]{@link https://iabtechlab.com/standards/vast/}
+ * For more info please take a look at the [VAST specification](https://iabtechlab.com/standards/vast/)
  */
 export interface MediaFile extends InteractiveFile {
   /**
-   * The codec used to encode the file which can take values as specified by [RFC 4281]{@link http://tools.ietf.org/html/rfc4281}.
+   * The codec used to encode the file which can take values as specified by [RFC 4281](http://tools.ietf.org/html/rfc4281).
    */
   codec?: string
   /**
@@ -272,7 +270,7 @@ export interface MediaFile extends InteractiveFile {
 }
 
 /**
- * For more info please take a look at the [VAST specification]{@link https://iabtechlab.com/standards/vast/}
+ * For more info please take a look at the [VAST specification](https://iabtechlab.com/standards/vast/)
  */
 export interface VastTrackingEvent {
   /**
@@ -321,7 +319,7 @@ export interface WrapperOptions {
 /**
  * Object with the trafficking ad parameters and the xmlEncoded flag.
  */
-export interface CreativeData {
+export interface VpaidCreativeData {
   /**
    * the AdParameters of the linear Ad as they come in the VAST XML.
    */
@@ -334,7 +332,7 @@ export interface CreativeData {
 
 /**
  * {@link VastChain} details object. You can think of it as a summary of the VAST Chain. Useful for debugging purposes and tracking.
- * for more info about the returned properties please check [VAST specification]{@link https://iabtechlab.com/standards/vast/}
+ * for more info about the returned properties please check [VAST specification](https://iabtechlab.com/standards/vast/)
  */
 export interface VastChainDetails {
   /**
@@ -390,9 +388,9 @@ export interface VastChainDetails {
    */
   creativeAdId?: string
   /**
-   * Object with the {@link creativeData} of the Ad.
+   * Object with the {@link VpaidCreativeData} of the Ad.
    */
-  creativeData?: CreativeData
+  creativeData?: VpaidCreativeData
   /**
    * the id of the linear creative.
    */
@@ -535,7 +533,7 @@ export interface RequestNextAdOptions extends RequestAdOptions {
 /**
  * Vpaid Creative environment variables
  */
-export interface EnvironmentVars {
+export interface VpaidEnvironmentVars {
   slot?: HTMLElement
   videoSlot?: HTMLVideoElement
   videoSlotCanAutoPlay?: boolean
@@ -551,8 +549,8 @@ export interface VpaidCreativeAdUnit {
     height: number,
     mode: string,
     desiredBitrate?: number,
-    creativeData?: CreativeData,
-    environmentVars?: EnvironmentVars
+    creativeData?: VpaidCreativeData,
+    environmentVars?: VpaidEnvironmentVars
   ): void
   resizeAd(width: number, height: number, mode: string): void
   startAd(): void
@@ -599,7 +597,7 @@ export interface Hooks {
   /**
    * If provided it will be called to get a {@link MediaFile} by size of the current video element.
    */
-  getMediaFile?(mediaFiles: MediaFile[], screenRect: ClientRect): MediaFile
+  getMediaFile?(mediaFiles: MediaFile[], screenRect: DOMRect): MediaFile
 }
 
 /**
@@ -615,4 +613,4 @@ export interface MetricHandlerData extends Hooks {
 /**
  * Cancelation function
  */
-export type Cancel = () => void
+export type CancelFunction = () => void

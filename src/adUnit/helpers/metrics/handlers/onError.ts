@@ -1,13 +1,13 @@
 import {VideoAdContainer} from '../../../../adContainer'
 import {linearEvents, ErrorCode} from '../../../../tracker'
-import {Cancel} from '../../../../types'
+import {CancelFunction} from '../../../../types'
 
 const {error} = linearEvents
 
 const onError = (
   {videoElement}: VideoAdContainer,
   callback: (event: string, mediaError?: MediaError) => void
-): Cancel => {
+): CancelFunction => {
   const errorHandler = (): void => {
     const mediaError = videoElement.error ?? undefined
 

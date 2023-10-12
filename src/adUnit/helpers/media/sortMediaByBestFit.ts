@@ -6,7 +6,7 @@ interface RectParams {
   aspectRatio: number
 }
 
-const getRectParams = (rect: ClientRect | MediaFile): RectParams => {
+const getRectParams = (rect: DOMRect | MediaFile): RectParams => {
   const width = Number(rect.width) || 0
   const height = Number(rect.height) || 0
 
@@ -24,7 +24,7 @@ const getRectParams = (rect: ClientRect | MediaFile): RectParams => {
 
 const sortMediaByBestFit = (
   mediaFiles: MediaFile[],
-  screenRect: ClientRect
+  screenRect: DOMRect
 ): MediaFile[] => {
   const screenParams = getRectParams(screenRect)
 

@@ -4,6 +4,9 @@ import {VastAdUnit, VpaidAdUnit} from '../adUnit'
 import {VastChain, PixelTracker} from '../types'
 import startVideoAd, {StartVideoAdOptions} from './helpers/startVideoAd'
 
+/**
+ * Options map to start video ad with {@link run}
+ */
 export interface RunOptions extends StartVideoAdOptions {
   /**
    * Optional videoElement that will be used to play the ad.

@@ -1,6 +1,6 @@
 import {getClickThrough, getSkipOffset} from '../../../vastSelectors'
 import {VideoAdContainer} from '../../../adContainer'
-import {VastChain, Hooks, Cancel} from '../../../types'
+import {VastChain, Hooks, CancelFunction} from '../../../types'
 import getProgressEvents from '../progress/getProgressEvents'
 import safeCallback from '../safeCallback'
 import metricHandlers from './handlers'
@@ -20,7 +20,7 @@ const setupMetricHandlers = (
     pauseOnAdClick
   }: SetupMetricsHandlersOptions,
   callback: (event: string, ...args: any[]) => void
-): Cancel => {
+): CancelFunction => {
   const inlineAd = vastChain[0].ad
   const skipoffset = inlineAd && getSkipOffset(inlineAd)
   const clickThroughUrl = inlineAd && getClickThrough(inlineAd)

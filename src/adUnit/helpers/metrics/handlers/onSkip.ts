@@ -1,5 +1,5 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {MetricHandlerData, Cancel} from '../../../../types'
+import {MetricHandlerData, CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 
 const {skip} = linearEvents
@@ -23,7 +23,7 @@ const onSkip = (
     skipoffset,
     createSkipControl = createDefaultSkipControl
   }: MetricHandlerData = {}
-): Cancel => {
+): CancelFunction => {
   if (!skipoffset) {
     return () => null
   }

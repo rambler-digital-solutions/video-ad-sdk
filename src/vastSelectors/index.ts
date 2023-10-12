@@ -12,7 +12,6 @@ import getLinearTrackingEvents from './getLinearTrackingEvents'
 import getNonLinearTrackingEvents from './getNonLinearTrackingEvents'
 import getIcons from './getIcons'
 import {
-  ParsedVast,
   ParsedAd,
   ParsedXML,
   VastChain,
@@ -21,7 +20,7 @@ import {
   MediaFile,
   InteractiveFile,
   ParsedOffset,
-  CreativeData
+  VpaidCreativeData
 } from '../types'
 
 const getBooleanValue = (val: unknown): boolean => {
@@ -59,7 +58,7 @@ const compareBySequence = (itemA: ParsedXML, itemB: ParsedXML): number => {
  * @param parsedVast Parsed VAST xml.
  * @returns Array of ads or empty array.
  */
-export const getAds = (parsedVast?: ParsedVast): ParsedAd[] => {
+export const getAds = (parsedVast?: ParsedXML): ParsedAd[] => {
   const vastElement = parsedVast && get(parsedVast, 'VAST')
   const ads = vastElement && getAll(vastElement, 'Ad')
 
@@ -77,7 +76,7 @@ export const getAds = (parsedVast?: ParsedVast): ParsedAd[] => {
  * @returns array of the Vast Error URI
  */
 export const getVastErrorURI = (
-  parsedVast?: ParsedVast
+  parsedVast?: ParsedXML
 ): Optional<VastMacro[]> => {
   const vastElement = parsedVast && get(parsedVast, 'VAST')
   const errors = vastElement && getAll(vastElement, 'Error')
@@ -116,7 +115,7 @@ export const isPodAd = (ad: ParsedAd): boolean => Boolean(getPodAdSequence(ad))
  * @param parsedVast Parsed VAST xml.
  * @returns Returns true if there is an ad pod in the array and false otherwise.
  */
-export const hasAdPod = (parsedVast?: ParsedVast): boolean => {
+export const hasAdPod = (parsedVast?: ParsedXML): boolean => {
   const ads = getAds(parsedVast)
 
   return Array.isArray(ads) && ads.filter(isPodAd).length > 1
@@ -137,7 +136,7 @@ export const isAdPod = (vastChain: VastChain = []): boolean =>
  * @param parsedVast Parsed VAST xml.
  * @returns First ad of the VAST xml.
  */
-export const getFirstAd = (parsedVast?: ParsedVast): Optional<ParsedAd> => {
+export const getFirstAd = (parsedVast?: ParsedXML): Optional<ParsedAd> => {
   const ads = getAds(parsedVast)
 
   if (Array.isArray(ads) && ads.length > 0) {
@@ -443,7 +442,7 @@ export const getClickThrough = (ad: ParsedAd): Optional<VastMacro> => {
 }
 
 /**
- * Gets the click through {@link VAST-macro}.
+ * Gets the click through {@link VastMacro}.
  *
  * @param ad VAST ad object.
  * @returns click tracking macro
@@ -461,7 +460,7 @@ export const getClickTracking = (ad: ParsedAd): Optional<VastMacro[]> => {
 }
 
 /**
- * Gets the custom click {@link VAST-macro}.
+ * Gets the custom click {@link VastMacro}.
  *
  * @param ad VAST ad object.
  * @returns click tracking macro
@@ -526,7 +525,7 @@ const getXmlEncodedValue = (xml: string): boolean => {
  * @param xml VAST XML text.
  * @returns with `AdParameters` as they come in the XML and a flag `xmlEncoded` to indicate if the ad parameters are xml encoded.
  */
-export const getCreativeData = (xml: string): CreativeData => {
+export const getCreativeData = (xml: string): VpaidCreativeData => {
   const linearContent = getLinearContent(xml)
   const AdParameters = linearContent && getAdParametersContent(linearContent)
   const xmlEncoded = linearContent ? getXmlEncodedValue(linearContent) : false

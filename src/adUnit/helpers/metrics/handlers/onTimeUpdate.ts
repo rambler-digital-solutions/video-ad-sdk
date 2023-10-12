@@ -1,5 +1,5 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {Cancel} from '../../../../types'
+import {CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 import {adProgress} from '../../../adUnitEvents'
 
@@ -26,7 +26,7 @@ interface TimeUpdateEvent {
 const onTimeUpdate = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
-): Cancel => {
+): CancelFunction => {
   let started = false
   let passFirstQuartile = false
   let passMidPoint = false

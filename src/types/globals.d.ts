@@ -5,6 +5,9 @@ declare module 'sane-domparser-error'
  */
 type Falsy = false | 0 | '' | null | undefined
 
+/**
+ * Optional type
+ */
 type Optional<T> = T | undefined
 
 interface Array<T> {

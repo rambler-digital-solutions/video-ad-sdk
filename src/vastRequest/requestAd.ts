@@ -131,7 +131,7 @@ const getOptions = (
 }
 
 /**
- * Request the ad using the passed ad tag and returns an array with the [VAST responses]{@link VastResponse} needed to get an inline ad.
+ * Request the ad using the passed ad tag and returns an array with the {@link VastResponse} needed to get an inline ad.
  *
  * @param adTag The VAST ad tag request url.
  * @param options Options Map. The allowed properties are:

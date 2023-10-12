@@ -1,5 +1,5 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {MetricHandlerData, Cancel} from '../../../../types'
+import {MetricHandlerData, CancelFunction} from '../../../../types'
 import onFullscreenChange from './onFullscreenChange'
 import onPlayPause from './onPlayPause'
 import onRewind from './onRewind'
@@ -15,7 +15,7 @@ type MetricHandler = (
   videoAdContainer: VideoAdContainer,
   callback: (event: string, ...args: any[]) => void,
   data: MetricHandlerData
-) => Cancel
+) => CancelFunction
 
 const handlers: MetricHandler[] = [
   onClickThrough,

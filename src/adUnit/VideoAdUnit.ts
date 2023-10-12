@@ -47,9 +47,12 @@ interface Protected extends Partial<AddedIcons> {
   throwIfFinished(): void
 }
 
+/**
+ * Options map to create a {@link VideoAdUnit}
+ */
 export interface VideoAdUnitOptions {
   /**
-   * Optional logger instance. Must comply to the [Console interface]{@link https://developer.mozilla.org/es/docs/Web/API/Console}.
+   * Optional logger instance. Must comply to the [Console interface](https://developer.mozilla.org/es/docs/Web/API/Console).
    * Defaults to `window.console`
    */
   logger?: Console

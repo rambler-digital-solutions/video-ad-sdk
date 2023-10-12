@@ -1,10 +1,10 @@
-import {Cancel} from '../../../types'
+import {CancelFunction} from '../../../types'
 
 const once = <T extends (...args: any) => any>(
   element: HTMLElement,
   eventName: string,
   listener: T
-): Cancel => {
+): CancelFunction => {
   const handler = (...args: unknown[]): void => {
     element.removeEventListener(eventName, handler)
 

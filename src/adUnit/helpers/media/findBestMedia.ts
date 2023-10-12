@@ -5,7 +5,7 @@ import sortMediaByBestFit from './sortMediaByBestFit'
 
 const getMediaByDefaultBestFit = (
   mediaFiles: MediaFile[],
-  screenRect: ClientRect
+  screenRect: DOMRect
 ): MediaFile => {
   const sortedMediaFiles = sortMediaByBestFit(mediaFiles, screenRect)
 

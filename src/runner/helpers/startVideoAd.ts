@@ -45,7 +45,7 @@ const hasVastCreative = (
   return false
 }
 
-interface StartAdUnitOptions<T extends VideoAdUnit> {
+export interface StartAdUnitOptions<T extends VideoAdUnit> {
   /**
    * Will be called once the ad is ready with the ad unit.
    *

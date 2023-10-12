@@ -18,6 +18,11 @@ interface Hidden {
 }
 
 /**
+ * Options map to add script to {@link VideoAdContainer}
+ */
+export type AddScriptOptions = Omit<LoadScriptOptions, 'placeholder'>
+
+/**
  * This class provides everything necessary to contain and create a video ad within a given placeholder Element.
  */
 class VideoAdContainer {
@@ -69,7 +74,7 @@ class VideoAdContainer {
    */
   public async addScript(
     src: string,
-    options: Omit<LoadScriptOptions, 'placeholder'> = {}
+    options: AddScriptOptions = {}
   ): Promise<HTMLScriptElement> {
     if (this.isDestroyed()) {
       throw new Error('VideoAdContainer has been destroyed')
@@ -136,5 +141,7 @@ class VideoAdContainer {
     return this[hidden].destroyed
   }
 }
+
+export {LoadScriptOptions}
 
 export default VideoAdContainer

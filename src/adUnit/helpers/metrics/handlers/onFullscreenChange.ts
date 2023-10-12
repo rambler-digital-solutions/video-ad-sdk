@@ -1,5 +1,5 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {Cancel} from '../../../../types'
+import {CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 
 const fullscreenElement = (): Element | null =>
@@ -14,7 +14,7 @@ const {fullscreen, exitFullscreen, playerCollapse, playerExpand} = linearEvents
 const onFullscreenChange = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
-): Cancel => {
+): CancelFunction => {
   const fullscreenEvtNames = [
     'webkitfullscreenchange',
     'mozfullscreenchange',

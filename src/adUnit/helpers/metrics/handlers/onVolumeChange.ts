@@ -1,5 +1,5 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {Cancel} from '../../../../types'
+import {CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 import {volumeChanged} from '../../../adUnitEvents'
 
@@ -10,7 +10,7 @@ const isMuted = (videoElement: HTMLVideoElement): boolean =>
 const onVolumeChange = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
-): Cancel => {
+): CancelFunction => {
   let wasMuted = isMuted(videoElement)
 
   const volumechangeHandler = (): void => {

@@ -1,5 +1,5 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {Cancel} from '../../../../types'
+import {CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 
 const {impression, creativeView} = linearEvents
@@ -7,7 +7,7 @@ const {impression, creativeView} = linearEvents
 const onImpression = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
-): Cancel => {
+): CancelFunction => {
   let started = false
 
   const impressionHandler = (): void => {

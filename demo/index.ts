@@ -1,5 +1,5 @@
 import {runWaterfall, VideoAdUnit} from '../src'
-import './demo.css'
+import './styles.css'
 
 document.addEventListener('DOMContentLoaded', () => {
   const textArea = document.querySelector('#adTag') as HTMLTextAreaElement

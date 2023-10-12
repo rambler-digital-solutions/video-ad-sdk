@@ -33,6 +33,7 @@ jobs:
           node-version: '18.x'
       - run: yarn
       - run: yarn docs
+      - run: yarn demo
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:

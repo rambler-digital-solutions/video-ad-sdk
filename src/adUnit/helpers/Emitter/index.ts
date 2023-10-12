@@ -1,12 +1,15 @@
+/**
+ * Event listener function
+ */
 export interface Listener {
   (...args: any[]): void
   _?: this
 }
 
 /**
- * Subset of node's [Emitter class]{@link https://nodejs.org/api/events.html#events_class_eventemitter}
+ * Subset of node's [Emitter class](https://nodejs.org/api/events.html#events_class_eventemitter)
  *
- * @param logger Optional logger instance. Must comply to the [Console interface]{@link https://developer.mozilla.org/es/docs/Web/API/Console}.
+ * @param logger Optional logger instance. Must comply to the [Console interface](https://developer.mozilla.org/es/docs/Web/API/Console).
  */
 class Emitter {
   public logger: Console

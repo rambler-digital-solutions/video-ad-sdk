@@ -93,15 +93,13 @@ interface Private {
   loadCreativePromise?: Promise<VpaidCreativeAdUnit>
 }
 
+/**
+ * Options map to create a {@link VpaidAdUnit}
+ */
 export type VpaidAdUnitOptions = VideoAdUnitOptions
 
 /**
- * @class
- * @alias VpaidAdUnit
- * @extends VideoAdUnit
- * @implements NonLinearEvents
- * @implements LinearEvents
- * @description This class provides everything necessary to run a Vpaid ad.
+ * This class provides everything necessary to run a Vpaid ad.
  */
 class VpaidAdUnit extends VideoAdUnit {
   private [_private]: Private = {

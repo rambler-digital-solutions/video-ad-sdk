@@ -1,5 +1,5 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {Cancel} from '../../../../types'
+import {CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 
 const {pause, resume} = linearEvents
@@ -7,7 +7,7 @@ const {pause, resume} = linearEvents
 const onPlayPause = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
-): Cancel => {
+): CancelFunction => {
   let started = false
   let paused = true
 

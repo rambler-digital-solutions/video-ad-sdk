@@ -1,12 +1,12 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {Cancel} from '../../../../types'
+import {CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 
 const {rewind} = linearEvents
 const onRewind = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
-): Cancel => {
+): CancelFunction => {
   let currentTime = videoElement.currentTime
 
   const timeupdateHandler = (): void => {
