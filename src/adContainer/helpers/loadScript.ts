@@ -1,3 +1,5 @@
+import {Optional} from '../../types'
+
 /**
  * Options map to load script
  */

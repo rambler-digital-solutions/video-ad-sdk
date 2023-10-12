@@ -2,7 +2,8 @@ import {
   ParsedAd,
   VastChain,
   VastTrackingEvent,
-  VastEventTrackerOptions
+  VastEventTrackerOptions,
+  Optional
 } from '../../types'
 import pixelTracker from './pixelTracker'
 

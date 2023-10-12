@@ -1,4 +1,4 @@
-import {ParsedXML, Attributes} from '../../types'
+import {ParsedXML, Attributes, Optional} from '../../types'
 
 const getChildren = (element: ParsedXML): ParsedXML[] => element.elements ?? []
 

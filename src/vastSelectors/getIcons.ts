@@ -1,5 +1,5 @@
 import {get, getAll, getText, getAttributes} from '../xml'
-import {ParsedAd, ParsedXML, VastIcon} from '../types'
+import {ParsedAd, ParsedXML, VastIcon, Optional} from '../types'
 import getLinearCreative from './helpers/getLinearCreative'
 import parseTime from './helpers/parseTime'
 

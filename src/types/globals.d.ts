@@ -5,11 +5,6 @@ declare module 'sane-domparser-error'
  */
 type Falsy = false | 0 | '' | null | undefined
 
-/**
- * Optional type
- */
-type Optional<T> = T | undefined
-
 interface Array<T> {
   /**
    * Returns the elements of an array that meet the condition specified in a callback function.

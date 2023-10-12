@@ -1,3 +1,5 @@
+import {Optional} from '../../types'
+
 const parseHoursToMs = (hourStr: string): number =>
   parseInt(hourStr, 10) * 60 * 60 * 1000
 const parseMinToMs = (minStr: string): number =>

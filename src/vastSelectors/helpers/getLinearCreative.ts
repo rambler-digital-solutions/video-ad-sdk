@@ -1,5 +1,5 @@
 import {get, getAll, getFirstChild} from '../../xml'
-import {ParsedAd, ParsedXML} from '../../types'
+import {ParsedAd, ParsedXML, Optional} from '../../types'
 
 const hasLinear = (creative: ParsedXML): Optional<ParsedXML> =>
   get(creative, 'linear')

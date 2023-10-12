@@ -1,5 +1,5 @@
 import {getMediaFiles} from '../../../vastSelectors'
-import {ParsedAd, MediaFile, Hooks} from '../../../types'
+import {ParsedAd, MediaFile, Hooks, Optional} from '../../../types'
 import canPlay from './canPlay'
 import sortMediaByBestFit from './sortMediaByBestFit'
 

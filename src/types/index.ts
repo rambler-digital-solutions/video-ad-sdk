@@ -1,3 +1,6 @@
+/**
+ * XML node type
+ */
 export enum NodeType {
   CDATA = 'cdata',
   DOCUMENT = 'document',
@@ -5,6 +8,9 @@ export enum NodeType {
   TEXT = 'text'
 }
 
+/**
+ * XML attribute map
+ */
 export type Attributes = Partial<Record<string, string>>
 
 /**
@@ -609,6 +615,11 @@ export interface MetricHandlerData extends Hooks {
   skipoffset?: ParsedOffset
   pauseOnAdClick?: boolean
 }
+
+/**
+ * Optional type
+ */
+export type Optional<T> = T | undefined
 
 /**
  * Cancelation function

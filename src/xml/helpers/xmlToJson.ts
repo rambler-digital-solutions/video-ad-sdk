@@ -1,4 +1,4 @@
-import {NodeType, ParsedXML, Attributes} from '../../types'
+import {NodeType, ParsedXML, Attributes, Optional} from '../../types'
 
 const getNodeType = (node: Node): NodeType => {
   switch (node.nodeType) {

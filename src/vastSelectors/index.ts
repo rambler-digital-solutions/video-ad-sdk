@@ -20,7 +20,8 @@ import {
   MediaFile,
   InteractiveFile,
   ParsedOffset,
-  VpaidCreativeData
+  VpaidCreativeData,
+  Optional
 } from '../types'
 
 const getBooleanValue = (val: unknown): boolean => {

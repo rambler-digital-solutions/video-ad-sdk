@@ -1,5 +1,10 @@
 import {hasAdPod, getAds, getPodAdSequence, isPodAd} from '../../vastSelectors'
-import {ParsedAd, VastResponse, RequestNextAdOptions} from '../../types'
+import {
+  ParsedAd,
+  VastResponse,
+  RequestNextAdOptions,
+  Optional
+} from '../../types'
 import {hasAdBeenRequested} from './adUtils'
 
 const getNextPod = (

@@ -1,7 +1,7 @@
 import {trackError, ErrorCode} from '../tracker'
 import {createVideoAdContainer, VideoAdContainer} from '../adContainer'
 import {VastAdUnit, VpaidAdUnit} from '../adUnit'
-import {VastChain, PixelTracker} from '../types'
+import {VastChain, PixelTracker, Optional} from '../types'
 import startVideoAd, {StartVideoAdOptions} from './helpers/startVideoAd'
 
 /**

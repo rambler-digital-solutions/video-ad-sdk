@@ -1,3 +1,4 @@
+import {Optional} from '../../types'
 import parseTime from './parseTime'
 
 const isPercentage = (offset: string): boolean => {

@@ -1,5 +1,5 @@
 import {get, getAll, getText, getAttributes} from '../xml'
-import {ParsedAd, VastTrackingEvent} from '../types'
+import {ParsedAd, VastTrackingEvent, Optional} from '../types'
 import getLinearCreative from './helpers/getLinearCreative'
 
 /**

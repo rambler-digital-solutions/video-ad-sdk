@@ -53,5 +53,6 @@ export {
   VpaidEnvironmentVars,
   ExecutionContext,
   Hooks,
+  Optional,
   CancelFunction
 } from './types'

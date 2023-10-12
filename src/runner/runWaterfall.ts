@@ -3,7 +3,13 @@ import {requestAd, requestNextAd} from '../vastRequest'
 import VastError from '../vastRequest/helpers/vastError'
 import {getInteractiveFiles} from '../vastSelectors'
 import {VastAdUnit, VpaidAdUnit} from '../adUnit'
-import {VastChain, Hooks, CancelFunction, PixelTracker} from '../types'
+import {
+  VastChain,
+  Hooks,
+  CancelFunction,
+  PixelTracker,
+  Optional
+} from '../types'
 import isIOS from '../utils/isIOS'
 import run, {RunOptions} from './run'
 

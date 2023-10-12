@@ -4,7 +4,8 @@ import {
   ParsedAd,
   VastChain,
   VastChainDetails,
-  MediaFile
+  MediaFile,
+  Optional
 } from '../types'
 import getLinearCreative from '../vastSelectors/helpers/getLinearCreative'
 import {

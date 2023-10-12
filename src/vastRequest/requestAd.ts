@@ -14,7 +14,8 @@ import {
   WrapperOptions,
   ParsedAd,
   ParsedXML,
-  RequestAdOptions
+  RequestAdOptions,
+  Optional
 } from '../types'
 import fetch from './helpers/fetch'
 import VastError from './helpers/vastError'

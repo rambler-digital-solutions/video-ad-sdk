@@ -1,5 +1,5 @@
 import {getIcons} from '../../../vastSelectors'
-import {VastIcon, VastChain, ParsedAd} from '../../../types'
+import {VastIcon, VastChain, ParsedAd, Optional} from '../../../types'
 import getResource from '../resources/getResource'
 
 const UNKNOWN = 'UNKNOWN'
