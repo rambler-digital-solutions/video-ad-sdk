@@ -2,6 +2,7 @@
   "extends": "@rambler-tech/typedoc-config",
   "customTitle": "Video Ad SDK",
   "customDescription": "VAST/VPAID SDK that allows video ads to be played on top of any player",
+  "readme": "README.md",
   "entryPoints": ["src/index.ts"],
   "out": "public/docs",
   "includeVersion": false,
