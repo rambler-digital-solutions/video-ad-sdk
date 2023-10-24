@@ -1,10 +1,12 @@
 {
   "extends": "@rambler-tech/typedoc-config",
-  "name": "Video Ad SDK",
+  "name": "video-ad-sdk",
+  "customTitle": "Video Ad SDK",
   "readme": "README.md",
   "entryPoints": ["src/index.ts"],
   "out": "public/docs",
-  "excludePrivate": true,
-  "excludeProtected": true,
-  "excludeNotDocumented": true
+  "navigationLinks": {
+    "Demo": "https://rambler-digital-solutions.github.io/video-ad-sdk/demo/",
+    "Github": "https://github.com/rambler-digital-solutions/video-ad-sdk"
+  }
 }
