@@ -1,0 +1,54 @@
+@import "https://static.rambler.ru/fonts/Manrope/Manrope.css";
+
+:root {
+  /* base colors */
+  --color-white: #fff;
+  --color-black: #000;
+  --color-blue-base: #315efb;
+  --color-alt-blue-base: #649dff;
+  --color-carbone-base: #343b4c;
+  --color-carbone-dark: #1f2431;
+  --color-light-carbone-2: #3d4456;
+  --color-alt-blue-1: #eff5ff;
+  --color-alt-blue-2: #e0ebff;
+  --color-cloud-gray-7: #afb6c9;
+  --color-sun-yellow-base: #fffbbf;
+
+  /* light theme */
+  --light-color-background: var(--color-white);
+  --light-color-background-secondary: var(--color-white);
+  --light-color-warning-text: var(--color-carbone-base);
+  --light-color-background-warning: var(--color-sun-yellow-base);
+  --light-color-accent: var(--color-alt-blue-2);
+  --light-color-active-menu-item: var(--light-color-accent);
+  --light-color-text: var(--color-carbone-base);
+  --light-color-text-aside: var(--color-cloud-gray-7);
+  --light-color-link: var(--color-blue-base);
+  --light-code-background: var(--color-white);
+
+  /* dark theme */
+  --dark-color-background: var(--color-carbone-dark);
+  --dark-color-background-secondary: var(--color-carbone-dark);
+  --dark-color-warning-text: var(--color-alt-blue-1);
+  --dark-color-background-warning: var(--color-sun-yellow-base);
+  --dark-color-accent: var(--color-light-carbone-2);
+  --dark-color-active-menu-item: var(--dark-color-accent);
+  --dark-color-text: var(--color-alt-blue-1);
+  --dark-color-text-aside: var(--color-cloud-gray-7);
+  --dark-color-link: var(--color-alt-blue-base);
+  --dark-code-background: var(--color-light-carbone-2);
+}
+
+body {
+  font-family: Manrope, sans-serif;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "liga" on;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+pre, code {
+  font-family: SF Mono, Menlo, Monaco, Courier New, Courier, monospace;
+  font-size: 0.9rem;
+  font-feature-settings: normal;
+}
