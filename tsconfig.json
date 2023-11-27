@@ -1,6 +1,7 @@
 {
   "extends": "@rambler-tech/ts-config/base",
   "compilerOptions": {
+    "target": "es2017",
     "baseUrl": "src",
     "outDir": "dist",
     "sourceMap": false,
