@@ -1,5 +1,3 @@
-import onElementVisibilityChange from '../onElementVisibilityChange'
-
 const mockObserve = jest.fn()
 const mockDisconnect = jest.fn()
 let simulateIntersection: any
@@ -29,6 +27,8 @@ jest.mock('../helpers/IntersectionObserver', () => {
 
   return MockIntersectionObserver
 })
+
+import onElementVisibilityChange from '../onElementVisibilityChange'
 
 const once = (
   context: Window | Document | Element,

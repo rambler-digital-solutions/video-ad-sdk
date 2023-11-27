@@ -1,5 +1,3 @@
-import onElementResize from '../onElementResize'
-
 const mockObserve = jest.fn()
 const mockDisconnect = jest.fn()
 let simulateAttrMutation: any
@@ -30,6 +28,8 @@ jest.mock('../helpers/MutationObserver', () => {
 
   return MockMutationObserver
 })
+
+import onElementResize from '../onElementResize'
 
 test('onElementResize', () => {
   expect(onElementResize).toEqual(expect.any(Function))
