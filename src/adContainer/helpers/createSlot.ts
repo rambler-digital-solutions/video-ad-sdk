@@ -1,4 +1,4 @@
-const createSlot = (
+export const createSlot = (
   placeholder: HTMLElement,
   width: number,
   height: number
@@ -21,5 +21,3 @@ const createSlot = (
 
   return slot
 }
-
-export default createSlot

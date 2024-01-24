@@ -1,6 +1,6 @@
 import {linearEvents} from '../../../../../tracker'
-import onTimeUpdate from '../onTimeUpdate'
 import {adProgress} from '../../../../adUnitEvents'
+import {onTimeUpdate} from '../onTimeUpdate'
 
 const {complete, firstQuartile, midpoint, start, thirdQuartile} = linearEvents
 

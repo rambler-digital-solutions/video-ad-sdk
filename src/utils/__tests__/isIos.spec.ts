@@ -1,6 +1,6 @@
-import isIOS from '../isIOS'
+import {isIos} from '../isIos'
 
-describe('isIOS', () => {
+describe('isIos', () => {
   let origUserAgent: string
 
   beforeEach(() => {
@@ -19,53 +19,53 @@ describe('isIOS', () => {
   })
 
   it('must be a function', () => {
-    expect(isIOS).toBeInstanceOf(Function)
+    expect(isIos).toBeInstanceOf(Function)
   })
 
   it('must return true if the useAgent contains iPad or iPod or iPhone', () => {
-    expect(isIOS()).toBe(false)
+    expect(isIos()).toBe(false)
 
     Object.defineProperty(navigator, 'userAgent', {
       value: `iPhone ${origUserAgent}`,
       writable: true
     })
-    expect(isIOS()).toBe(true)
+    expect(isIos()).toBe(true)
 
     Object.defineProperty(navigator, 'userAgent', {
       value: `iPad ${origUserAgent}`,
       writable: true
     })
-    expect(isIOS()).toBe(true)
+    expect(isIos()).toBe(true)
 
     Object.defineProperty(navigator, 'userAgent', {
       value: `iPod ${origUserAgent}`,
       writable: true
     })
-    expect(isIOS()).toBe(true)
+    expect(isIos()).toBe(true)
   })
 
   it('must return false for IE user agents that contain iPhone', () => {
     ;(window.MSStream as any) = true
 
-    expect(isIOS()).toBe(false)
+    expect(isIos()).toBe(false)
 
     Object.defineProperty(navigator, 'userAgent', {
       value: `iPhone ${origUserAgent}`,
       writable: true
     })
-    expect(isIOS()).toBe(false)
+    expect(isIos()).toBe(false)
 
     Object.defineProperty(navigator, 'userAgent', {
       value: `iPad ${origUserAgent}`,
       writable: true
     })
-    expect(isIOS()).toBe(false)
+    expect(isIos()).toBe(false)
 
     Object.defineProperty(navigator, 'userAgent', {
       value: `iPod ${origUserAgent}`,
       writable: true
     })
-    expect(isIOS()).toBe(false)
+    expect(isIos()).toBe(false)
 
     delete window.MSStream
   })

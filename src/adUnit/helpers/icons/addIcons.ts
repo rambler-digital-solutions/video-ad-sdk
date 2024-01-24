@@ -1,6 +1,6 @@
 import {VideoAdContainer} from '../../../adContainer'
-import {VastIcon as BaseIcon} from '../../../types'
-import renderIcons from './renderIcons'
+import type {VastIcon as BaseIcon} from '../../../types'
+import {renderIcons} from './renderIcons'
 
 const firstRenderPending = Symbol('firstRenderPending')
 
@@ -32,7 +32,7 @@ const removeDrawnIcons = (icons: VastIcon[]): void =>
     .filter(({element}) => Boolean(element?.parentNode))
     .forEach(({element}) => element?.parentNode?.removeChild(element))
 
-export interface AddIconsOptions {
+interface AddIconsOptions {
   videoAdContainer: VideoAdContainer
   onIconView?(icon: VastIcon): void
   onIconClick?(icon: VastIcon): void
@@ -45,7 +45,7 @@ export interface AddedIcons {
   removeIcons(): void
 }
 
-const addIcons = (
+export const addIcons = (
   icons: VastIcon[],
   {
     videoAdContainer,
@@ -82,5 +82,3 @@ const addIcons = (
     removeIcons: () => removeDrawnIcons(icons)
   }
 }
-
-export default addIcons

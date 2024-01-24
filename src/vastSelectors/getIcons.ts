@@ -1,14 +1,15 @@
 import {get, getAll, getText, getAttributes} from '../xml'
-import {ParsedAd, ParsedXML, VastIcon, Optional} from '../types'
-import getLinearCreative from './helpers/getLinearCreative'
-import parseTime from './helpers/parseTime'
+import type {ParsedAd, ParsedXML, VastIcon, Optional} from '../types'
+import {getLinearCreative} from './helpers/getLinearCreative'
+import {parseTime} from './helpers/parseTime'
 
 const formatSize = (size: string | number): number => {
   const match = `${size}`.match(/\d+/g)
 
-  return parseInt(match?.[0] || '', 10)
+  return Number(match?.[0] || '')
 }
 
+// eslint-disable-next-line sonar/function-return-type
 const formatPosition = (position: string): number | string => {
   const isNumberString = /\d+/.test(position)
 
@@ -46,7 +47,7 @@ const getIconAttributes = (iconElement: ParsedXML): VastIcon => {
 const getIconResource = (iconElement: ParsedXML): VastIcon => {
   const staticResourceElement = get(iconElement, 'StaticResource')
   const htmlResourceElement = get(iconElement, 'HTMLResource')
-  const iFrameResourceElement = get(iconElement, 'IFrameResource')
+  const indexFrameResourceElement = get(iconElement, 'IFrameResource')
 
   if (staticResourceElement) {
     return {staticResource: getText(staticResourceElement)}
@@ -56,8 +57,8 @@ const getIconResource = (iconElement: ParsedXML): VastIcon => {
     return {htmlResource: getText(htmlResourceElement)}
   }
 
-  if (iFrameResourceElement) {
-    return {iFrameResource: getText(iFrameResourceElement)}
+  if (indexFrameResourceElement) {
+    return {iFrameResource: getText(indexFrameResourceElement)}
   }
 
   return {
@@ -105,7 +106,7 @@ const getIconClicks = (iconElement: ParsedXML): VastIcon => {
  * @param ad VAST ad object.
  * @returns Array of VAST icon definitions
  */
-const getIcons = (ad: ParsedAd): Optional<VastIcon[]> => {
+export const getIcons = (ad: ParsedAd): Optional<VastIcon[]> => {
   const linearCreativeElement = ad && getLinearCreative(ad)
   const linearElement =
     linearCreativeElement && get(linearCreativeElement, 'linear')
@@ -121,5 +122,3 @@ const getIcons = (ad: ParsedAd): Optional<VastIcon[]> => {
     }))
   }
 }
-
-export default getIcons

@@ -1,4 +1,4 @@
-import updateIcon from '../updateIcon'
+import {updateIcon} from '../updateIcon'
 
 const mockClientRect = (
   element: HTMLElement,

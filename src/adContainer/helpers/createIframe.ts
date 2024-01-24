@@ -1,6 +1,6 @@
-import getContentDocument from './getContentDocument'
-import getOrigin from './getOrigin'
-import supportsSrcdoc from './supportsSrcdoc'
+import {getContentDocument} from './getContentDocument'
+import {getOrigin} from './getOrigin'
+import {supportsSrcdoc} from './supportsSrcdoc'
 
 const iframeContent = (
   id: string,
@@ -31,7 +31,7 @@ const createBaseIframe = (): HTMLIFrameElement => {
   return iframe
 }
 
-const createIframe = (
+export const createIframe = (
   placeholder: HTMLElement,
   id: string
 ): Promise<HTMLIFrameElement> =>
@@ -74,5 +74,3 @@ const createIframe = (
 
     window.addEventListener('message', handleMessage, false)
   })
-
-export default createIframe

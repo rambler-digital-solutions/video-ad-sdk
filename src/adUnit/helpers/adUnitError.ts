@@ -1,7 +1,7 @@
 /**
  * Ad unit error
  */
-class AdUnitError extends Error {
+export class AdUnitError extends Error {
   code?: number
 
   public constructor(message: string) {
@@ -10,5 +10,3 @@ class AdUnitError extends Error {
     Object.setPrototypeOf(this, AdUnitError.prototype)
   }
 }
-
-export default AdUnitError

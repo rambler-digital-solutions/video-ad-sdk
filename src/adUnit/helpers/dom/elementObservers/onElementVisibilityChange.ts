@@ -1,5 +1,5 @@
 import debounce from 'lodash.debounce'
-import IntersectionObserver from './helpers/IntersectionObserver'
+import {IntersectionObserver} from './helpers/IntersectionObserver'
 
 type Callback = () => void
 
@@ -23,6 +23,8 @@ interface ObservedHTMLElement extends HTMLElement {
   [observerKey]?: IntersectionObserver
 }
 
+const THRESHOLDS_COUNT = 11
+
 const onIntersection = (
   target: ObservedHTMLElement,
   callback: IntersectionObserverCallback
@@ -42,7 +44,9 @@ const onIntersection = (
     const options = {
       root: null,
       rootMargin: '0px',
-      threshold: [...new Array(11)].map((_item, index) => index / 10)
+      threshold: [...new Array(THRESHOLDS_COUNT)].map(
+        (_item, index) => index / (THRESHOLDS_COUNT - 1)
+      )
     }
 
     target[observerKey] = new IntersectionObserver(execHandlers, options)
@@ -127,7 +131,7 @@ interface VisibilityObserverOptions {
  *
  * @returns Unsubscribe function.
  */
-const onElementVisibilityChange = (
+export const onElementVisibilityChange = (
   target: HTMLElement,
   callback: VisibilityCallback,
   {threshold = 100, viewabilityOffset = 0.4}: VisibilityObserverOptions = {}
@@ -170,5 +174,3 @@ const onElementVisibilityChange = (
     stopListeningToVisibilityChange()
   }
 }
-
-export default onElementVisibilityChange

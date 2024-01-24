@@ -1,4 +1,4 @@
-import pixelTracker from '../pixelTracker'
+import {pixelTracker} from '../pixelTracker'
 
 test('pixelTracker must return the image Image with the parsed macro as source', () => {
   const urlMacros = [
@@ -11,8 +11,8 @@ test('pixelTracker must return the image Image with the parsed macro as source',
     pixelTracker(urlMacro, {CODE: 'TEST_CODE'})
   )
 
-  trackImgs.forEach((image, idx) => {
+  trackImgs.forEach((image, index) => {
     expect(image).toBeInstanceOf(Image)
-    expect(image.src).toBe(`https://test.example.com/${idx}/TEST_CODE`)
+    expect(image.src).toBe(`https://test.example.com/${index}/TEST_CODE`)
   })
 })

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unused-modules */
 export type {
   NodeType,
   Attributes,
@@ -18,7 +19,7 @@ export type {
   VastEventTrackerOptions,
   VpaidCreativeAdUnit,
   VpaidCreativeData,
-  VpaidEnvironmentVars,
+  VpaidEnvironmentVariables,
   ExecutionContext,
   Hooks,
   Optional,
@@ -40,9 +41,8 @@ export type {
   Listener,
   AdUnitError
 } from './adUnit'
-export {
-  run,
-  runWaterfall,
+export {run, runWaterfall} from './runner'
+export type {
   RunOptions,
   StartVideoAdOptions,
   StartAdUnitOptions,
@@ -51,11 +51,7 @@ export {
   ErrorData
 } from './runner'
 export {ErrorCode} from './tracker'
-export {
-  requestAd,
-  requestNextAd,
-  RequestAdOptions,
-  RequestNextAdOptions
-} from './vastRequest'
+export {requestAd, requestNextAd} from './vastRequest'
+export type {RequestAdOptions, RequestNextAdOptions} from './vastRequest'
 export {getDetails} from './vastChain'
 export * as vastSelectors from './vastSelectors'

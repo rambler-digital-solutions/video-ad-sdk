@@ -1,3 +1,3 @@
-export {default as createVideoAdContainer} from './createVideoAdContainer'
-export {default as VideoAdContainer, AddScriptOptions} from './VideoAdContainer'
-export {LoadScriptOptions} from './helpers/loadScript'
+export {createVideoAdContainer} from './createVideoAdContainer'
+export {VideoAdContainer, type AddScriptOptions} from './VideoAdContainer'
+export type {LoadScriptOptions} from './helpers/loadScript'

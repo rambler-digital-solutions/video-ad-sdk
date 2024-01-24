@@ -1,12 +1,12 @@
-import {VastIcon} from '../../../types'
+import type {VastIcon} from '../../../types'
 
 interface IFrameResourceOptions {
   document: Document
   data: VastIcon
 }
 
-const createIframeResource = (
-  src: string,
+export const createIframeResource = (
+  source: string,
   {document, data}: IFrameResourceOptions
 ): HTMLIFrameElement => {
   const {height, width} = data
@@ -26,11 +26,9 @@ const createIframeResource = (
     iframeElement.height = height.toString()
   }
 
-  iframeElement.src = src
+  iframeElement.src = source
   iframeElement.frameBorder = '0'
   iframeElement.style.border = 'none'
 
   return iframeElement
 }
-
-export default createIframeResource

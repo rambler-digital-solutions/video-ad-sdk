@@ -1,6 +1,6 @@
-import {VastIcon} from '../../../types'
+import type {VastIcon} from '../../../types'
 
-const canBeShown = (
+export const canBeShown = (
   icon: VastIcon,
   videoElement: HTMLVideoElement
 ): boolean => {
@@ -14,5 +14,3 @@ const canBeShown = (
 
   return offset <= currentTimeInMs && currentTimeInMs - offset <= duration
 }
-
-export default canBeShown

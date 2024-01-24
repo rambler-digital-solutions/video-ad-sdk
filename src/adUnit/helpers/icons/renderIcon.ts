@@ -1,7 +1,7 @@
-import {VastIcon, RenderedVastIcon} from '../../../types'
-import loadResource, {LoadResourceOptions} from '../resources/loadResource'
-import updateIcon from './updateIcon'
-import canBeRendered from './canBeRendered'
+import type {VastIcon, RenderedVastIcon} from '../../../types'
+import {loadResource, type LoadResourceOptions} from '../resources/loadResource'
+import {updateIcon} from './updateIcon'
+import {canBeRendered} from './canBeRendered'
 
 export interface RenderIconOptions extends LoadResourceOptions {
   drawnIcons: RenderedVastIcon[]
@@ -87,7 +87,7 @@ const updateIconElement = (
   return iconElement
 }
 
-const renderIcon = async (
+export const renderIcon = async (
   icon: VastIcon,
   config: RenderIconOptions
 ): Promise<RenderedVastIcon> => {
@@ -107,5 +107,3 @@ const renderIcon = async (
 
   return updatedIcon
 }
-
-export default renderIcon

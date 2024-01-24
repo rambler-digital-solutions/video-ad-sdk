@@ -1,4 +1,4 @@
-import parseTime from '../parseTime'
+import {parseTime} from '../parseTime'
 
 test('parseTime must return the passed offset string in ms', () => {
   expect(parseTime('00:00:05.000')).toBe(5000)

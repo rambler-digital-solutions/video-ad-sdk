@@ -1,4 +1,4 @@
-import canBeShown from '../canBeShown'
+import {canBeShown} from '../canBeShown'
 
 let videoElement: HTMLVideoElement
 

@@ -25,10 +25,8 @@ export const adCollapse = 'adCollapse'
  */
 export const close = 'close'
 
-const nonLinearEvents = {
+export const nonLinearEvents = {
   acceptInvitation,
   adCollapse,
   close
 }
-
-export default nonLinearEvents

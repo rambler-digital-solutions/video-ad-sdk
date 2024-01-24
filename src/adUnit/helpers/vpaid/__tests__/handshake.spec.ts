@@ -1,4 +1,4 @@
-import handshake from '../handshake'
+import {handshake} from '../handshake'
 
 describe('handshake', () => {
   test('must throw if the version is not supported', () => {

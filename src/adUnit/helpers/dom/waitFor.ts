@@ -1,11 +1,11 @@
-import once from './once'
+import {once} from './once'
 
 interface WaitFor<T> {
   cancel(): void
   promise: Promise<T>
 }
 
-const waitFor = <T extends any[]>(
+export const waitFor = <T extends any[]>(
   element: HTMLElement,
   event: string
 ): WaitFor<T> => {
@@ -33,5 +33,3 @@ const waitFor = <T extends any[]>(
     promise
   }
 }
-
-export default waitFor

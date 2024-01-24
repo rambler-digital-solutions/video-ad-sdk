@@ -1,5 +1,5 @@
 import {wrapperAd, inlineAd} from '../../../../../fixtures'
-import retrieveIcons from '../retrieveIcons'
+import {retrieveIcons} from '../retrieveIcons'
 
 beforeEach(() => {
   Object.defineProperty(window, 'devicePixelRatio', {

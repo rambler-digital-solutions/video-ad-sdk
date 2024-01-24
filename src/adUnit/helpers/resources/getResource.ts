@@ -1,10 +1,8 @@
-import {VastIcon} from '../../../types'
+import type {VastIcon} from '../../../types'
 
-const getResource = ({
+export const getResource = ({
   staticResource,
   htmlResource,
-  iFrameResource
+  iFrameResource: indexFrameResource
 }: VastIcon = {}): string | void =>
-  staticResource || htmlResource || iFrameResource || undefined
-
-export default getResource
+  staticResource || htmlResource || indexFrameResource || undefined

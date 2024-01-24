@@ -16,11 +16,13 @@ const isValidContentType = (contentType: string): boolean => {
   )
 }
 
-const fetchHtml = async (endpoint: string): Promise<string> => {
+const BAD_REQUEST = 400
+
+export const fetchHtml = async (endpoint: string): Promise<string> => {
   const response = await fetch(endpoint)
   const contentType = response.headers.get('Content-Type')
 
-  if (response.status >= 400) {
+  if (response.status >= BAD_REQUEST) {
     const error = new FetchError(response.statusText)
 
     error.response = response
@@ -38,5 +40,3 @@ const fetchHtml = async (endpoint: string): Promise<string> => {
 
   return response.text()
 }
-
-export default fetchHtml

@@ -6,16 +6,18 @@ import {
   wrapperAd,
   inlineAd
 } from '../../../fixtures'
-import {VastChain} from '../../types'
-import startVideoAd from '../helpers/startVideoAd'
-import run from '../run'
-import VideoAdContainer from '../../adContainer/VideoAdContainer'
-import VastAdUnit from '../../adUnit/VastAdUnit'
-import createVideoAdContainer from '../../adContainer/createVideoAdContainer'
-import defer from '../../utils/defer'
+import type {VastChain} from '../../types'
+import {startVideoAd} from '../helpers/startVideoAd'
+import {run} from '../run'
+import {VideoAdContainer} from '../../adContainer/VideoAdContainer'
+import {VastAdUnit} from '../../adUnit/VastAdUnit'
+import {createVideoAdContainer} from '../../adContainer/createVideoAdContainer'
+import {defer} from '../../utils/defer'
 
-jest.mock('../helpers/startVideoAd', () => jest.fn())
-jest.mock('../../adContainer/createVideoAdContainer', () => jest.fn())
+jest.mock('../helpers/startVideoAd', () => ({startVideoAd: jest.fn()}))
+jest.mock('../../adContainer/createVideoAdContainer', () => ({
+  createVideoAdContainer: jest.fn()
+}))
 jest.mock('../../tracker', () => ({
   ...jest.requireActual('../../tracker'),
   linearEvents: {},
@@ -114,7 +116,7 @@ describe('run', () => {
       await run(vastAdChain, placeholder, {
         onAdReady: noop
       })
-    } catch (error) {
+    } catch {
       expect(adContainer.destroy).toHaveBeenCalledTimes(1)
     }
   })
@@ -190,17 +192,21 @@ describe('run', () => {
     })
 
     test('must start the ad if the adUnit starts within the timeout', async () => {
-      const opts = {
+      const testOptions = {
         ...options,
         timeout: 10000
       }
 
-      expect(await run(vastAdChain, placeholder, opts)).toBe(adUnit)
+      expect(await run(vastAdChain, placeholder, testOptions)).toBe(adUnit)
       expect(createVideoAdContainer).toHaveBeenCalledWith(
         placeholder,
         options.videoElement
       )
-      expect(startVideoAd).toHaveBeenCalledWith(vastAdChain, adContainer, opts)
+      expect(startVideoAd).toHaveBeenCalledWith(
+        vastAdChain,
+        adContainer,
+        testOptions
+      )
     })
   })
 })

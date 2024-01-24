@@ -1,15 +1,17 @@
-import {RenderedVastIcon} from '../../../types'
-import {RenderIconOptions} from './renderIcon'
+import type {RenderedVastIcon} from '../../../types'
+import type {RenderIconOptions} from './renderIcon'
 
 const calculateArea = ({
   height,
   width
 }: Pick<DOMRect, 'width' | 'height'>): number => height * width
 
-export type CanBeRenderedOptions = Pick<
+type CanBeRenderedOptions = Pick<
   RenderIconOptions,
   'drawnIcons' | 'placeholder'
 >
+
+const ICON_MIN_SIZE = 0.35
 
 export const hasSpace = (
   newIcon: RenderedVastIcon,
@@ -28,7 +30,7 @@ export const hasSpace = (
     return accumulator + calculateArea({width, height})
   }, 0)
 
-  return iconArea + usedIconsArea <= placeholderArea * 0.35
+  return iconArea + usedIconsArea <= placeholderArea * ICON_MIN_SIZE
 }
 
 export const withinBoundaries = (
@@ -64,7 +66,7 @@ export const withoutOverlaps = (
   {drawnIcons}: CanBeRenderedOptions
 ): boolean => !drawnIcons.some((drawnIcon) => overlap(newIcon, drawnIcon))
 
-const canBeRendered = (
+export const canBeRendered = (
   newIcon: RenderedVastIcon,
   config: CanBeRenderedOptions
 ): boolean => {
@@ -74,5 +76,3 @@ const canBeRendered = (
 
   return thereIsSpace && isWithinTheContentArea && doesNotOverlap
 }
-
-export default canBeRendered

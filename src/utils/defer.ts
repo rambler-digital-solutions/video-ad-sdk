@@ -1,10 +1,10 @@
-export interface Deferred<T> {
+interface Deferred<T> {
   resolve(result: T): void
   reject(error: Error): void
   promise: Promise<T>
 }
 
-const defer = <T>(): Deferred<T> => {
+export const defer = <T>(): Deferred<T> => {
   const deferred = {} as Deferred<T>
   const promise = new Promise<T>((resolve, reject) => {
     deferred.resolve = resolve
@@ -15,5 +15,3 @@ const defer = <T>(): Deferred<T> => {
 
   return deferred
 }
-
-export default defer

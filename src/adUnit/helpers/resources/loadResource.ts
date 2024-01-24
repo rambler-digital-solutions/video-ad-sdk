@@ -1,6 +1,6 @@
-import {VastIcon} from '../../../types'
-import waitFor from '../dom/waitFor'
-import createResource, {ResourceElement} from './createResource'
+import type {VastIcon} from '../../../types'
+import {waitFor} from '../dom/waitFor'
+import {createResource, type ResourceElement} from './createResource'
 
 export interface LoadResourceOptions {
   document: Document
@@ -9,7 +9,7 @@ export interface LoadResourceOptions {
 
 const noop = (): void => {}
 
-const loadResource = (
+export const loadResource = (
   icon: VastIcon,
   {document, placeholder}: LoadResourceOptions
 ): Promise<ResourceElement> =>
@@ -25,6 +25,7 @@ const loadResource = (
         }
       }
 
+      /* eslint-disable promise/prefer-await-to-then */
       resourceErrorWait.promise
         .then(() => {
           resourceLoadWait.cancel()
@@ -42,6 +43,7 @@ const loadResource = (
           resolve(resourceElement)
         })
         .catch(noop)
+      /* eslint-enable promise/prefer-await-to-then */
 
       // Some browsers will not load the resource if they are not added to the DOM
       resourceElement.style.zIndex = '-9999'
@@ -50,5 +52,3 @@ const loadResource = (
       reject(error)
     }
   })
-
-export default loadResource

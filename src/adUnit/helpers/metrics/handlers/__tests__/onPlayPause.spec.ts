@@ -1,5 +1,5 @@
 import {linearEvents} from '../../../../../tracker'
-import onPlayPause from '../onPlayPause'
+import {onPlayPause} from '../onPlayPause'
 
 const {pause, resume} = linearEvents
 

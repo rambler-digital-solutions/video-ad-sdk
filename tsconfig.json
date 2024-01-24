@@ -7,8 +7,9 @@
     "sourceMap": false,
     "declaration": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": false
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+  "include": ["src", "demo"],
+  "exclude": ["node_modules", "dist"]
 }

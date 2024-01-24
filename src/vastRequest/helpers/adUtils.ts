@@ -1,4 +1,4 @@
-import {ParsedAd} from '../../types'
+import type {ParsedAd} from '../../types'
 
 const requested = Symbol('requested')
 

@@ -1,7 +1,7 @@
-import loadResource from '../../resources/loadResource'
-import renderIcon from '../renderIcon'
-import updateIcon from '../updateIcon'
-import canBeRendered from '../canBeRendered'
+import {loadResource} from '../../resources/loadResource'
+import {renderIcon} from '../renderIcon'
+import {updateIcon} from '../updateIcon'
+import {canBeRendered} from '../canBeRendered'
 
 jest.mock('../../resources/loadResource')
 jest.mock('../updateIcon')
@@ -85,7 +85,7 @@ test('renderIcon must reuse previously created icons', async () => {
 })
 
 test('renderIcon must return the updated icon', () => {
-  const updatedIcon = Object.assign({}, icon)
+  const updatedIcon = {...icon}
 
   ;(loadResource as jest.Mock).mockImplementation(() =>
     Promise.resolve(iconResource)
@@ -113,7 +113,7 @@ test('renderIcon must style the icon element', async () => {
 
   await renderIcon(icon, config)
 
-  const iconElement = icon.element
+  const {element: iconElement} = icon
 
   expect(iconElement.style.position).toEqual('absolute')
   expect(iconElement.style.left).toEqual(`${updatedIcon.left}px`)
@@ -139,7 +139,7 @@ test('renderIcon must wrap the resource with an anchor', async () => {
 
   await renderIcon(icon, config)
 
-  const iconElement = icon.element
+  const {element: iconElement} = icon
 
   expect(iconElement).toBeInstanceOf(HTMLAnchorElement)
   expect(iconElement.href).toBe('')
@@ -166,7 +166,7 @@ test('renderIcon element anchor must have the clickThrough url if passed', async
 
   await renderIcon(icon, config)
 
-  const iconElement = icon.element
+  const {element: iconElement} = icon
 
   expect(iconElement).toBeInstanceOf(HTMLAnchorElement)
   expect(iconElement.href).toBe(icon.iconClickThrough)
@@ -190,7 +190,7 @@ test('renderIcon element anchor on click must call the passed onIconClick method
   config.onIconClick = jest.fn()
   await renderIcon(icon, config)
 
-  const iconElement = icon.element
+  const {element: iconElement} = icon
 
   iconElement.click()
 
@@ -240,7 +240,7 @@ test('renderIcon must must remove an icon that can no longer be rendered', async
 
   try {
     await renderIcon(icon, config)
-  } catch (error) {
+  } catch {
     // Do nothing
   }
 

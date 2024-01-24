@@ -1,5 +1,5 @@
-import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd'
-import waitFor from '../waitFor'
+import {MockVpaidCreativeAd} from '../../../__tests__/MockVpaidCreativeAd'
+import {waitFor} from '../waitFor'
 
 describe('waitFor', () => {
   beforeEach(() => {
@@ -18,6 +18,7 @@ describe('waitFor', () => {
     const callback = jest.fn()
 
     const promise = waitFor(creativeAd, 'adLoaded', 1000)
+    // eslint-disable-next-line promise/prefer-await-to-then
     const promiseWithCallback = promise.then(callback)
 
     expect(callback).not.toHaveBeenCalled()
@@ -37,6 +38,7 @@ describe('waitFor', () => {
     const callback = jest.fn()
 
     const promise = waitFor(creativeAd, 'adLoaded', 2000)
+    // eslint-disable-next-line promise/prefer-await-to-then
     const promiseWithCallback = promise.then(callback)
 
     expect(callback).not.toHaveBeenCalled()
@@ -59,6 +61,7 @@ describe('waitFor', () => {
     const creativeAd: any = new MockVpaidCreativeAd()
     const callback = jest.fn()
     const promise = waitFor(creativeAd, 'adLoaded')
+    // eslint-disable-next-line promise/prefer-await-to-then
     const promiseWithCallback = promise.then(callback)
 
     expect(setTimeout).not.toHaveBeenCalled()

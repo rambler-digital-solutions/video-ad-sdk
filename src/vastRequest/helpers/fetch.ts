@@ -8,17 +8,20 @@ class FetchError extends Error {
   }
 }
 
-const fetch = async (
+const BAD_REQUEST = 400
+
+export const fetch = async (
   endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> => {
-  const defaults = {
-    credentials: 'include'
+  const fetchOptions = {
+    credentials: 'include' as RequestCredentials,
+    ...options
   }
-  const fetchOptions = Object.assign({}, defaults, options)
+
   const response = await window.fetch(endpoint, fetchOptions)
 
-  if (response.status >= 400) {
+  if (response.status >= BAD_REQUEST) {
     const error = new FetchError(response.statusText)
 
     error.response = response
@@ -27,5 +30,3 @@ const fetch = async (
 
   return response
 }
-
-export default fetch

@@ -1,7 +1,7 @@
 import {getNonLinearTrackingEvents} from '../vastSelectors'
-import {ParsedAd, VastChain, VastEventTrackerOptions} from '../types'
-import createVastEventTracker from './helpers/createVastEventTracker'
-import pixelTracker from './helpers/pixelTracker'
+import type {ParsedAd, VastChain, VastEventTrackerOptions} from '../types'
+import {createVastEventTracker} from './helpers/createVastEventTracker'
+import {pixelTracker} from './helpers/pixelTracker'
 import {acceptInvitation, adCollapse, close} from './nonLinearEvents'
 
 const trackingEventSelector = (event: string) => (ad: ParsedAd) =>
@@ -22,12 +22,12 @@ const linearTrackers = {
  * @param vastChain the ad VAST Chain.
  * @param options Options Map.
  */
-const trackNonLinearEvent = (
+export const trackNonLinearEvent = (
   event: keyof typeof linearTrackers,
   vastChain: VastChain,
   {data, tracker = pixelTracker, logger = console}: VastEventTrackerOptions
 ): void => {
-  const linearTracker = linearTrackers[event]
+  const {[event]: linearTracker} = linearTrackers
 
   if (linearTracker) {
     linearTracker(vastChain, {
@@ -40,5 +40,3 @@ const trackNonLinearEvent = (
     logger.error(`Event '${event}' cannot be tracked`)
   }
 }
-
-export default trackNonLinearEvent

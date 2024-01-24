@@ -10,7 +10,7 @@ import {
   wrapperAd,
   inlineAd
 } from '../../../fixtures'
-import requestNextAd from '../requestNextAd'
+import {requestNextAd} from '../requestNextAd'
 import {markAdAsRequested, unmarkAdAsRequested} from '../helpers/adUtils'
 
 test('requestNextAd must throw if we pass an invalid VAST chain', () => {

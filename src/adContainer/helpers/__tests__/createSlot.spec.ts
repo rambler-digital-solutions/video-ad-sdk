@@ -1,4 +1,4 @@
-import createSlot from '../createSlot'
+import {createSlot} from '../createSlot'
 
 describe('createSlot', () => {
   test('must return a slot element', () => {

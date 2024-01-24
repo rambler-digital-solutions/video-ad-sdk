@@ -1,17 +1,19 @@
-const viewmode = (width: number, height: number): string => {
-  const screen = window.screen
+const FULLSCREEN_LAPSE = 100
+const THUMBNAIL_MAX_WIDTH = 400
+
+export const viewmode = (width: number, height: number): string => {
+  const {screen} = window
   const isFullscreen =
-    width + 100 > screen.width && height + 100 > screen.height
+    width + FULLSCREEN_LAPSE > screen.width &&
+    height + FULLSCREEN_LAPSE > screen.height
 
   if (isFullscreen) {
     return 'fullscreen'
   }
 
-  if (width < 400) {
+  if (width < THUMBNAIL_MAX_WIDTH) {
     return 'thumbnail'
   }
 
   return 'normal'
 }
-
-export default viewmode

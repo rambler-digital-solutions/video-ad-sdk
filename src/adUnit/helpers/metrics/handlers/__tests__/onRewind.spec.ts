@@ -1,5 +1,5 @@
 import {linearEvents} from '../../../../../tracker'
-import onRewind from '../onRewind'
+import {onRewind} from '../onRewind'
 
 const {rewind} = linearEvents
 let videoElement: HTMLVideoElement

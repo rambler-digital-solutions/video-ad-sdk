@@ -1,7 +1,7 @@
-import {MediaFile} from '../../../types'
-import once from '../dom/once'
+import type {MediaFile} from '../../../types'
+import {once} from '../dom/once'
 
-const updateMedia = (
+export const updateMedia = (
   videoElement: HTMLVideoElement,
   mediaFile: MediaFile
 ): Promise<void> =>
@@ -31,5 +31,3 @@ const updateMedia = (
       resolve()
     })
   })
-
-export default updateMedia

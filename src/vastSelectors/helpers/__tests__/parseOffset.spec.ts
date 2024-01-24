@@ -1,4 +1,4 @@
-import parseOffset from '../parseOffset'
+import {parseOffset} from '../parseOffset'
 
 test('parseOffset must return the percentage', () => {
   expect(parseOffset('19.5%')).toBe('19.5%')

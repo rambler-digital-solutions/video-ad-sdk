@@ -1,4 +1,4 @@
-import sortMediaByBestFit from '../sortMediaByBestFit'
+import {sortMediaByBestFit} from '../sortMediaByBestFit'
 
 let mediafiles: any[]
 

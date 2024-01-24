@@ -1,7 +1,7 @@
-import VideoAdContainer from '../VideoAdContainer'
-import loadScript from '../helpers/loadScript'
-import getContentDocument from '../helpers/getContentDocument'
-import supportsSrcdoc from '../helpers/supportsSrcdoc'
+import {VideoAdContainer} from '../VideoAdContainer'
+import {loadScript} from '../helpers/loadScript'
+import {getContentDocument} from '../helpers/getContentDocument'
+import {supportsSrcdoc} from '../helpers/supportsSrcdoc'
 
 let placeholder: HTMLElement
 
@@ -59,15 +59,15 @@ describe('VideoAdContainer', () => {
     test('must create an iframe and add the scripts to it', async () => {
       ;(loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
-      const src = 'http://example.com/resource'
-      const scriptOpts: any = {foo: 'bar'}
+      const source = 'http://example.com/resource'
+      const scriptOptions: any = {foo: 'bar'}
       const videoAdContainer = new VideoAdContainer(placeholder)
 
       const adContainerElement = videoAdContainer.element
 
       expect(adContainerElement.querySelector('iframe')).toBeNull()
 
-      const script = await videoAdContainer.addScript(src, scriptOpts)
+      const script = await videoAdContainer.addScript(source, scriptOptions)
       const iframe = adContainerElement.querySelector(
         'iframe'
       ) as HTMLIFrameElement
@@ -78,10 +78,10 @@ describe('VideoAdContainer', () => {
       expect(iframe).toBeInstanceOf(HTMLIFrameElement)
       expect(loadScript).toHaveBeenCalledTimes(1)
       expect(loadScript).toBeCalledWith(
-        src,
+        source,
         expect.objectContaining({
           placeholder: iframeBody,
-          ...scriptOpts
+          ...scriptOptions
         })
       )
     })
@@ -89,15 +89,15 @@ describe('VideoAdContainer', () => {
     test('must reuse the iframe to add scripts', async () => {
       ;(loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
-      const src = 'http://example.com/resource'
+      const source = 'http://example.com/resource'
       const videoAdContainer = new VideoAdContainer(placeholder)
 
       const adContainerElement = videoAdContainer.element
 
       expect(adContainerElement.querySelector('IFRAME')).toBeNull()
-      await videoAdContainer.addScript(src)
-      await videoAdContainer.addScript(src)
-      await videoAdContainer.addScript(src)
+      await videoAdContainer.addScript(source)
+      await videoAdContainer.addScript(source)
+      await videoAdContainer.addScript(source)
 
       expect(adContainerElement.querySelectorAll('IFRAME').length).toBe(1)
     })
@@ -105,14 +105,14 @@ describe('VideoAdContainer', () => {
     test('must set the execution context', async () => {
       ;(loadScript as jest.Mock).mockReturnValue(Promise.resolve('SCRIPT_MOCK'))
 
-      const src = 'http://example.com/resource'
+      const source = 'http://example.com/resource'
       const videoAdContainer = new VideoAdContainer(placeholder)
 
       expect(videoAdContainer.executionContext).toBeUndefined()
 
       const adContainerElement = videoAdContainer.element
 
-      await videoAdContainer.addScript(src)
+      await videoAdContainer.addScript(source)
 
       const iframe = adContainerElement.querySelector(
         'iframe'
@@ -153,13 +153,13 @@ describe('VideoAdContainer', () => {
   test('once destroyed must not allow the addition of scripts', async () => {
     expect.assertions(1)
 
-    const src = 'http://example.com/resource'
+    const source = 'http://example.com/resource'
     const videoAdContainer = new VideoAdContainer(placeholder)
 
     videoAdContainer.destroy()
 
     try {
-      await videoAdContainer.addScript(src, {})
+      await videoAdContainer.addScript(source, {})
     } catch (error: any) {
       expect(error.message).toBe('VideoAdContainer has been destroyed')
     }

@@ -3,10 +3,10 @@ import {
   vpaidInlineParsedXML,
   vastVpaidInlineXML
 } from '../../../../../fixtures'
-import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
-import {VastChain} from '../../../../types'
-import initAd from '../initAd'
-import MockVpaidCreativeAd from '../../../__tests__/MockVpaidCreativeAd'
+import {VideoAdContainer} from '../../../../adContainer/VideoAdContainer'
+import type {VastChain} from '../../../../types'
+import {initAd} from '../initAd'
+import {MockVpaidCreativeAd} from '../../../__tests__/MockVpaidCreativeAd'
 
 jest.mock('../loadCreative')
 jest.mock('../handshake')
@@ -43,7 +43,7 @@ describe('initAd', () => {
     })
   })
 
-  test('must init the creative', async () => {
+  test('must init the creative', () => {
     const mockCreativeAd: any = new MockVpaidCreativeAd()
 
     initAd(mockCreativeAd, videoAdContainer, vpaidChain)

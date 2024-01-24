@@ -1,10 +1,12 @@
-import {MediaFile} from '../../../types'
+import type {MediaFile} from '../../../types'
 
 interface RectParams {
   width: number
   height: number
   aspectRatio: number
 }
+
+const APPROXIMATION_LAPSE = 10
 
 const getRectParams = (rect: DOMRect | MediaFile): RectParams => {
   const width = Number(rect.width) || 0
@@ -13,7 +15,9 @@ const getRectParams = (rect: DOMRect | MediaFile): RectParams => {
   // NOTE: leaving 1 digit after the decimal point to handle
   //       approximately equal ratios, because aspect ratio
   //       of 480p (854x480) don't strict equal to 360p (640x360)
-  const aspectRatio = height ? Math.floor((width / height) * 10) / 10 : 0
+  const aspectRatio = height
+    ? Math.floor((width / height) * APPROXIMATION_LAPSE) / APPROXIMATION_LAPSE
+    : 0
 
   return {
     aspectRatio,
@@ -22,7 +26,7 @@ const getRectParams = (rect: DOMRect | MediaFile): RectParams => {
   }
 }
 
-const sortMediaByBestFit = (
+export const sortMediaByBestFit = (
   mediaFiles: MediaFile[],
   screenRect: DOMRect
 ): MediaFile[] => {
@@ -47,5 +51,3 @@ const sortMediaByBestFit = (
 
   return mediaFiles.slice(0).sort(compareTo)
 }
-
-export default sortMediaByBestFit

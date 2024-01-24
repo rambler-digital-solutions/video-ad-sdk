@@ -3,13 +3,13 @@ import {
   VideoAdContainer
 } from '../../../../../adContainer'
 import {linearEvents} from '../../../../../tracker'
-import onClickThrough from '../onClickThrough'
+import {onClickThrough} from '../onClickThrough'
 
 const {clickThrough} = linearEvents
 let videoAdContainer: VideoAdContainer
 let callback: any
 
-beforeEach(async () => {
+beforeEach(() => {
   callback = jest.fn()
   videoAdContainer = createVideoAdContainer(document.createElement('div'))
 

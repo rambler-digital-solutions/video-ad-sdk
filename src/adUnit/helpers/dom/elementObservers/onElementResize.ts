@@ -1,5 +1,5 @@
 import debounce from 'lodash.debounce'
-import MutationObserver from './helpers/MutationObserver'
+import {MutationObserver} from './helpers/MutationObserver'
 
 type Callback = () => void
 
@@ -15,7 +15,7 @@ const validate = (target: HTMLElement, callback: Callback): void => {
 
 const noop = (): void => {}
 
-const sizeMutationAttrs = ['style', 'clientWidth', 'clientHeight']
+const sizeMutationAttributes = ['style', 'clientWidth', 'clientHeight']
 
 const createResizeMO = (
   target: HTMLElement,
@@ -25,7 +25,7 @@ const createResizeMO = (
     for (let index = 0; index < mutations.length; index++) {
       const {attributeName} = mutations[index]
 
-      if (attributeName && sizeMutationAttrs.includes(attributeName)) {
+      if (attributeName && sizeMutationAttributes.includes(attributeName)) {
         callback()
       }
     }
@@ -98,6 +98,7 @@ const createResizeElement = (callback: Callback): HTMLIFrameElement => {
 
   return iframe
 }
+
 const resizeHandlers: unique symbol = Symbol('resizeHandlers')
 const resizeElement: unique symbol = Symbol('resizeElement')
 
@@ -169,7 +170,7 @@ interface ResizeObserverOptions {
  *
  * @returns Unsubscribe function.
  */
-const onElementResize = (
+export const onElementResize = (
   target: HTMLElement,
   callback: ResizeCallback,
   {threshold = 20}: ResizeObserverOptions = {}
@@ -203,5 +204,3 @@ const onElementResize = (
     stopListeningToResize()
   }
 }
-
-export default onElementResize

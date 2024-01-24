@@ -1,4 +1,4 @@
-import updateMedia from '../updateMedia'
+import {updateMedia} from '../updateMedia'
 
 const createMockVideoElement = ({
   currentTime = 0,

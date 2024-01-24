@@ -1,5 +1,5 @@
-import xml2js from './helpers/xml2js'
-import {ParsedXML} from '../types'
+import type {ParsedXML} from '../types'
+import {xml2js} from './helpers/xml2js'
 import {
   get,
   getAll,

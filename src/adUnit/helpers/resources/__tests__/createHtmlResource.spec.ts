@@ -1,5 +1,5 @@
-import waitFor from '../../dom/waitFor'
-import createHtmlResource from '../createHtmlResource'
+import {waitFor} from '../../dom/waitFor'
+import {createHtmlResource} from '../createHtmlResource'
 
 test('createHtmlResource must return an div', () => {
   const payload = {
@@ -9,8 +9,8 @@ test('createHtmlResource must return an div', () => {
     },
     document
   }
-  const src = 'http://test.example.com/htmlResource'
-  const resource = createHtmlResource(src, payload)
+  const source = 'http://test.example.com/htmlResource'
+  const resource = createHtmlResource(source, payload)
 
   expect(resource).toBeInstanceOf(HTMLDivElement)
   expect(resource.style.width).toBe('100px')
@@ -22,8 +22,8 @@ test('createHtmlResource must not set the width and height if not passed', () =>
     data: {},
     document
   }
-  const src = 'http://test.example.com/htmlResource'
-  const resource = createHtmlResource(src, payload)
+  const source = 'http://test.example.com/htmlResource'
+  const resource = createHtmlResource(source, payload)
 
   expect(resource).toBeInstanceOf(HTMLDivElement)
   expect(resource.style.width).toBe('')
@@ -48,8 +48,8 @@ test('createHtmlResource returned div must emit load once ready', async () => {
     },
     document
   }
-  const src = 'http://test.example.com/htmlResource'
-  const resource = createHtmlResource(src, payload)
+  const source = 'http://test.example.com/htmlResource'
+  const resource = createHtmlResource(source, payload)
   const {promise} = waitFor(resource, 'load')
 
   await promise
@@ -75,8 +75,8 @@ test('createHtmlResource returned div must emit error if there is a problem load
     },
     document
   }
-  const src = 'http://test.example.com/htmlResource'
-  const resource = createHtmlResource(src, payload)
+  const source = 'http://test.example.com/htmlResource'
+  const resource = createHtmlResource(source, payload)
   const {promise} = waitFor(resource, 'error')
 
   await promise

@@ -1,13 +1,13 @@
-import {VastIcon} from '../../../types'
-import fetchHtml from '../fetch/fetchHtml'
+import type {VastIcon} from '../../../types'
+import {fetchHtml} from '../fetch/fetchHtml'
 
 interface HtmlResourceOptions {
   document: Document
   data: VastIcon
 }
 
-const createHtmlResource = (
-  src: string,
+export const createHtmlResource = (
+  source: string,
   {document, data}: HtmlResourceOptions
 ): HTMLDivElement => {
   const {height, width} = data
@@ -21,7 +21,8 @@ const createHtmlResource = (
     divElement.style.height = `${height}px`
   }
 
-  fetchHtml(src)
+  /* eslint-disable promise/prefer-await-to-then */
+  fetchHtml(source)
     .then((html) => {
       divElement.innerHTML = html
 
@@ -30,8 +31,7 @@ const createHtmlResource = (
     .catch(() => {
       divElement.dispatchEvent(new CustomEvent('error'))
     })
+  /* eslint-enable promise/prefer-await-to-then */
 
   return divElement
 }
-
-export default createHtmlResource

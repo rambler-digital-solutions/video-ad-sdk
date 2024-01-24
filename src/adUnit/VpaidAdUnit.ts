@@ -1,10 +1,10 @@
 import {linearEvents, ErrorCode, isVastErrorCode} from '../tracker'
 import {acceptInvitation, adCollapse} from '../tracker/nonLinearEvents'
 import {getClickThrough} from '../vastSelectors'
-import {VastChain, VpaidCreativeAdUnit} from '../types'
+import type {VastChain, VpaidCreativeAdUnit} from '../types'
 import {VideoAdContainer} from '../adContainer'
 import {volumeChanged, adProgress} from './adUnitEvents'
-import loadCreative from './helpers/vpaid/loadCreative'
+import {loadCreative} from './helpers/vpaid/loadCreative'
 import {
   adLoaded,
   adStarted,
@@ -40,12 +40,12 @@ import {
   getAdIcons,
   getAdRemainingTime
 } from './helpers/vpaid/api'
-import waitFor from './helpers/vpaid/waitFor'
-import callAndWait from './helpers/vpaid/callAndWait'
-import handshake from './helpers/vpaid/handshake'
-import initAd from './helpers/vpaid/initAd'
-import AdUnitError from './helpers/adUnitError'
-import VideoAdUnit, {_protected, VideoAdUnitOptions} from './VideoAdUnit'
+import {waitFor} from './helpers/vpaid/waitFor'
+import {callAndWait} from './helpers/vpaid/callAndWait'
+import {handshake} from './helpers/vpaid/handshake'
+import {initAd} from './helpers/vpaid/initAd'
+import {AdUnitError} from './helpers/adUnitError'
+import {VideoAdUnit, _protected, type VideoAdUnitOptions} from './VideoAdUnit'
 
 const {
   complete,
@@ -60,13 +60,16 @@ const {
   midpoint,
   thirdQuartile,
   clickThrough,
-  error: errorEvt,
+  error: errorEvent,
   closeLinear,
   creativeView
 } = linearEvents
 
 // NOTE some ads only allow one handler per event and we need to subscribe to the adLoaded to know the creative is loaded.
 const VPAID_EVENTS = EVENTS.filter((event) => event !== adLoaded)
+
+const DRAW_ICONS_TIMEOUT = 500
+const WAIT_STOPPED_TIMEOUT = 3000
 
 const _private = Symbol('_private')
 
@@ -101,7 +104,7 @@ export type VpaidAdUnitOptions = VideoAdUnitOptions
 /**
  * This class provides everything necessary to run a Vpaid ad.
  */
-class VpaidAdUnit extends VideoAdUnit {
+export class VpaidAdUnit extends VideoAdUnit {
   private [_private]: Private = {
     evtHandler: {
       [adClickThru]: (url: string, _id: string, playerHandles: boolean) => {
@@ -133,9 +136,9 @@ class VpaidAdUnit extends VideoAdUnit {
 
         this[_protected].finish()
 
-        this.emit(errorEvt, {
+        this.emit(errorEvent, {
           adUnit: this,
-          type: errorEvt
+          type: errorEvent
         })
       },
       [adImpression]: () => {
@@ -308,7 +311,7 @@ class VpaidAdUnit extends VideoAdUnit {
           if (!this.creativeAd[getAdIcons]()) {
             delete this.icons
           }
-        } catch (error) {
+        } catch {
           delete this.icons
         }
       }
@@ -321,7 +324,7 @@ class VpaidAdUnit extends VideoAdUnit {
       await this[_protected].drawIcons?.()
 
       if (this[_protected].hasPendingIconRedraws?.() && !this.isFinished()) {
-        setTimeout(this[_private].drawIcons, 500)
+        setTimeout(this[_private].drawIcons, DRAW_ICONS_TIMEOUT)
       }
     },
     muted: false,
@@ -373,10 +376,10 @@ class VpaidAdUnit extends VideoAdUnit {
 
       const adLoadedPromise = waitFor(this.creativeAd, adLoaded)
 
-      for (const creativeEvt of VPAID_EVENTS) {
+      for (const creativeEvent of VPAID_EVENTS) {
         this.creativeAd.subscribe(
-          this[_private].handleVpaidEvent.bind(this, creativeEvt),
-          creativeEvt
+          this[_private].handleVpaidEvent.bind(this, creativeEvent),
+          creativeEvent
         )
       }
 
@@ -388,27 +391,29 @@ class VpaidAdUnit extends VideoAdUnit {
       await adLoadedPromise
 
       // if the ad timed out while trying to load the videoAdContainer will be destroyed
-      if (!this.videoAdContainer.isDestroyed()) {
-        try {
-          const {videoElement} = this.videoAdContainer
+      if (this.videoAdContainer.isDestroyed()) {
+        return
+      }
 
-          if (videoElement.muted) {
-            this[_private].muted = true
-            this.setVolume(0)
-          } else {
-            this.setVolume(videoElement.volume)
-          }
+      try {
+        const {videoElement} = this.videoAdContainer
 
-          await callAndWait(this.creativeAd, startAd, adStarted)
-
-          if (this.icons) {
-            await this[_private].drawIcons()
-          }
-
-          this[_protected].started = true
-        } catch (error) {
-          this.cancel()
+        if (videoElement.muted) {
+          this[_private].muted = true
+          this.setVolume(0)
+        } else {
+          this.setVolume(videoElement.volume)
         }
+
+        await callAndWait(this.creativeAd, startAd, adStarted)
+
+        if (this.icons) {
+          await this[_private].drawIcons()
+        }
+
+        this[_protected].started = true
+      } catch {
+        this.cancel()
       }
     } catch (error) {
       this[_private].handleVpaidEvent(adError, error)
@@ -491,11 +496,12 @@ class VpaidAdUnit extends VideoAdUnit {
 
     try {
       const adStoppedPromise =
-        this.creativeAd && waitFor(this.creativeAd, adStopped, 3000)
+        this.creativeAd &&
+        waitFor(this.creativeAd, adStopped, WAIT_STOPPED_TIMEOUT)
 
       this.creativeAd?.[stopAd]()
       await adStoppedPromise
-    } catch (error) {
+    } catch {
       this[_protected].finish()
     }
   }
@@ -580,5 +586,3 @@ class VpaidAdUnit extends VideoAdUnit {
     )
   }
 }
-
-export default VpaidAdUnit

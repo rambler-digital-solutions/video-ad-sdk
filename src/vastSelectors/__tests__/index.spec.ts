@@ -10,6 +10,13 @@ import {
   wrapperParsedXML,
   noAdParsedXML
 } from '../../../fixtures'
+import type {
+  ParsedXML,
+  ParsedAd,
+  Attributes,
+  MediaFile,
+  InteractiveFile
+} from '../../types'
 import {
   getAds,
   getCreativeData,
@@ -35,17 +42,10 @@ import {
   isPodAd,
   isInline,
   isWrapper
-} from '../'
-import {
-  ParsedXML,
-  ParsedAd,
-  Attributes,
-  MediaFile,
-  InteractiveFile
-} from '../../types'
+} from '..'
 
-const clone = <T extends Record<string, any>>(obj: T): T =>
-  JSON.parse(JSON.stringify(obj))
+const clone = <T extends Record<string, any>>(object: T): T =>
+  JSON.parse(JSON.stringify(object))
 
 test('getVastErrorURI must return the error uri of the VAST element', () => {
   expect(getVastErrorURI(inlineParsedXML)).toBeUndefined()
@@ -134,21 +134,22 @@ test('getWrapperOptions must return the options of the ad or {} otherwise', () =
   expect(getWrapperOptions(wrapperAd)).toEqual({allowMultipleAds: true})
 
   const wrapperAdClone = clone<ParsedXML>(wrapperAd)
-  const wrapperAttrs = wrapperAdClone.elements?.[0].attributes as Attributes
+  const wrapperAttributes = wrapperAdClone.elements?.[0]
+    .attributes as Attributes
 
-  wrapperAttrs.allowMultipleAds = 'false'
+  wrapperAttributes.allowMultipleAds = 'false'
 
   expect(getWrapperOptions(wrapperAdClone)).toEqual({allowMultipleAds: false})
 
-  wrapperAttrs.allowMultipleAds = 'true'
-  wrapperAttrs.followAdditionalWrappers = 'false'
+  wrapperAttributes.allowMultipleAds = 'true'
+  wrapperAttributes.followAdditionalWrappers = 'false'
 
   expect(getWrapperOptions(wrapperAdClone)).toEqual({
     allowMultipleAds: true,
     followAdditionalWrappers: false
   })
 
-  wrapperAttrs.fallbackOnNoAd = 'true'
+  wrapperAttributes.fallbackOnNoAd = 'true'
 
   expect(getWrapperOptions(wrapperAdClone)).toEqual({
     allowMultipleAds: true,

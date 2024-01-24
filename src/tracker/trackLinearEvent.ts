@@ -7,19 +7,19 @@ import {
   getViewUndetermined,
   getLinearTrackingEvents
 } from '../vastSelectors'
-import {
+import type {
   ParsedAd,
   VastChain,
   VastTrackingEvent,
   VastEventTrackerOptions,
   Optional
 } from '../types'
-import pixelTracker from './helpers/pixelTracker'
-import trackError from './helpers/trackError'
-import trackIconView from './helpers/trackIconView'
-import trackIconClick from './helpers/trackIconClick'
-import trackProgress from './helpers/trackProgress'
-import createVastEventTracker from './helpers/createVastEventTracker'
+import {pixelTracker} from './helpers/pixelTracker'
+import {trackError} from './helpers/trackError'
+import {trackIconView} from './helpers/trackIconView'
+import {trackIconClick} from './helpers/trackIconClick'
+import {trackProgress} from './helpers/trackProgress'
+import {createVastEventTracker} from './helpers/createVastEventTracker'
 import {
   clickThrough,
   closeLinear,
@@ -125,7 +125,7 @@ const linearTrackers = {
  * @param vastChain the ad VAST Chain.
  * @param options Options Map. The allowed properties are:
  */
-const trackLinearEvent = (
+export const trackLinearEvent = (
   event: keyof typeof linearTrackers,
   vastChain: VastChain,
   {
@@ -135,7 +135,7 @@ const trackLinearEvent = (
     logger = console
   }: VastEventTrackerOptions
 ): void => {
-  const linearTracker = linearTrackers[event]
+  const {[event]: linearTracker} = linearTrackers
 
   if (linearTracker) {
     linearTracker(vastChain, {
@@ -150,5 +150,3 @@ const trackLinearEvent = (
     logger.error(`Event '${event}' cannot be tracked`)
   }
 }
-
-export default trackLinearEvent

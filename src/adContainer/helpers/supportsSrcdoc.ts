@@ -1,4 +1,3 @@
 const supported = 'srcdoc' in document.createElement('iframe')
-const supportsSrcdoc = (): boolean => supported
 
-export default supportsSrcdoc
+export const supportsSrcdoc = (): boolean => supported

@@ -1,4 +1,4 @@
-import createIframeResource from '../createIframeResource'
+import {createIframeResource} from '../createIframeResource'
 
 test('createIframeResource must return an iframe', () => {
   const payload = {
@@ -8,11 +8,11 @@ test('createIframeResource must return an iframe', () => {
     },
     document
   }
-  const src = 'http://test.example.com/iframeResource'
-  const resource = createIframeResource(src, payload)
+  const source = 'http://test.example.com/iframeResource'
+  const resource = createIframeResource(source, payload)
 
   expect(resource).toBeInstanceOf(HTMLIFrameElement)
-  expect(resource.src).toBe(src)
+  expect(resource.src).toBe(source)
   expect(resource.width).toBe('100')
   expect(resource.height).toBe('100')
   expect(resource.getAttribute('sandbox')).toBe(
@@ -25,11 +25,11 @@ test('createIframeResource must not set the width and height if not passed', () 
     data: {},
     document
   }
-  const src = 'http://test.example.com/iframeResource'
-  const resource = createIframeResource(src, payload)
+  const source = 'http://test.example.com/iframeResource'
+  const resource = createIframeResource(source, payload)
 
   expect(resource).toBeInstanceOf(HTMLIFrameElement)
-  expect(resource.src).toBe(src)
+  expect(resource.src).toBe(source)
   expect(resource.width).toBe('')
   expect(resource.height).toBe('')
 })

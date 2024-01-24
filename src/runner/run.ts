@@ -1,8 +1,8 @@
 import {trackError, ErrorCode} from '../tracker'
 import {createVideoAdContainer, VideoAdContainer} from '../adContainer'
 import {VastAdUnit, VpaidAdUnit} from '../adUnit'
-import {VastChain, PixelTracker, Optional} from '../types'
-import startVideoAd, {StartVideoAdOptions} from './helpers/startVideoAd'
+import type {VastChain, PixelTracker, Optional} from '../types'
+import {startVideoAd, type StartVideoAdOptions} from './helpers/startVideoAd'
 
 /**
  * Options map to start video ad with {@link run}
@@ -31,7 +31,7 @@ export interface RunOptions extends StartVideoAdOptions {
  * @param options - Options Map.
  * @returns The video ad unit.
  */
-const run = async (
+export const run = async (
   vastChain: VastChain,
   placeholder: HTMLElement,
   options: RunOptions
@@ -48,6 +48,7 @@ const run = async (
     if (typeof timeout === 'number') {
       let timedOut = false
       let timeoutId: number
+
       const timeoutPromise = new Promise<never>((_resolve, reject) => {
         timeoutId = window.setTimeout(() => {
           const {tracker} = options
@@ -61,20 +62,21 @@ const run = async (
         }, options.timeout)
       })
 
-      adUnitPromise = Promise.race([
-        adUnitPromise.then((newAdUnit) => {
-          if (timedOut) {
-            if (newAdUnit.isStarted()) {
-              newAdUnit.cancel()
-            }
-          } else {
-            clearTimeout(timeoutId)
-          }
+      const waitAdUnit = async (): Promise<VastAdUnit | VpaidAdUnit> => {
+        const newAdUnit = await adUnitPromise
 
-          return newAdUnit
-        }),
-        timeoutPromise
-      ])
+        if (timedOut) {
+          if (newAdUnit.isStarted()) {
+            newAdUnit.cancel()
+          }
+        } else {
+          clearTimeout(timeoutId)
+        }
+
+        return newAdUnit
+      }
+
+      adUnitPromise = Promise.race([waitAdUnit(), timeoutPromise])
     }
 
     const adUnit = await adUnitPromise
@@ -90,5 +92,3 @@ const run = async (
     throw error
   }
 }
-
-export default run

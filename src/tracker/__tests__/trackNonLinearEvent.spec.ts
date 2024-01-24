@@ -6,12 +6,12 @@ import {
   vastVpaidInlineXML,
   vastPodXML
 } from '../../../fixtures'
-import trackNonLinearEvent from '../trackNonLinearEvent'
+import type {VastChain} from '../../types'
+import {trackNonLinearEvent} from '../trackNonLinearEvent'
 import {acceptInvitation, adCollapse, close} from '../nonLinearEvents'
-import {VastChain} from '../../types'
-import pixelTracker from '../helpers/pixelTracker'
+import {pixelTracker} from '../helpers/pixelTracker'
 
-jest.mock('../helpers/pixelTracker', () => jest.fn())
+jest.mock('../helpers/pixelTracker', () => ({pixelTracker: jest.fn()}))
 
 describe('trackNonLinearEvent', () => {
   const vastChain: VastChain = [

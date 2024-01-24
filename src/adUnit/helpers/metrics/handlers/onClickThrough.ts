@@ -1,6 +1,6 @@
 import {linearEvents} from '../../../../tracker'
+import type {MetricHandlerData, CancelFunction} from '../../../../types'
 import {VideoAdContainer} from '../../../../adContainer'
-import {MetricHandlerData, CancelFunction} from '../../../../types'
 
 const {clickThrough} = linearEvents
 
@@ -17,7 +17,7 @@ const createDefaultClickControl = (): HTMLElement => {
   return anchor
 }
 
-const onClickThrough = (
+export const onClickThrough = (
   {videoElement, element}: VideoAdContainer,
   callback: (event: string) => void,
   {
@@ -61,5 +61,3 @@ const onClickThrough = (
     }
   }
 }
-
-export default onClickThrough

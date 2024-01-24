@@ -4,6 +4,8 @@
  * @interface LinearEvents
  */
 
+/* eslint-disable import/no-unused-modules */
+
 /**
  * Fires when the the creative was played to the end at normal speed so that 100% of the creative was played.
  *
@@ -200,7 +202,9 @@ export const closeLinear = 'closeLinear'
  */
 export const creativeView = 'creativeView'
 
-const linearEvents = {
+/* eslint-enable import/no-unused-modules */
+
+export const linearEvents = {
   clickThrough,
   closeLinear,
   complete,
@@ -230,5 +234,3 @@ const linearEvents = {
   viewable,
   viewUndetermined
 }
-
-export default linearEvents

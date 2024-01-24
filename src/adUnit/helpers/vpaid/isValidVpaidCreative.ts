@@ -1,7 +1,7 @@
-import {VpaidCreativeAdUnit} from '../../../types'
+import type {VpaidCreativeAdUnit} from '../../../types'
 import {METHODS} from './api'
 
-const isValidVpaidCreative = (creativeAd: VpaidCreativeAdUnit): boolean =>
+export const isValidVpaidCreative = (
+  creativeAd: VpaidCreativeAdUnit
+): boolean =>
   METHODS.every((method) => typeof creativeAd[method] === 'function')
-
-export default isValidVpaidCreative

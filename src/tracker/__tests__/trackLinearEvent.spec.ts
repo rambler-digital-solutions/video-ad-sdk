@@ -6,7 +6,7 @@ import {
   vastInlineXML,
   vastPodXML
 } from '../../../fixtures'
-import trackLinearEvent from '../trackLinearEvent'
+import {trackLinearEvent} from '../trackLinearEvent'
 import {
   clickThrough,
   closeLinear,
@@ -34,12 +34,12 @@ import {
   error,
   creativeView
 } from '../linearEvents'
-import pixelTracker from '../helpers/pixelTracker'
-import trackError from '../helpers/trackError'
-import {VastChain} from '../../types'
+import type {VastChain} from '../../types'
+import {pixelTracker} from '../helpers/pixelTracker'
+import {trackError} from '../helpers/trackError'
 import {ErrorCode} from '../errorCode'
 
-jest.mock('../helpers/trackError', () => jest.fn())
+jest.mock('../helpers/trackError', () => ({trackError: jest.fn()}))
 
 const vastChain: VastChain = [
   {

@@ -1,24 +1,25 @@
 import {getMediaFiles} from '../../../vastSelectors'
-import {ParsedAd, MediaFile, Hooks, Optional} from '../../../types'
-import canPlay from './canPlay'
-import sortMediaByBestFit from './sortMediaByBestFit'
+import type {VideoAdContainer} from '../../../adContainer'
+import type {ParsedAd, MediaFile, Hooks, Optional} from '../../../types'
+import {canPlay} from './canPlay'
+import {sortMediaByBestFit} from './sortMediaByBestFit'
 
 const getMediaByDefaultBestFit = (
   mediaFiles: MediaFile[],
   screenRect: DOMRect
 ): MediaFile => {
-  const sortedMediaFiles = sortMediaByBestFit(mediaFiles, screenRect)
+  const [mediaFile] = sortMediaByBestFit(mediaFiles, screenRect)
 
-  return sortedMediaFiles[0]
+  return mediaFile
 }
 
-const findBestMedia = (
+export const findBestMedia = (
   inlineAd: ParsedAd,
-  videoElement: HTMLVideoElement,
-  container: HTMLElement,
+  videoAdContainer: VideoAdContainer,
   {getMediaFile = getMediaByDefaultBestFit}: Hooks
 ): Optional<MediaFile> => {
-  const screenRect = container.getBoundingClientRect()
+  const {element, videoElement} = videoAdContainer
+  const screenRect = element.getBoundingClientRect()
   const mediaFiles = getMediaFiles(inlineAd)
   const supportedMediaFiles = mediaFiles?.filter((mediaFile) =>
     canPlay(videoElement, mediaFile)
@@ -26,5 +27,3 @@ const findBestMedia = (
 
   return supportedMediaFiles && getMediaFile(supportedMediaFiles, screenRect)
 }
-
-export default findBestMedia

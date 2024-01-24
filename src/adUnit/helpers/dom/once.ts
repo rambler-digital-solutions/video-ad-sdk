@@ -1,6 +1,6 @@
-import {CancelFunction} from '../../../types'
+import type {CancelFunction} from '../../../types'
 
-const once = <T extends (...args: any) => any>(
+export const once = <T extends (...args: any) => any>(
   element: HTMLElement,
   eventName: string,
   listener: T
@@ -17,5 +17,3 @@ const once = <T extends (...args: any) => any>(
     element.removeEventListener(eventName, handler)
   }
 }
-
-export default once

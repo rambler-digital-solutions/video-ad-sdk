@@ -4,10 +4,8 @@
  * @ignore
  * @param namespace
  */
-const unique = (namespace: string): (() => string) => {
+export const unique = (namespace: string): (() => string) => {
   let count = -1
 
-  return () => namespace + '_' + ++count
+  return () => `${namespace}_${++count}`
 }
-
-export default unique

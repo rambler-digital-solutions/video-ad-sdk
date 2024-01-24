@@ -1,5 +1,5 @@
-import {Optional} from '../../types'
-import parseTime from './parseTime'
+import type {Optional} from '../../types'
+import {parseTime} from './parseTime'
 
 const isPercentage = (offset: string): boolean => {
   const percentageRegex = /^\d+(\.\d+)?%$/g
@@ -7,12 +7,11 @@ const isPercentage = (offset: string): boolean => {
   return percentageRegex.test(offset)
 }
 
-const parseOffset = (offset: string): Optional<string | number> => {
+// eslint-disable-next-line sonar/function-return-type
+export const parseOffset = (offset: string): Optional<string | number> => {
   if (isPercentage(offset)) {
     return offset
   }
 
   return parseTime(offset)
 }
-
-export default parseOffset

@@ -11,7 +11,7 @@ import {
   vastPodXML
 } from '../../../fixtures'
 import {ErrorCode} from '../../tracker'
-import {getFirstAd, isAdPod} from '../'
+import {getFirstAd, isAdPod} from '..'
 
 const WRAPPER_TAG = 'http://adtag.test.example.com'
 const INLINE_TAG = 'https://test.example.com/vastadtaguri'

@@ -1,11 +1,11 @@
 import {METHODS} from '../api'
-import isValidVpaidCreative from '../isValidVpaidCreative'
+import {isValidVpaidCreative} from '../isValidVpaidCreative'
 
 const createVpaidCreative = (): any =>
-  METHODS.reduce((acc, key) => {
-    acc[key] = () => {}
+  METHODS.reduce((accumulator, key) => {
+    accumulator[key] = () => {}
 
-    return acc
+    return accumulator
   }, {} as any)
 
 test("isValidVpaidCreative must return false if doesn't implement the vpaid interface", () => {

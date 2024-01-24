@@ -1,11 +1,13 @@
-import loadResource from '../loadResource'
-import createResource from '../createResource'
+import {loadResource} from '../loadResource'
+import {createResource} from '../createResource'
 
 const mockResource = document.createElement('img')
 
 mockResource.classList.add('mock-resource-element')
 
-jest.mock('../createResource', () => jest.fn(() => mockResource))
+jest.mock('../createResource', () => ({
+  createResource: jest.fn(() => mockResource)
+}))
 
 let icon: any
 let placeholder: HTMLElement

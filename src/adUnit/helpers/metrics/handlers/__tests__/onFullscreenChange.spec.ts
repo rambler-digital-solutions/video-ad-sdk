@@ -1,5 +1,5 @@
 import {linearEvents} from '../../../../../tracker'
-import onFullscreenChange from '../onFullscreenChange'
+import {onFullscreenChange} from '../onFullscreenChange'
 
 const {fullscreen, exitFullscreen, playerCollapse, playerExpand} = linearEvents
 

@@ -1,13 +1,11 @@
-import {MediaFile} from '../../../types'
-import guessMimeType from './guessMimeType'
+import type {MediaFile} from '../../../types'
+import {guessMimeType} from './guessMimeType'
 
-const canPlay = (
+export const canPlay = (
   videoElement: HTMLVideoElement,
   mediaFile: MediaFile
 ): string => {
-  const {src, type} = mediaFile
+  const {src: source, type} = mediaFile
 
-  return videoElement.canPlayType(type || guessMimeType(src || ''))
+  return videoElement.canPlayType(type || guessMimeType(source || ''))
 }
-
-export default canPlay

@@ -1,22 +1,24 @@
 import {linearEvents} from '../tracker'
 import {getViewable} from '../vastSelectors'
-import {VastChain, VastIcon} from '../types'
+import type {VastChain, VastIcon} from '../types'
 import {VideoAdContainer} from '../adContainer'
 import {finish} from './adUnitEvents'
 import {
   onElementVisibilityChange,
   onElementResize
 } from './helpers/dom/elementObservers'
-import preventManualProgress from './helpers/dom/preventManualProgress'
-import Emitter, {Listener} from './helpers/Emitter'
-import retrieveIcons from './helpers/icons/retrieveIcons'
-import addIcons, {AddedIcons} from './helpers/icons/addIcons'
-import viewmode from './helpers/vpaid/viewmode'
-import safeCallback from './helpers/safeCallback'
-import AdUnitError from './helpers/adUnitError'
+import {preventManualProgress} from './helpers/dom/preventManualProgress'
+import {Emitter, type Listener} from './helpers/Emitter'
+import {retrieveIcons} from './helpers/icons/retrieveIcons'
+import {addIcons, type AddedIcons} from './helpers/icons/addIcons'
+import {viewmode} from './helpers/vpaid/viewmode'
+import {safeCallback} from './helpers/safeCallback'
+import {AdUnitError} from './helpers/adUnitError'
 
 const {start, viewable, notViewable, viewUndetermined, iconClick, iconView} =
   linearEvents
+
+const VIEWABLE_IMPRESSION_TIMEOUT = 2000
 
 const _private = Symbol('_private')
 export const _protected = Symbol('_protected')
@@ -76,7 +78,7 @@ export interface VideoAdUnitOptions {
 /**
  * This class provides shared logic among all the ad units.
  */
-class VideoAdUnit extends Emitter {
+export class VideoAdUnit extends Emitter {
   private [_private]: Private = {
     addIcons: () => {
       if (!this.icons) {
@@ -128,7 +130,7 @@ class VideoAdUnit extends Emitter {
           if (visible) {
             timeoutId = window.setTimeout(
               this[_private].handleViewableImpression,
-              2000,
+              VIEWABLE_IMPRESSION_TIMEOUT,
               viewable
             )
           } else {
@@ -192,11 +194,11 @@ class VideoAdUnit extends Emitter {
           return
         }
 
-        const prevSize = this[_protected].size
+        const previousSize = this[_protected].size
         const height = element.clientHeight
         const width = element.clientWidth
 
-        if (height !== prevSize?.height || width !== prevSize?.width) {
+        if (height !== previousSize?.height || width !== previousSize?.width) {
           this.resize(width, height, viewmode(width, height))
         }
       })
@@ -467,5 +469,3 @@ class VideoAdUnit extends Emitter {
     }
   }
 }
-
-export default VideoAdUnit

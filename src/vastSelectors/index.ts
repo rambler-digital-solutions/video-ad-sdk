@@ -6,12 +6,7 @@ import {
   getAttributes,
   getAttribute
 } from '../xml'
-import parseOffset from './helpers/parseOffset'
-import getLinearCreative from './helpers/getLinearCreative'
-import getLinearTrackingEvents from './getLinearTrackingEvents'
-import getNonLinearTrackingEvents from './getNonLinearTrackingEvents'
-import getIcons from './getIcons'
-import {
+import type {
   ParsedAd,
   ParsedXML,
   VastChain,
@@ -23,13 +18,18 @@ import {
   VpaidCreativeData,
   Optional
 } from '../types'
+import {parseOffset} from './helpers/parseOffset'
+import {getLinearCreative} from './helpers/getLinearCreative'
+import {getLinearTrackingEvents} from './getLinearTrackingEvents'
+import {getNonLinearTrackingEvents} from './getNonLinearTrackingEvents'
+import {getIcons} from './getIcons'
 
-const getBooleanValue = (val: unknown): boolean => {
-  if (typeof val === 'string') {
-    return val === 'true'
+const getBooleanValue = (value: unknown): boolean => {
+  if (typeof value === 'string') {
+    return value === 'true'
   }
 
-  return Boolean(val)
+  return Boolean(value)
 }
 
 const compareBySequence = (itemA: ParsedXML, itemB: ParsedXML): number => {
@@ -323,7 +323,7 @@ export const getMediaFiles = (ad: ParsedAd): Optional<MediaFile[]> => {
 
   if (mediaFileElements && mediaFileElements.length > 0) {
     return mediaFileElements.map((mediaFileElement: ParsedXML) => {
-      const src = getText(mediaFileElement)
+      const source = getText(mediaFileElement)
       const {
         apiFramework,
         bitrate,
@@ -350,7 +350,7 @@ export const getMediaFiles = (ad: ParsedAd): Optional<MediaFile[]> => {
         maxBitrate,
         minBitrate,
         scalable,
-        src,
+        src: source,
         type,
         universalAdId,
         width
@@ -378,11 +378,11 @@ export const getInteractiveCreativeFiles = (
   if (interactiveElements && interactiveElements.length > 0) {
     return interactiveElements.map((interactiveElement: ParsedXML) => {
       const {apiFramework, type} = getAttributes(interactiveElement)
-      const src = getText(interactiveElement)
+      const source = getText(interactiveElement)
 
       return {
         apiFramework,
-        src,
+        src: source,
         type
       }
     })
@@ -409,9 +409,9 @@ export const getInteractiveFiles = (
   if (mediaFiles) {
     interactiveFiles = mediaFiles
       .filter(({apiFramework = ''}) => apiFramework?.toLowerCase() === 'vpaid')
-      .map(({apiFramework, src, type}) => ({
+      .map(({apiFramework, src: source, type}) => ({
         apiFramework,
-        src,
+        src: source,
         type
       }))
 

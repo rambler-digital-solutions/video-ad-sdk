@@ -1,4 +1,5 @@
-import canBeRendered, {
+import {
+  canBeRendered,
   hasSpace,
   withinBoundaries,
   withoutOverlaps

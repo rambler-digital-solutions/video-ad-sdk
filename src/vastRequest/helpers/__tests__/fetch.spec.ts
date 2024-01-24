@@ -1,4 +1,4 @@
-import fetch from '../fetch'
+import {fetch} from '../fetch'
 
 test("fetch must add credentials 'include' to the request options", async () => {
   const successResponse = new Response(null, {status: 200})

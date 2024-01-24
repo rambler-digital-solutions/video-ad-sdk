@@ -1,4 +1,4 @@
-import {ParsedXML} from './xml'
+import type {ParsedXML} from './xml'
 
 /**
  * Deserialised ad object from a {@link ParsedXML} object.
@@ -476,7 +476,7 @@ export interface VastEventTrackerOptions {
 /**
  * Vpaid Creative environment variables
  */
-export interface VpaidEnvironmentVars {
+export interface VpaidEnvironmentVariables {
   slot?: HTMLElement
   videoSlot?: HTMLVideoElement
   videoSlotCanAutoPlay?: boolean
@@ -493,7 +493,7 @@ export interface VpaidCreativeAdUnit {
     mode: string,
     desiredBitrate?: number,
     creativeData?: VpaidCreativeData,
-    environmentVars?: VpaidEnvironmentVars
+    environmentVariables?: VpaidEnvironmentVariables
   ): void
   resizeAd(width: number, height: number, mode: string): void
   startAd(): void

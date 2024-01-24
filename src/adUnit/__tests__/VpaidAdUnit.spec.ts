@@ -3,13 +3,13 @@ import {
   vpaidInlineParsedXML,
   vastVpaidInlineXML
 } from '../../../fixtures'
-import VideoAdContainer from '../../adContainer/VideoAdContainer'
-import loadCreative from '../helpers/vpaid/loadCreative'
-import handshake from '../helpers/vpaid/handshake'
-import initAd from '../helpers/vpaid/initAd'
-import callAndWait from '../helpers/vpaid/callAndWait'
-import AdUnitError from '../helpers/adUnitError'
-import VpaidAdUnit from '../VpaidAdUnit'
+import {VideoAdContainer} from '../../adContainer/VideoAdContainer'
+import {loadCreative} from '../helpers/vpaid/loadCreative'
+import {handshake} from '../helpers/vpaid/handshake'
+import {initAd} from '../helpers/vpaid/initAd'
+import {callAndWait} from '../helpers/vpaid/callAndWait'
+import {AdUnitError} from '../helpers/adUnitError'
+import {VpaidAdUnit} from '../VpaidAdUnit'
 import {
   adLoaded,
   adStarted,
@@ -41,7 +41,8 @@ import {
   adDurationChange,
   adRemainingTimeChange
 } from '../helpers/vpaid/api'
-import linearEvents, {
+import {
+  linearEvents,
   skip,
   start,
   mute,
@@ -61,11 +62,11 @@ import linearEvents, {
 } from '../../tracker/linearEvents'
 import {acceptInvitation, adCollapse} from '../../tracker/nonLinearEvents'
 import {ErrorCode} from '../../tracker'
-import {VastChain} from '../../types'
-import addIcons from '../helpers/icons/addIcons'
-import retrieveIcons from '../helpers/icons/retrieveIcons'
+import type {VastChain} from '../../types'
+import {addIcons} from '../helpers/icons/addIcons'
+import {retrieveIcons} from '../helpers/icons/retrieveIcons'
 import {volumeChanged, adProgress} from '../adUnitEvents'
-import MockVpaidCreativeAd from './MockVpaidCreativeAd'
+import {MockVpaidCreativeAd} from './MockVpaidCreativeAd'
 
 jest.mock('../helpers/vpaid/loadCreative')
 jest.mock('../helpers/vpaid/handshake')
@@ -76,14 +77,14 @@ const mockDrawIcons = jest.fn()
 const mockRemoveIcons = jest.fn()
 const mockHasPendingRedraws = jest.fn(() => false)
 
-jest.mock('../helpers/icons/addIcons', () =>
-  jest.fn(() => ({
+jest.mock('../helpers/icons/addIcons', () => ({
+  addIcons: jest.fn(() => ({
     drawIcons: mockDrawIcons,
     hasPendingIconRedraws: mockHasPendingRedraws,
     removeIcons: mockRemoveIcons
   }))
-)
-jest.mock('../helpers/icons/retrieveIcons', () => jest.fn())
+}))
+jest.mock('../helpers/icons/retrieveIcons', () => ({retrieveIcons: jest.fn()}))
 
 describe('VpaidAdUnit', () => {
   let vpaidChain: VastChain
@@ -91,7 +92,7 @@ describe('VpaidAdUnit', () => {
 
   beforeEach(() => {
     ;(callAndWait as jest.Mock).mockImplementation(
-      jest.requireActual('../helpers/vpaid/callAndWait').default
+      jest.requireActual('../helpers/vpaid/callAndWait').callAndWait
     )
     vpaidChain = [
       {
@@ -407,9 +408,9 @@ describe('VpaidAdUnit', () => {
 
       passedConfig.onIconClick(icons[0])
 
-      const passedArgs = await promise
+      const passedArguments = await promise
 
-      expect(passedArgs).toEqual([
+      expect(passedArguments).toEqual([
         {
           adUnit,
           data: icons[0],
@@ -447,9 +448,9 @@ describe('VpaidAdUnit', () => {
 
       passedConfig.onIconView(icons[0])
 
-      const passedArgs = await promise
+      const passedArguments = await promise
 
-      expect(passedArgs).toEqual([
+      expect(passedArguments).toEqual([
         {
           adUnit,
           data: icons[0],
@@ -798,17 +799,17 @@ describe('VpaidAdUnit', () => {
       adUnit = new VpaidAdUnit(vpaidChain, videoAdContainer)
     })
 
-    for (const vpaidEvt of EVENTS.filter((evt) => evt !== adLoaded)) {
-      test(`${vpaidEvt} must be emitted by the ad unit`, async () => {
+    for (const vpaidEvent of EVENTS.filter((event) => event !== adLoaded)) {
+      test(`${vpaidEvent} must be emitted by the ad unit`, async () => {
         const callback = jest.fn()
 
-        adUnit.on(vpaidEvt, callback)
+        adUnit.on(vpaidEvent, callback)
         await adUnit.start()
-        ;(adUnit.creativeAd as any).emit(vpaidEvt)
+        ;(adUnit.creativeAd as any).emit(vpaidEvent)
 
         expect(callback).toHaveBeenCalledWith({
           adUnit,
-          type: vpaidEvt
+          type: vpaidEvent
         })
       })
     }
@@ -888,17 +889,17 @@ describe('VpaidAdUnit', () => {
         vastEvt: clickThrough,
         vpaidEvt: adClickThru
       }
-    ].forEach(({vpaidEvt, vastEvt, payload}) => {
-      describe(vpaidEvt, () => {
-        test(`must emit ${vastEvt} event`, async () => {
+    ].forEach(({vpaidEvt: vpaidEvent, vastEvt: vastEvent, payload}) => {
+      describe(vpaidEvent, () => {
+        test(`must emit ${vastEvent} event`, async () => {
           const callback = jest.fn()
 
-          adUnit.on(vastEvt, callback)
+          adUnit.on(vastEvent, callback)
           await adUnit.start()
-          ;(adUnit.creativeAd as any).emit(vpaidEvt, payload)
+          ;(adUnit.creativeAd as any).emit(vpaidEvent, payload)
           expect(callback).toHaveBeenCalledWith({
             adUnit,
-            type: vastEvt
+            type: vastEvent
           })
         })
       })
@@ -1080,21 +1081,21 @@ describe('VpaidAdUnit', () => {
     })
 
     describe(adError, () => {
-      const vastEvt = linearEvents.error
+      const vastEvent = linearEvents.error
 
-      test(`must emit ${vastEvt} event`, async () => {
+      test(`must emit ${vastEvent} event`, async () => {
         const callback = jest.fn()
 
-        adUnit.on(vastEvt, callback)
+        adUnit.on(vastEvent, callback)
         await adUnit.start()
         ;(adUnit.creativeAd as any).emit(adError)
 
         expect(callback).toHaveBeenCalledWith({
           adUnit,
-          type: vastEvt
+          type: vastEvent
         })
 
-        const error = adUnit.error
+        const {error} = adUnit
 
         expect(error?.message).toBe('VPAID general error')
         expect(error?.code).toBe(ErrorCode.VPAID_ERROR)
@@ -1104,7 +1105,7 @@ describe('VpaidAdUnit', () => {
       it('must use the emitted error if provided', async () => {
         const callback = jest.fn()
 
-        adUnit.on(vastEvt, callback)
+        adUnit.on(vastEvent, callback)
         await adUnit.start()
 
         const creativeError = new AdUnitError('test error')
@@ -1114,10 +1115,10 @@ describe('VpaidAdUnit', () => {
 
         expect(callback).toHaveBeenCalledWith({
           adUnit,
-          type: vastEvt
+          type: vastEvent
         })
 
-        const error = adUnit.error
+        const {error} = adUnit
 
         expect(error).toBe(creativeError)
         expect(error?.code).toBe(ErrorCode.VAST_TOO_MANY_REDIRECTS)

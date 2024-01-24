@@ -1,2 +1,2 @@
-export {default as requestAd, RequestAdOptions} from './requestAd'
-export {default as requestNextAd, RequestNextAdOptions} from './requestNextAd'
+export {requestAd, type RequestAdOptions} from './requestAd'
+export {requestNextAd, type RequestNextAdOptions} from './requestNextAd'

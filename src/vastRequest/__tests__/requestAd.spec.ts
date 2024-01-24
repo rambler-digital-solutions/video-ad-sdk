@@ -1,6 +1,6 @@
 import {parseXml} from '../../xml'
 import {ErrorCode} from '../../tracker'
-import {ParsedAd} from '../../types'
+import type {ParsedAd} from '../../types'
 import {getAds, getFirstAd} from '../../vastSelectors'
 import {
   noAdParsedXML,
@@ -16,7 +16,7 @@ import {
   wrapperAd,
   inlineAd
 } from '../../../fixtures'
-import requestAd from '../requestAd'
+import {requestAd} from '../requestAd'
 import {markAdAsRequested, unmarkAdAsRequested} from '../helpers/adUtils'
 
 describe('requestAd', () => {
@@ -35,7 +35,7 @@ describe('requestAd', () => {
       {wrapperLimit: 1},
       [{}, {}] as any
     )
-    const lastVastResponse = vastChain[0]
+    const [lastVastResponse] = vastChain
 
     expect(lastVastResponse).toEqual({
       ad: undefined,
@@ -56,7 +56,7 @@ describe('requestAd', () => {
       {},
       {}
     ] as any)
-    const lastVastResponse = vastChain[0]
+    const [lastVastResponse] = vastChain
 
     expect(lastVastResponse).toEqual({
       ad: undefined,
@@ -74,7 +74,7 @@ describe('requestAd', () => {
     global.fetch = jest.fn(() => Promise.reject(fetchError))
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
-    const lastVastResponse = vastChain[0]
+    const [lastVastResponse] = vastChain
 
     expect(lastVastResponse).toEqual({
       ad: undefined,
@@ -100,7 +100,7 @@ describe('requestAd', () => {
     )
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
-    const lastVastResponse = vastChain[0]
+    const [lastVastResponse] = vastChain
 
     expect(lastVastResponse).toEqual({
       ad: undefined,
@@ -121,7 +121,7 @@ describe('requestAd', () => {
     global.fetch = jest.fn(() => Promise.resolve(response))
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
-    const lastVastResponse = vastChain[0]
+    const [lastVastResponse] = vastChain
 
     expect(lastVastResponse).toEqual({
       ad: undefined,
@@ -142,7 +142,7 @@ describe('requestAd', () => {
     global.fetch = jest.fn(() => Promise.resolve(response))
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
-    const lastVastResponse = vastChain[0]
+    const [lastVastResponse] = vastChain
 
     expect(lastVastResponse).toEqual({
       ad: undefined,
@@ -215,7 +215,7 @@ describe('requestAd', () => {
       .mockImplementationOnce(() => Promise.resolve(invalidVastResponse))
 
     const vastChain = await requestAd('http://adtag.test.example.com', {})
-    const ad = getAds(vastInvalidParsedXML)[0]
+    const [ad] = getAds(vastInvalidParsedXML)
 
     markAdAsRequested(ad)
 

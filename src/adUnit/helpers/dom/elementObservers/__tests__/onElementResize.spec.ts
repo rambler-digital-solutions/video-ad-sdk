@@ -1,8 +1,8 @@
 const mockObserve = jest.fn()
 const mockDisconnect = jest.fn()
-let simulateAttrMutation: any
+let simulateAttributeMutation: any
 
-jest.mock('lodash.debounce', () => (fn: any) => fn)
+jest.mock('lodash.debounce', () => (callback: any) => callback)
 jest.mock('../helpers/MutationObserver', () => {
   let mockHandler: any
 
@@ -15,7 +15,7 @@ jest.mock('../helpers/MutationObserver', () => {
     }
   }
 
-  simulateAttrMutation = (
+  simulateAttributeMutation = (
     node: HTMLElement,
     attributeName: string
   ): MutationObserver =>
@@ -26,10 +26,10 @@ jest.mock('../helpers/MutationObserver', () => {
       }
     ])
 
-  return MockMutationObserver
+  return {MutationObserver: MockMutationObserver}
 })
 
-import onElementResize from '../onElementResize'
+import {onElementResize} from '../onElementResize'
 
 test('onElementResize', () => {
   expect(onElementResize).toEqual(expect.any(Function))
@@ -53,7 +53,7 @@ test('onElementResize not must call the callback if the changed style does not c
 
   expect(mock).not.toHaveBeenCalled()
 
-  simulateAttrMutation(target, 'style')
+  simulateAttributeMutation(target, 'style')
 
   expect(mock).not.toHaveBeenCalled()
 })
@@ -67,7 +67,7 @@ test('onElementResize must call the callback if the element width changes on sty
   expect(mock).not.toHaveBeenCalled()
 
   target.style.width = '400px'
-  simulateAttrMutation(target, 'style')
+  simulateAttributeMutation(target, 'style')
   expect(mock).toHaveBeenCalled()
 })
 
@@ -78,17 +78,17 @@ test('onElementResize must call the callback if the element resizes', () => {
   onElementResize(target, () => mock())
   expect(mock).not.toHaveBeenCalled()
 
-  const resizeObjElement = target.querySelector('iframe')
+  const resizeObjectElement = target.querySelector('iframe')
 
   // jsdom does not add the content window to iframe elements for the sack of the test we fake it
   // with the normal window.
-  Object.defineProperty(resizeObjElement, 'contentWindow', {
+  Object.defineProperty(resizeObjectElement, 'contentWindow', {
     value: global.window
   })
-  resizeObjElement?.onload?.(undefined as any)
+  resizeObjectElement?.onload?.(undefined as any)
 
   target.style.width = '400px'
-  resizeObjElement?.contentWindow?.dispatchEvent(new Event('resize'))
+  resizeObjectElement?.contentWindow?.dispatchEvent(new Event('resize'))
   expect(mock).toHaveBeenCalled()
 })
 
@@ -96,14 +96,14 @@ test('onElementResize must return a disconnect fn', () => {
   const target = document.createElement('DIV')
   const mock = jest.fn()
   const disconnect = onElementResize(target, () => mock())
-  const resizeObjElement = target.querySelector('iframe')
+  const resizeObjectElement = target.querySelector('iframe')
 
   // jsdom does not add the content window to iframe elements for the sack of the test we fake it
   // with the normal window.
-  Object.defineProperty(resizeObjElement, 'contentWindow', {
+  Object.defineProperty(resizeObjectElement, 'contentWindow', {
     value: global.window
   })
-  resizeObjElement?.onload?.(undefined as any)
+  resizeObjectElement?.onload?.(undefined as any)
 
   expect(mock).not.toHaveBeenCalled()
 
@@ -111,10 +111,10 @@ test('onElementResize must return a disconnect fn', () => {
 
   target.style.width = '400px'
   expect(mockDisconnect).toHaveBeenCalled()
-  simulateAttrMutation(target, 'style')
+  simulateAttributeMutation(target, 'style')
   expect(mock).not.toHaveBeenCalled()
 
   target.style.width = '300px'
-  resizeObjElement?.contentWindow?.dispatchEvent(new Event('resize'))
+  resizeObjectElement?.contentWindow?.dispatchEvent(new Event('resize'))
   expect(mock).not.toHaveBeenCalled()
 })

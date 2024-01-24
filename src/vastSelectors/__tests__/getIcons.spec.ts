@@ -1,5 +1,5 @@
 import {inlineAd, wrapperAd} from '../../../fixtures'
-import getIcons from '../getIcons'
+import {getIcons} from '../getIcons'
 
 test('getIcons must return undefined if there are no icons', () => {
   expect((getIcons as any)()).toBeUndefined()

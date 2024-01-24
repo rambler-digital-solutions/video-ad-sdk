@@ -1,14 +1,15 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {
+import type {
   MetricHandlerData,
   CancelFunction,
   VastTrackingEvent,
   ParsedOffset
 } from '../../../../types'
 import {linearEvents} from '../../../../tracker'
-import formatProgress from '../../progress/formatProgress'
+import {formatProgress} from '../../progress/formatProgress'
 
 const {progress} = linearEvents
+
 const secondsToMilliseconds = (seconds: number): number => seconds * 1000
 const isPercentage = (offset: string): boolean => {
   const percentageRegex = /^\d+(\.\d+)?%$/g
@@ -24,12 +25,14 @@ const isValid = ({offset, uri}: VastTrackingEvent): boolean => {
   return offsetIsValid && uriIsValid
 }
 
+const PERCENTAGE_FACTOR = 100
+
 const offsetToMs = (offset: ParsedOffset, durationInMs: number): number => {
   if (typeof offset === 'number') {
     return offset
   }
 
-  return (parseFloat(offset) / 100) * durationInMs
+  return (parseFloat(offset) / PERCENTAGE_FACTOR) * durationInMs
 }
 
 interface ProgressData {
@@ -42,7 +45,7 @@ interface PendingEvents {
   toCall: VastTrackingEvent[]
 }
 
-const onProgress = (
+export const onProgress = (
   {videoElement}: VideoAdContainer,
   callback: (event: string, data: ProgressData) => void,
   {progressEvents = []}: MetricHandlerData = {}
@@ -104,5 +107,3 @@ const onProgress = (
     videoElement.removeEventListener('timeupdate', progressHandler)
   }
 }
-
-export default onProgress

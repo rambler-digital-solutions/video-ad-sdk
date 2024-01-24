@@ -1,4 +1,4 @@
-import guessMimeType from '../guessMimeType'
+import {guessMimeType} from '../guessMimeType'
 
 test('guessMimeType must guess the mime of the passed source', () => {
   const mimeMap: Record<string, string> = {
@@ -17,7 +17,7 @@ test('guessMimeType must guess the mime of the passed source', () => {
     wmv: 'video/x-ms-wmv'
   }
 
-  Object.keys(mimeMap).forEach((ext) => {
-    expect(guessMimeType(`/some/source.${ext}`)).toBe(mimeMap[ext])
+  Object.keys(mimeMap).forEach((extension) => {
+    expect(guessMimeType(`/some/source.${extension}`)).toBe(mimeMap[extension])
   })
 })

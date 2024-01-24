@@ -1,4 +1,4 @@
-import {MediaFile} from '../../../types'
+import type {MediaFile} from '../../../types'
 
 export const SUPPORTED_MIMETYPES = [
   'text/javascript',
@@ -17,7 +17,5 @@ export const SUPPORTED_MIMETYPES = [
   'application/x-ecmascript'
 ]
 
-const isSupported = ({type}: MediaFile): boolean =>
+export const isSupported = ({type}: MediaFile): boolean =>
   SUPPORTED_MIMETYPES.some((mimetype) => mimetype === type)
-
-export default isSupported
