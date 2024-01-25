@@ -34,7 +34,7 @@
     "lint": "eslint '**/*.{js,ts}'",
     "format": "prettier --write '**/*.{js,ts}' && eslint '**/*.{js,ts}' --fix",
     "typecheck": "tsc --noEmit",
-    "sizecheck": "tsc && size-limit",
+    "sizecheck": "tsc -p tsconfig.lib.json && size-limit",
     "docs": "typedoc",
     "release": "semantic-release",
     "prepare": "[ -n \"$CI\" ] && exit 0 || husky install"
