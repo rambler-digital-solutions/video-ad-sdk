@@ -1,4 +1,4 @@
-import createAdContainer from '../createAdContainer'
+import {createAdContainer} from '../createAdContainer'
 
 describe('createAdContainer', () => {
   test('must return a video ad container element', () => {

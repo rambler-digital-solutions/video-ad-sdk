@@ -4,28 +4,28 @@ import {
   trackLinearEvent,
   trackNonLinearEvent
 } from '../tracker'
-import {VastChain, VastEventTrackerOptions} from '../types'
+import type {VastChain, VastEventTrackerOptions} from '../types'
 import {VideoAdContainer} from '../adContainer'
-import VastAdUnit from './VastAdUnit'
-import VpaidAdUnit from './VpaidAdUnit'
+import {VastAdUnit} from './VastAdUnit'
+import {VpaidAdUnit} from './VpaidAdUnit'
 
 interface VideoAdUnitOptions<T extends string> extends VastEventTrackerOptions {
   type: T
 }
 
-function createVideoAdUnit(
+export function createVideoAdUnit(
   vastChain: VastChain,
   videoAdContainer: VideoAdContainer,
   options: VideoAdUnitOptions<'VPAID'>
 ): VpaidAdUnit
 
-function createVideoAdUnit(
+export function createVideoAdUnit(
   vastChain: VastChain,
   videoAdContainer: VideoAdContainer,
   options: VideoAdUnitOptions<string>
 ): VastAdUnit
 
-function createVideoAdUnit(
+export function createVideoAdUnit(
   vastChain: VastChain,
   videoAdContainer: VideoAdContainer,
   options: VideoAdUnitOptions<string>
@@ -38,14 +38,14 @@ function createVideoAdUnit(
 
   Object.values(linearEvents).forEach((linearEvent) =>
     adUnit.on(linearEvent, (event) => {
-      const {type: evtType, data} = event
+      const {type: eventType, data} = event
       const payload = {
         data,
         errorCode: adUnit.errorCode,
         tracker
       }
 
-      trackLinearEvent(evtType, vastChain, payload)
+      trackLinearEvent(eventType, vastChain, payload)
     })
   )
 
@@ -62,5 +62,3 @@ function createVideoAdUnit(
 
   return adUnit
 }
-
-export default createVideoAdUnit

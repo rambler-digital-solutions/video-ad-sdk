@@ -1,15 +1,15 @@
 import {linearEvents, ErrorCode, isVastErrorCode} from '../tracker'
 import {getSkipOffset} from '../vastSelectors'
-import {VastChain, Hooks, MacroData} from '../types'
+import type {VastChain, Hooks, MacroData} from '../types'
 import {VideoAdContainer} from '../adContainer'
-import findBestMedia from './helpers/media/findBestMedia'
-import once from './helpers/dom/once'
-import setupMetricHandlers from './helpers/metrics/setupMetricHandlers'
-import updateMedia from './helpers/media/updateMedia'
-import AdUnitError from './helpers/adUnitError'
-import VideoAdUnit, {_protected, VideoAdUnitOptions} from './VideoAdUnit'
+import {findBestMedia} from './helpers/media/findBestMedia'
+import {once} from './helpers/dom/once'
+import {setupMetricHandlers} from './helpers/metrics/setupMetricHandlers'
+import {updateMedia} from './helpers/media/updateMedia'
+import {AdUnitError} from './helpers/adUnitError'
+import {VideoAdUnit, _protected, type VideoAdUnitOptions} from './VideoAdUnit'
 
-const {complete, error: errorEvt, skip} = linearEvents
+const {complete, error: errorEvent, skip} = linearEvents
 
 const _private = Symbol('_private')
 
@@ -31,7 +31,7 @@ export interface VastAdUnitOptions extends VideoAdUnitOptions {
 /**
  * This class provides everything necessary to run a Vast ad.
  */
-class VastAdUnit extends VideoAdUnit {
+export class VastAdUnit extends VideoAdUnit {
   private [_private]: Private = {
     handleMetric: (event, data) => {
       switch (event) {
@@ -40,7 +40,7 @@ class VastAdUnit extends VideoAdUnit {
           break
         }
 
-        case errorEvt: {
+        case errorEvent: {
           if (data instanceof Error) {
             this.error = data
             this.errorCode =
@@ -139,9 +139,9 @@ class VastAdUnit extends VideoAdUnit {
     }
 
     const inlineAd = this.vastChain[0].ad
-    const {videoElement, element} = this.videoAdContainer
+    const {videoElement} = this.videoAdContainer
     const media =
-      inlineAd && findBestMedia(inlineAd, videoElement, element, this.hooks)
+      inlineAd && findBestMedia(inlineAd, this.videoAdContainer, this.hooks)
 
     if (media) {
       if (this.icons) {
@@ -158,7 +158,7 @@ class VastAdUnit extends VideoAdUnit {
       const adUnitError = new AdUnitError("Can't find a suitable media to play")
 
       adUnitError.code = ErrorCode.VAST_LINEAR_ASSET_MISMATCH
-      this[_private].handleMetric(errorEvt, adUnitError)
+      this[_private].handleMetric(errorEvent, adUnitError)
     }
 
     this[_protected].started = true
@@ -287,9 +287,9 @@ class VastAdUnit extends VideoAdUnit {
 
     if (this.isStarted() && !this.isFinished()) {
       const inlineAd = this.vastChain[0].ad
-      const {videoElement, element} = this.videoAdContainer
+      const {videoElement} = this.videoAdContainer
       const media =
-        inlineAd && findBestMedia(inlineAd, videoElement, element, this.hooks)
+        inlineAd && findBestMedia(inlineAd, this.videoAdContainer, this.hooks)
 
       if (media && videoElement.src !== media.src) {
         updateMedia(videoElement, media)
@@ -297,5 +297,3 @@ class VastAdUnit extends VideoAdUnit {
     }
   }
 }
-
-export default VastAdUnit

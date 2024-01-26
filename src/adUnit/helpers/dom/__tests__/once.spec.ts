@@ -1,4 +1,4 @@
-import once from '../once'
+import {once} from '../once'
 
 test('once must exec the listener once when the event occurs on the passed element', () => {
   const element = document.createElement('div')

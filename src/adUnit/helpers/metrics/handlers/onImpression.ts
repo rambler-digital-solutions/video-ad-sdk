@@ -1,17 +1,17 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {CancelFunction} from '../../../../types'
+import type {CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 
 const {impression, creativeView} = linearEvents
 
-const onImpression = (
+export const onImpression = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
 ): CancelFunction => {
   let started = false
 
   const impressionHandler = (): void => {
-    const currentTime = videoElement.currentTime
+    const {currentTime} = videoElement
 
     if (!started && currentTime > 0) {
       started = true
@@ -27,5 +27,3 @@ const onImpression = (
     videoElement.removeEventListener('timeupdate', impressionHandler)
   }
 }
-
-export default onImpression

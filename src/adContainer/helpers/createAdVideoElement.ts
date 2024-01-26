@@ -1,4 +1,4 @@
-const createAdVideoElement = (
+export const createAdVideoElement = (
   contentDocument: Document = document
 ): HTMLVideoElement => {
   const video = contentDocument.createElement('video')
@@ -8,5 +8,3 @@ const createAdVideoElement = (
 
   return video
 }
-
-export default createAdVideoElement

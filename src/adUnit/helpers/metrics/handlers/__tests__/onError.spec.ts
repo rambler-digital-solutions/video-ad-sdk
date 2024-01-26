@@ -1,5 +1,5 @@
 import {linearEvents} from '../../../../../tracker'
-import onError from '../onError'
+import {onError} from '../onError'
 
 const {error} = linearEvents
 let videoElement: HTMLVideoElement

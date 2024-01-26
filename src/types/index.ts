@@ -1,5 +1,6 @@
-export {NodeType, Attributes, ParsedXML} from './xml'
-export {
+export {NodeType} from './xml'
+export type {Attributes, ParsedXML} from './xml'
+export type {
   ParsedAd,
   VastResponse,
   VastChain,
@@ -18,8 +19,8 @@ export {
   VastEventTrackerOptions,
   VpaidCreativeAdUnit,
   VpaidCreativeData,
-  VpaidEnvironmentVars,
+  VpaidEnvironmentVariables,
   ExecutionContext,
   Hooks
 } from './vast'
-export {Optional, CancelFunction} from './helpers'
+export type {Optional, CancelFunction} from './helpers'

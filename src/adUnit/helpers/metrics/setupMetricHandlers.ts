@@ -1,9 +1,9 @@
 import {getClickThrough, getSkipOffset} from '../../../vastSelectors'
 import {VideoAdContainer} from '../../../adContainer'
-import {VastChain, Hooks, CancelFunction} from '../../../types'
-import getProgressEvents from '../progress/getProgressEvents'
-import safeCallback from '../safeCallback'
-import metricHandlers from './handlers'
+import type {VastChain, Hooks, CancelFunction} from '../../../types'
+import {getProgressEvents} from '../progress/getProgressEvents'
+import {safeCallback} from '../safeCallback'
+import {metricHandlers} from './handlers'
 
 interface SetupMetricsHandlersOptions {
   vastChain: VastChain
@@ -12,7 +12,7 @@ interface SetupMetricsHandlersOptions {
   pauseOnAdClick: boolean
 }
 
-const setupMetricHandlers = (
+export const setupMetricHandlers = (
   {
     vastChain,
     videoAdContainer,
@@ -21,7 +21,7 @@ const setupMetricHandlers = (
   }: SetupMetricsHandlersOptions,
   callback: (event: string, ...args: any[]) => void
 ): CancelFunction => {
-  const inlineAd = vastChain[0].ad
+  const [{ad: inlineAd}] = vastChain
   const skipoffset = inlineAd && getSkipOffset(inlineAd)
   const clickThroughUrl = inlineAd && getClickThrough(inlineAd)
   const progressEvents = getProgressEvents(vastChain)
@@ -39,5 +39,3 @@ const setupMetricHandlers = (
 
   return () => stopHandlersFns.forEach((disconnect) => disconnect())
 }
-
-export default setupMetricHandlers

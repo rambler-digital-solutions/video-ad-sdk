@@ -9,17 +9,17 @@ import {
   vpaidInlineParsedXML,
   vastVpaidInlineXML
 } from '../../../fixtures'
-import VideoAdContainer from '../../adContainer/VideoAdContainer'
+import {VideoAdContainer} from '../../adContainer/VideoAdContainer'
 import {
   linearEvents,
   trackLinearEvent,
   trackNonLinearEvent,
   nonLinearEvents
 } from '../../tracker'
-import VastAdUnit from '../VastAdUnit'
-import createVideoAdUnit from '../createVideoAdUnit'
-import VpaidAdUnit from '../VpaidAdUnit'
-import {VastChain} from '../../types'
+import type {VastChain} from '../../types'
+import {VastAdUnit} from '../VastAdUnit'
+import {VpaidAdUnit} from '../VpaidAdUnit'
+import {createVideoAdUnit} from '../createVideoAdUnit'
 
 jest.mock('../../tracker', () => ({
   ...jest.requireActual('../../tracker'),

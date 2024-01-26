@@ -2,7 +2,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const {name: pkgName} = require('./package.json')
+const {name: packageName} = require('./package.json')
 
 const devMode = process.env.NODE_ENV !== 'production'
 
@@ -47,8 +47,8 @@ module.exports = {
   },
   output: {
     libraryTarget: 'umd',
-    devtoolFallbackModuleFilenameTemplate: `webpack:///${pkgName}/[resource-path]?[hash]`,
-    devtoolModuleFilenameTemplate: `webpack:///${pkgName}/[resource-path]`,
+    devtoolFallbackModuleFilenameTemplate: `webpack:///${packageName}/[resource-path]?[hash]`,
+    devtoolModuleFilenameTemplate: `webpack:///${packageName}/[resource-path]`,
     publicPath: devMode ? 'http://localhost:9000/' : '../',
     path: path.resolve(__dirname, 'public/demo/')
   },

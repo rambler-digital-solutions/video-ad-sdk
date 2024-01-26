@@ -1,6 +1,6 @@
-export {default as run, RunOptions} from './run'
-export {
-  default as runWaterfall,
+export {run, type RunOptions} from './run'
+export {runWaterfall} from './runWaterfall'
+export type {
   RunWaterfallOptions,
   RunWaterfallHooks,
   ErrorData

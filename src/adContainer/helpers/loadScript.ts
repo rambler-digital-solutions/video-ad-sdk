@@ -1,4 +1,4 @@
-import {Optional} from '../../types'
+import type {Optional} from '../../types'
 
 /**
  * Options map to load script
@@ -29,11 +29,11 @@ export interface LoadScriptOptions {
  * @param src The script source.
  * @param options The allowed options
  */
-const loadScript = (
-  src: string,
+export const loadScript = (
+  source: string,
   {async = false, defer = false, type, placeholder}: LoadScriptOptions = {}
 ): Promise<HTMLScriptElement> => {
-  if (!src) {
+  if (!source) {
     throw new TypeError('Missing required "src" parameter')
   }
 
@@ -45,7 +45,7 @@ const loadScript = (
     script.async = async
     script.defer = defer
     script.onerror = () =>
-      reject(new URIError(`The script ${src} is not accessible.`))
+      reject(new URIError(`The script ${source} is not accessible.`))
     script.onload = () => resolve(script)
 
     if (!scriptPlaceholder) {
@@ -57,9 +57,7 @@ const loadScript = (
       ) as HTMLElement
     }
 
-    script.src = src
+    script.src = source
     scriptPlaceholder?.appendChild(script)
   })
 }
-
-export default loadScript

@@ -1,4 +1,2 @@
-import onElementResize from './onElementResize'
-import onElementVisibilityChange from './onElementVisibilityChange'
-
-export {onElementResize, onElementVisibilityChange}
+export {onElementResize} from './onElementResize'
+export {onElementVisibilityChange} from './onElementVisibilityChange'

@@ -1,6 +1,6 @@
 import {hasAdPod, getAds, getPodAdSequence, isPodAd} from '../../vastSelectors'
-import {ParsedAd, VastResponse, Optional} from '../../types'
-import {RequestNextAdOptions} from '../../vastRequest'
+import type {ParsedAd, VastResponse, Optional} from '../../types'
+import type {RequestNextAdOptions} from '..'
 import {hasAdBeenRequested} from './adUtils'
 
 const getNextPod = (
@@ -12,7 +12,7 @@ const getNextPod = (
   return ads.find((ad) => getPodAdSequence(ad) === nextPodSequence)
 }
 
-const getNextAd = (
+export const getNextAd = (
   {ad, parsedXML}: VastResponse,
   {fallbackOnNoAd = true, useAdBuffet = false}: RequestNextAdOptions
 ): Optional<ParsedAd> => {
@@ -24,17 +24,17 @@ const getNextAd = (
 
   if (hasAdPod(parsedXML)) {
     if (useAdBuffet) {
-      nextAd = availableAds.filter((adDefinition) => !isPodAd(adDefinition))[0]
+      nextAd = availableAds.find((adDefinition) => !isPodAd(adDefinition))
     }
 
     if (ad && !nextAd) {
       nextAd = getNextPod(ad, availableAds)
     }
   } else if (availableAds.length > 0 && fallbackOnNoAd) {
-    nextAd = availableAds[0]
+    const [availableAd] = availableAds
+
+    nextAd = availableAd
   }
 
   return nextAd
 }
-
-export default getNextAd

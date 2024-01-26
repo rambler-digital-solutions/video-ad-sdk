@@ -1,4 +1,4 @@
-const createAdContainer = (): HTMLDivElement => {
+export const createAdContainer = (): HTMLDivElement => {
   const adContainer = document.createElement('div')
 
   adContainer.classList.add('mol-video-ad-container')
@@ -7,5 +7,3 @@ const createAdContainer = (): HTMLDivElement => {
 
   return adContainer
 }
-
-export default createAdContainer

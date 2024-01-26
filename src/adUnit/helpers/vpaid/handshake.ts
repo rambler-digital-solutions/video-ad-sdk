@@ -1,4 +1,4 @@
-import {VpaidCreativeAdUnit} from '../../../types'
+import type {VpaidCreativeAdUnit} from '../../../types'
 import {handshakeVersion} from './api'
 
 const major = (version: string): number => {
@@ -11,16 +11,16 @@ const isSupported = (
   supportedVersion: string,
   creativeVersion: string
 ): boolean => {
-  const creativeMajorNum = major(creativeVersion)
+  const creativeMajorNumber = major(creativeVersion)
 
-  if (creativeMajorNum < 1) {
+  if (creativeMajorNumber < 1) {
     return false
   }
 
-  return creativeMajorNum <= major(supportedVersion)
+  return creativeMajorNumber <= major(supportedVersion)
 }
 
-const handshake = (
+export const handshake = (
   creativeAd: VpaidCreativeAdUnit,
   supportedVersion: string
 ): string => {
@@ -32,5 +32,3 @@ const handshake = (
 
   return creativeVersion
 }
-
-export default handshake

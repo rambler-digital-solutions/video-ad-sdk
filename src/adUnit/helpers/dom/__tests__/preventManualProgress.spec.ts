@@ -1,4 +1,4 @@
-import preventManualProgress from '../preventManualProgress'
+import {preventManualProgress} from '../preventManualProgress'
 
 describe('preventManualProgress', () => {
   let videoElement: HTMLVideoElement

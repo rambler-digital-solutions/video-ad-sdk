@@ -1,5 +1,5 @@
 import {linearEvents} from '../../../../../tracker'
-import onImpression from '../onImpression'
+import {onImpression} from '../onImpression'
 
 const {impression, creativeView} = linearEvents
 let videoElement: HTMLVideoElement

@@ -1,1 +1,1 @@
-export {default as getDetails} from './getDetails'
+export {getDetails} from './getDetails'

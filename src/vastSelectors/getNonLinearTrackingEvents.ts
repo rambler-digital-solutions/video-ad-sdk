@@ -1,6 +1,6 @@
 import {get, getAll, getText, getAttributes} from '../xml'
-import {ParsedAd, VastTrackingEvent, Optional} from '../types'
-import getLinearCreative from './helpers/getLinearCreative'
+import type {ParsedAd, VastTrackingEvent, Optional} from '../types'
+import {getLinearCreative} from './helpers/getLinearCreative'
 
 /**
  * Gets the Non Linear tracking events from the Vast Ad
@@ -9,7 +9,7 @@ import getLinearCreative from './helpers/getLinearCreative'
  * @param eventName If provided it will filter-out the array events against it.
  * @returns Array of Tracking event definitions
  */
-const getNonLinearTrackingEvents = (
+export const getNonLinearTrackingEvents = (
   ad: ParsedAd,
   eventName?: string
 ): Optional<VastTrackingEvent[]> => {
@@ -45,5 +45,3 @@ const getNonLinearTrackingEvents = (
     }
   }
 }
-
-export default getNonLinearTrackingEvents

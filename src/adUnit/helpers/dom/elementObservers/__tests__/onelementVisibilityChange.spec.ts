@@ -25,10 +25,10 @@ jest.mock('../helpers/IntersectionObserver', () => {
       }
     ])
 
-  return MockIntersectionObserver
+  return {IntersectionObserver: MockIntersectionObserver}
 })
 
-import onElementVisibilityChange from '../onElementVisibilityChange'
+import {onElementVisibilityChange} from '../onElementVisibilityChange'
 
 const once = (
   context: Window | Document | Element,
@@ -53,7 +53,7 @@ const waitForEvent = (
 
 let origHidden: boolean
 
-jest.mock('lodash.debounce', () => (fn: any) => fn)
+jest.mock('lodash.debounce', () => (callback: any) => callback)
 
 beforeEach(() => {
   origHidden = document.hidden

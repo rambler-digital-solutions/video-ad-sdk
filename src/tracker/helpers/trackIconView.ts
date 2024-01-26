@@ -1,7 +1,7 @@
-import {VastChain, VastEventTrackerOptions} from '../../types'
-import pixelTracker from './pixelTracker'
+import type {VastChain, VastEventTrackerOptions} from '../../types'
+import {pixelTracker} from './pixelTracker'
 
-const trackIconView = (
+export const trackIconView = (
   _vastChain: VastChain,
   {data = {}, tracker = pixelTracker}: VastEventTrackerOptions
 ): void => {
@@ -13,5 +13,3 @@ const trackIconView = (
     }
   }
 }
-
-export default trackIconView

@@ -18,11 +18,3 @@ export const finish = 'finish'
  * @event VideoAdUnit#adProgress
  */
 export const adProgress = 'adProgress'
-
-const adUnitEvents = {
-  adProgress,
-  finish,
-  volumeChanged
-}
-
-export default adUnitEvents

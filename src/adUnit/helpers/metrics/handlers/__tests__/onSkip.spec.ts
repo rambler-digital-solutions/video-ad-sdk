@@ -3,13 +3,13 @@ import {
   VideoAdContainer
 } from '../../../../../adContainer'
 import {linearEvents} from '../../../../../tracker'
-import onSkip from '../onSkip'
+import {onSkip} from '../onSkip'
 
 const {skip} = linearEvents
 let videoAdContainer: VideoAdContainer
 let callback: any
 
-beforeEach(async () => {
+beforeEach(() => {
   callback = jest.fn()
   videoAdContainer = createVideoAdContainer(document.createElement('div'))
 
@@ -73,11 +73,11 @@ test('onSkip must be possible to pass a skipControl factory method', () => {
 
   onSkip(videoAdContainer, callback, {
     createSkipControl: () => {
-      const skipBtn = document.createElement('button')
+      const skipButton = document.createElement('button')
 
-      skipBtn.classList.add('custom-skip-control')
+      skipButton.classList.add('custom-skip-control')
 
-      return skipBtn
+      return skipButton
     },
     skipoffset: 5000
   })

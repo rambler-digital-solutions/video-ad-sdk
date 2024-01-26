@@ -1,7 +1,7 @@
-import {VastChain, VastEventTrackerOptions} from '../../types'
-import pixelTracker from './pixelTracker'
+import type {VastChain, VastEventTrackerOptions} from '../../types'
+import {pixelTracker} from './pixelTracker'
 
-const trackProgress = (
+export const trackProgress = (
   _vastChain: VastChain,
   {data = {}, tracker = pixelTracker}: VastEventTrackerOptions
 ): void => {
@@ -11,5 +11,3 @@ const trackProgress = (
     tracker(progressUri, {...data})
   }
 }
-
-export default trackProgress

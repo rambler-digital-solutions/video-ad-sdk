@@ -1,5 +1,8 @@
-import fetchHtml from '../fetchHtml'
-;['text/plain', 'text/html'].forEach((contentType) => {
+import {fetchHtml} from '../fetchHtml'
+
+const CONTENT_TYPES = ['text/plain', 'text/html']
+
+CONTENT_TYPES.forEach((contentType) => {
   test(`fetchHtml must resolve with the html fragment with content-type ${contentType}`, async () => {
     const htmlFragment = '<div></div>'
     const successResponse = new Response(htmlFragment, {

@@ -1,5 +1,5 @@
-import createIframe from '../createIframe'
-import supportsSrcdoc from '../supportsSrcdoc'
+import {createIframe} from '../createIframe'
+import {supportsSrcdoc} from '../supportsSrcdoc'
 
 jest.mock('../supportsSrcdoc')
 describe('createIframe', () => {

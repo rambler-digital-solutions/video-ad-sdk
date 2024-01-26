@@ -1,5 +1,5 @@
 import {getLinearTrackingEvents} from '../../../vastSelectors'
-import {
+import type {
   VastChain,
   VastResponse,
   VastTrackingEvent,
@@ -9,7 +9,7 @@ import {linearEvents} from '../../../tracker'
 
 const {progress} = linearEvents
 
-const getProgressEvents = (vastChain: VastChain): VastTrackingEvent[] =>
+export const getProgressEvents = (vastChain: VastChain): VastTrackingEvent[] =>
   vastChain
     .map(({ad}: VastResponse) => ad)
     .reduce((accumulated: VastTrackingEvent[], ad?: ParsedAd) => {
@@ -21,5 +21,3 @@ const getProgressEvents = (vastChain: VastChain): VastTrackingEvent[] =>
       offset,
       uri
     }))
-
-export default getProgressEvents

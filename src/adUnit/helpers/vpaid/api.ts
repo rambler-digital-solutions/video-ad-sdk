@@ -1,5 +1,6 @@
-import {VpaidCreativeAdUnit} from '../../../types'
+import type {VpaidCreativeAdUnit} from '../../../types'
 
+/* eslint-disable import/no-unused-modules */
 export const handshakeVersion = 'handshakeVersion'
 export const initAd = 'initAd'
 export const resizeAd = 'resizeAd'
@@ -47,6 +48,7 @@ export const adPaused = 'AdPaused'
 export const adPlaying = 'AdPlaying'
 export const adLog = 'AdLog'
 export const adError = 'AdError'
+/* eslint-enable import/no-unused-modules */
 
 export const EVENTS = [
   adLoaded,
@@ -91,20 +93,3 @@ export const METHODS: (keyof VpaidCreativeAdUnit)[] = [
   // VPAID 2.0 new methods
   skipAd
 ]
-
-export const GETTERS: (keyof VpaidCreativeAdUnit)[] = [
-  getAdLinear,
-  getAdExpanded,
-  getAdRemainingTime,
-  getAdVolume,
-
-  // VPAID 2.0 new getters
-  getAdWidth,
-  getAdHeight,
-  getAdSkippableState,
-  getAdDuration,
-  getAdCompanions,
-  getAdIcons
-]
-
-export const SETTERS: (keyof VpaidCreativeAdUnit)[] = [setAdVolume]

@@ -1,17 +1,17 @@
-import {
+import type {
   ParsedAd,
   VastChain,
   VastTrackingEvent,
   VastEventTrackerOptions,
   Optional
 } from '../../types'
-import pixelTracker from './pixelTracker'
+import {pixelTracker} from './pixelTracker'
 
 type TrackingEventSelector = (
   ad: ParsedAd
 ) => Optional<VastTrackingEvent[] | string>
 
-const createVastEventTracker =
+export const createVastEventTracker =
   (trackingEventSelector: TrackingEventSelector) =>
   (
     vastChain: VastChain,
@@ -35,5 +35,3 @@ const createVastEventTracker =
       }
     })
   }
-
-export default createVastEventTracker

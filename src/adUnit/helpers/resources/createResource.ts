@@ -1,7 +1,7 @@
-import {VastIcon} from '../../../types'
-import createHtmlResource from './createHtmlResource'
-import createIframeResource from './createIframeResource'
-import createStaticResource from './createStaticResource'
+import type {VastIcon} from '../../../types'
+import {createHtmlResource} from './createHtmlResource'
+import {createIframeResource} from './createIframeResource'
+import {createStaticResource} from './createStaticResource'
 
 export type ResourceElement =
   | HTMLDivElement
@@ -10,11 +10,15 @@ export type ResourceElement =
 
 const noopResource = document.createElement('div')
 
-const createResource = (
+export const createResource = (
   document: Document,
   data: VastIcon
 ): ResourceElement => {
-  const {staticResource, htmlResource, iFrameResource} = data
+  const {
+    staticResource,
+    htmlResource,
+    iFrameResource: indexFrameResource
+  } = data
 
   if (staticResource) {
     return createStaticResource(staticResource, {
@@ -30,8 +34,8 @@ const createResource = (
     })
   }
 
-  if (iFrameResource) {
-    return createIframeResource(iFrameResource, {
+  if (indexFrameResource) {
+    return createIframeResource(indexFrameResource, {
       data,
       document
     })
@@ -39,5 +43,3 @@ const createResource = (
 
   return noopResource
 }
-
-export default createResource

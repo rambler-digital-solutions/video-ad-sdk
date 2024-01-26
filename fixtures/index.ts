@@ -1,6 +1,7 @@
+/* eslint-disable import/no-unused-modules */
 import path from 'path'
 import fs from 'fs'
-import {ParsedXML, ParsedAd} from '../src/types'
+import type {ParsedXML, ParsedAd} from '../src/types'
 import {parseXml} from '../src/xml'
 import {getFirstAd} from '../src/vastSelectors'
 

@@ -1,4 +1,4 @@
-class VastError extends Error {
+export class VastError extends Error {
   code?: number
 
   public constructor(message: string) {
@@ -7,5 +7,3 @@ class VastError extends Error {
     Object.setPrototypeOf(this, VastError.prototype)
   }
 }
-
-export default VastError

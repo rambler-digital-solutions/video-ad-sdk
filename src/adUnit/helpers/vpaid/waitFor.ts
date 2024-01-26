@@ -1,6 +1,6 @@
-import {VpaidCreativeAdUnit} from '../../../types'
+import type {VpaidCreativeAdUnit} from '../../../types'
 
-const waitFor = (
+export const waitFor = (
   creativeAd: VpaidCreativeAdUnit,
   event: string,
   timeout?: number
@@ -25,5 +25,3 @@ const waitFor = (
 
     creativeAd.subscribe(handler, event)
   })
-
-export default waitFor

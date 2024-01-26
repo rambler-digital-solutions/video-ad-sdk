@@ -1,9 +1,9 @@
 import {VideoAdContainer} from '../../../adContainer'
 import {getCreativeData} from '../../../vastSelectors'
-import {VpaidCreativeAdUnit, VastChain} from '../../../types'
-import viewmode from './viewmode'
+import type {VpaidCreativeAdUnit, VastChain} from '../../../types'
+import {viewmode} from './viewmode'
 
-const initAd = (
+export const initAd = (
   creativeAd: VpaidCreativeAdUnit,
   videoAdContainer: VideoAdContainer,
   vastChain: VastChain
@@ -15,7 +15,7 @@ const initAd = (
 
   videoAdContainer.addSlot(width, height)
 
-  const environmentVars = {
+  const environmentVariables = {
     slot: videoAdContainer.slotElement,
     videoSlot: videoAdContainer.videoElement,
     videoSlotCanAutoPlay: videoAdContainer.isOriginalVideoElement
@@ -27,8 +27,6 @@ const initAd = (
     mode,
     desiredBitrate,
     creativeData,
-    environmentVars
+    environmentVariables
   )
 }
-
-export default initAd

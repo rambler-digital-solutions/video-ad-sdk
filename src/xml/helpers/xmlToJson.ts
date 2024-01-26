@@ -1,17 +1,24 @@
-import {NodeType, ParsedXML, Attributes, Optional} from '../../types'
+import {NodeType} from '../../types'
+import type {ParsedXML, Attributes, Optional} from '../../types'
+
+const NODE_TYPE: Record<number, NodeType> = {
+  1: NodeType.ELEMENT,
+  3: NodeType.TEXT,
+  4: NodeType.TEXT
+}
+
+const DOCUMENT_TYPE: Record<number, NodeType> = {
+  9: NodeType.DOCUMENT
+}
 
 const getNodeType = (node: Node): NodeType => {
-  switch (node.nodeType) {
-    case 1:
-      return NodeType.ELEMENT
-    case 3:
-    case 4:
-      return NodeType.TEXT
-    case 9:
-      return NodeType.DOCUMENT
-    default:
-      throw new Error('Unsupported element type')
+  const nodeType = NODE_TYPE[node.nodeType] ?? DOCUMENT_TYPE[node.nodeType]
+
+  if (!nodeType) {
+    throw new Error('Unsupported element type')
   }
+
+  return nodeType
 }
 
 const getNodeAttributes = (node: Element): Optional<Attributes> =>
@@ -33,8 +40,9 @@ const getNodeChildren = (node: Document | ChildNode): Optional<ParsedXML[]> => {
   }
 
   const childNodes = Array.from(node.childNodes).filter((childNode) =>
-    [1, 3, 4].includes(childNode.nodeType)
+    Object.keys(NODE_TYPE).map(Number).includes(childNode.nodeType)
   )
+
   const elements: ParsedXML[] = []
 
   for (const childNode of childNodes) {
@@ -48,7 +56,7 @@ const getNodeChildren = (node: Document | ChildNode): Optional<ParsedXML[]> => {
   return elements
 }
 
-const xmlToJson = (node: Document | ChildNode): ParsedXML => {
+export const xmlToJson = (node: Document | ChildNode): ParsedXML => {
   const type = getNodeType(node)
 
   const element: ParsedXML = {
@@ -75,5 +83,3 @@ const xmlToJson = (node: Document | ChildNode): ParsedXML => {
 
   return element
 }
-
-export default xmlToJson

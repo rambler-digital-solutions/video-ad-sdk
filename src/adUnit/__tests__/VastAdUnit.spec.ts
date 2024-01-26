@@ -6,59 +6,61 @@ import {
   wrapperAd,
   inlineAd
 } from '../../../fixtures'
-import VideoAdContainer from '../../adContainer/VideoAdContainer'
-import createVideoAdContainer from '../../adContainer/createVideoAdContainer'
+import {VideoAdContainer} from '../../adContainer/VideoAdContainer'
+import {createVideoAdContainer} from '../../adContainer/createVideoAdContainer'
 import {linearEvents, ErrorCode} from '../../tracker'
-import {VastChain, MediaFile} from '../../types'
-import VastAdUnit from '../VastAdUnit'
-import canPlay from '../helpers/media/canPlay'
-import updateMedia from '../helpers/media/updateMedia'
-import metricHandlers from '../helpers/metrics/handlers'
-import addIcons from '../helpers/icons/addIcons'
-import retrieveIcons from '../helpers/icons/retrieveIcons'
+import type {VastChain, MediaFile} from '../../types'
+import {canPlay} from '../helpers/media/canPlay'
+import {updateMedia} from '../helpers/media/updateMedia'
+import {metricHandlers} from '../helpers/metrics/handlers'
+import {addIcons} from '../helpers/icons/addIcons'
+import {retrieveIcons} from '../helpers/icons/retrieveIcons'
+import {VastAdUnit} from '../VastAdUnit'
 
-const {iconClick, iconView, skip, error: errorEvt} = linearEvents
+const {iconClick, iconView, skip, error: errorEvent} = linearEvents
 const mockStopMetricHandler = jest.fn()
 const noop = (): void => {}
 
 jest.mock('../helpers/media/canPlay')
 jest.mock('../helpers/media/updateMedia')
-jest.mock('../helpers/metrics/handlers/index', () => [
-  jest.fn(({videoElement}, callback) => {
-    videoElement.addEventListener('ended', () => callback('complete'))
-    videoElement.addEventListener('error', () =>
-      callback('error', videoElement.error)
-    )
-    videoElement.addEventListener('timeupdate', (event: any) =>
-      callback('progress', event.data)
-    )
-    videoElement.addEventListener('custom', (event: any) =>
-      callback('custom', event.data)
-    )
-    videoElement.addEventListener('skip', () => callback('skip'))
+jest.mock('../helpers/metrics/handlers/index', () => ({
+  metricHandlers: [
+    jest.fn(({videoElement}, callback) => {
+      videoElement.addEventListener('ended', () => callback('complete'))
+      videoElement.addEventListener('error', () =>
+        callback('error', videoElement.error)
+      )
+      videoElement.addEventListener('timeupdate', (event: any) =>
+        callback('progress', event.data)
+      )
+      videoElement.addEventListener('custom', (event: any) =>
+        callback('custom', event.data)
+      )
+      videoElement.addEventListener('skip', () => callback('skip'))
 
-    return mockStopMetricHandler
-  }),
-  jest.fn(() => mockStopMetricHandler)
-])
+      return mockStopMetricHandler
+    }),
+    jest.fn(() => mockStopMetricHandler)
+  ]
+}))
 
 const mockDrawIcons = jest.fn()
 const mockRemoveIcons = jest.fn()
 
-jest.mock('../helpers/icons/addIcons', () =>
-  jest.fn(() => ({
+jest.mock('../helpers/icons/addIcons', () => ({
+  addIcons: jest.fn(() => ({
     drawIcons: mockDrawIcons,
     hasPendingIconRedraws: () => false,
     removeIcons: mockRemoveIcons
   }))
-)
-jest.mock('../helpers/icons/retrieveIcons', () => jest.fn())
+}))
+jest.mock('../helpers/icons/retrieveIcons', () => ({retrieveIcons: jest.fn()}))
 
 describe('VastAdUnit', () => {
   let vastChain: VastChain
   let videoAdContainer: VideoAdContainer
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vastChain = [
       {
         ad: inlineAd,
@@ -234,9 +236,9 @@ describe('VastAdUnit', () => {
 
     passedConfig.onIconView(icons[0])
 
-    const passedArgs = await promise
+    const passedArguments = await promise
 
-    expect(passedArgs).toEqual([
+    expect(passedArguments).toEqual([
       {
         adUnit,
         data: icons[0],
@@ -275,9 +277,9 @@ describe('VastAdUnit', () => {
 
     passedConfig.onIconClick(icons[0])
 
-    const passedArgs = await promise
+    const passedArguments = await promise
 
-    expect(passedArgs).toEqual([
+    expect(passedArguments).toEqual([
       {
         adUnit,
         data: icons[0],
@@ -295,12 +297,12 @@ describe('VastAdUnit', () => {
     const errorHandler = jest.fn()
     const onErrorCallback = jest.fn()
     const errorPromise = new Promise((resolve) => {
-      adUnit.on(errorEvt, (...args) => {
+      adUnit.on(errorEvent, (...args) => {
         resolve(args)
       })
     })
 
-    adUnit.on(errorEvt, errorHandler)
+    adUnit.on(errorEvent, errorHandler)
     adUnit.onError(() => {
       throw new Error('boom')
     })
@@ -315,7 +317,7 @@ describe('VastAdUnit', () => {
     expect(errorHandler).toHaveBeenCalledWith({
       adUnit,
       data: adUnit.error,
-      type: errorEvt
+      type: errorEvent
     })
     expect(onErrorCallback).toHaveBeenCalledTimes(1)
     expect(onErrorCallback).toHaveBeenCalledWith(adUnit.error, {
@@ -591,9 +593,9 @@ describe('VastAdUnit', () => {
     Object.defineProperty(event, 'data', {value: data})
     videoAdContainer.videoElement.dispatchEvent(event)
 
-    const passedArgs = await promise
+    const passedArguments = await promise
 
-    expect(passedArgs).toEqual([
+    expect(passedArguments).toEqual([
       {
         adUnit,
         data: {
@@ -623,9 +625,9 @@ describe('VastAdUnit', () => {
     Object.defineProperty(event, 'data', {value: data})
     videoAdContainer.videoElement.dispatchEvent(event)
 
-    const passedArgs = await promise
+    const passedArguments = await promise
 
-    expect(passedArgs).toEqual([
+    expect(passedArguments).toEqual([
       {
         adUnit,
         data: {},
@@ -653,9 +655,9 @@ describe('VastAdUnit', () => {
     Object.defineProperty(event, 'data', {value: data})
     videoAdContainer.videoElement.dispatchEvent(event)
 
-    const passedArgs = await promise
+    const passedArguments = await promise
 
-    expect(passedArgs).toEqual([
+    expect(passedArguments).toEqual([
       {
         adUnit,
         type: skip
@@ -684,9 +686,9 @@ describe('VastAdUnit', () => {
 
     adUnit.skip()
 
-    const passedArgs = await promise
+    const passedArguments = await promise
 
-    expect(passedArgs).toEqual([
+    expect(passedArguments).toEqual([
       {
         adUnit,
         type: skip

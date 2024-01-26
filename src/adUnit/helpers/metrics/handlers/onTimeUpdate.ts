@@ -1,20 +1,26 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {CancelFunction} from '../../../../types'
+import type {CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 import {adProgress} from '../../../adUnitEvents'
 
 const {complete, firstQuartile, midpoint, start, thirdQuartile} = linearEvents
 
+const FIRST_QUARTILE = 25
+const MID_POINT = 50
+const THIRD_QUARTILE = 75
+const COMPLETED = 99
+const PERCENTAGE_FACTOR = 100
+
 const percentageProgress = (currentTime: number, duration: number): number =>
-  (currentTime * 100) / duration
+  (currentTime * PERCENTAGE_FACTOR) / duration
 const isPassFirstQuartile = (currentTime: number, duration: number): boolean =>
-  percentageProgress(currentTime, duration) >= 25
+  percentageProgress(currentTime, duration) >= FIRST_QUARTILE
 const isPassMidPoint = (currentTime: number, duration: number): boolean =>
-  percentageProgress(currentTime, duration) >= 50
+  percentageProgress(currentTime, duration) >= MID_POINT
 const isPassThirdQuartile = (currentTime: number, duration: number): boolean =>
-  percentageProgress(currentTime, duration) >= 75
+  percentageProgress(currentTime, duration) >= THIRD_QUARTILE
 const isCompleted = (currentTime: number, duration: number): boolean =>
-  percentageProgress(currentTime, duration) >= 99
+  percentageProgress(currentTime, duration) >= COMPLETED
 
 interface TimeUpdateEvent {
   isFired: (currentTime: number, duration: number) => boolean
@@ -23,7 +29,7 @@ interface TimeUpdateEvent {
 
 // TODO: implement logic to track `timeSpentViewing` linear event
 
-const onTimeUpdate = (
+export const onTimeUpdate = (
   {videoElement}: VideoAdContainer,
   callback: (event: string) => void
 ): CancelFunction => {
@@ -76,8 +82,8 @@ const onTimeUpdate = (
   }
 
   const timeUpdateHandler = (): void => {
-    const duration = videoElement.duration
-    const currentTime = videoElement.currentTime
+    const {duration} = videoElement
+    const {currentTime} = videoElement
 
     for (const event in events) {
       if (events[event].isFired(currentTime, duration)) {
@@ -90,8 +96,8 @@ const onTimeUpdate = (
   }
 
   const endedHandler = (): void => {
-    const duration = videoElement.duration
-    const currentTime = videoElement.currentTime
+    const {duration} = videoElement
+    const {currentTime} = videoElement
 
     if (!completed && isCompleted(currentTime, duration)) {
       completed = true
@@ -110,5 +116,3 @@ const onTimeUpdate = (
     videoElement.removeEventListener('ended', endedHandler)
   }
 }
-
-export default onTimeUpdate

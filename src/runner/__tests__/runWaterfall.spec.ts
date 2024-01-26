@@ -9,23 +9,23 @@ import {
   wrapperAd,
   wrapperParsedXML
 } from '../../../fixtures'
-import defer from '../../utils/defer'
-import requestAd from '../../vastRequest/requestAd'
-import requestNextAd from '../../vastRequest/requestNextAd'
-import VastError from '../../vastRequest/helpers/vastError'
-import run from '../run'
-import runWaterfall from '../runWaterfall'
-import VideoAdContainer from '../../adContainer/VideoAdContainer'
-import VastAdUnit from '../../adUnit/VastAdUnit'
+import {defer} from '../../utils/defer'
+import {requestAd} from '../../vastRequest/requestAd'
+import {requestNextAd} from '../../vastRequest/requestNextAd'
+import {VastError} from '../../vastRequest/helpers/vastError'
+import {run} from '../run'
+import {runWaterfall} from '../runWaterfall'
+import {VideoAdContainer} from '../../adContainer/VideoAdContainer'
+import {VastAdUnit} from '../../adUnit/VastAdUnit'
 import {trackError, ErrorCode} from '../../tracker'
-import {VastChain} from '../../types'
+import type {VastChain} from '../../types'
 import {_protected} from '../../adUnit/VideoAdUnit'
-import isIOS from '../../utils/isIOS'
+import {isIos} from '../../utils/isIos'
 
-jest.mock('../../utils/isIOS')
-jest.mock('../../vastRequest/requestAd', () => jest.fn())
-jest.mock('../../vastRequest/requestNextAd', () => jest.fn())
-jest.mock('../run', () => jest.fn())
+jest.mock('../../utils/isIos')
+jest.mock('../../vastRequest/requestAd', () => ({requestAd: jest.fn()}))
+jest.mock('../../vastRequest/requestNextAd', () => ({requestNextAd: jest.fn()}))
+jest.mock('../run', () => ({run: jest.fn()}))
 jest.mock('../../tracker', () => ({
   ...jest.requireActual('../../tracker'),
   linearEvents: {},
@@ -43,7 +43,7 @@ describe('runWaterfall', () => {
   let adUnit: VastAdUnit
 
   beforeEach(() => {
-    ;(isIOS as jest.Mock).mockReturnValue(false)
+    ;(isIos as jest.Mock).mockReturnValue(false)
     adTag = 'https://test.example.com/adtag'
     vastAdChain = [
       {
@@ -82,7 +82,7 @@ describe('runWaterfall', () => {
       Object.defineProperty(videoElement, 'load', {
         value: jest.fn()
       })
-      ;(isIOS as jest.Mock).mockReturnValue(true)
+      ;(isIos as jest.Mock).mockReturnValue(true)
 
       runWaterfall(adTag, placeholder, {
         ...options,
@@ -98,7 +98,7 @@ describe('runWaterfall', () => {
       Object.defineProperty(videoElement, 'load', {
         value: jest.fn()
       })
-      ;(isIOS as jest.Mock).mockReturnValue(true)
+      ;(isIos as jest.Mock).mockReturnValue(true)
 
       runWaterfall(adTag, placeholder, {
         ...options
@@ -113,7 +113,7 @@ describe('runWaterfall', () => {
       Object.defineProperty(videoElement, 'load', {
         value: jest.fn()
       })
-      ;(isIOS as jest.Mock).mockReturnValue(false)
+      ;(isIos as jest.Mock).mockReturnValue(false)
 
       runWaterfall(adTag, placeholder, {
         ...options,
@@ -483,7 +483,7 @@ describe('runWaterfall', () => {
 
     test('must update the timeout', async () => {
       const deferred = defer<void>()
-      const opts = {
+      const testOptions = {
         timeout: 1000
       }
 
@@ -493,7 +493,7 @@ describe('runWaterfall', () => {
       ;(requestAd as jest.Mock).mockReturnValue(Promise.resolve(vastAdChain))
 
       runWaterfall(adTag, placeholder, {
-        ...opts,
+        ...testOptions,
         onAdReady: noop,
         onAdStart: () => deferred.resolve()
       })
@@ -504,7 +504,7 @@ describe('runWaterfall', () => {
       expect(requestAd).toHaveBeenCalledWith(
         adTag,
         expect.objectContaining({
-          ...opts,
+          ...testOptions,
           timeout: 1000
         })
       )
@@ -514,7 +514,7 @@ describe('runWaterfall', () => {
         vastAdChain,
         placeholder,
         expect.objectContaining({
-          ...opts,
+          ...testOptions,
           timeout: 900
         })
       )
@@ -524,7 +524,7 @@ describe('runWaterfall', () => {
       const deferred = defer<void>()
       const runError = new Error('Error running the ad')
       const requestError = new Error('Error with the request')
-      const opts = {
+      const testOptions = {
         timeout: 1000
       }
 
@@ -545,7 +545,7 @@ describe('runWaterfall', () => {
       )
 
       runWaterfall(adTag, placeholder, {
-        ...opts,
+        ...testOptions,
         onAdReady: noop,
         onRunFinish: () => deferred.resolve()
       })
@@ -596,7 +596,7 @@ describe('runWaterfall', () => {
 
     it('must finish the ad run if it times out fetching an ad', async () => {
       const deferred = defer<void>()
-      const opts = {
+      const testOptions = {
         timeout: 1000
       }
       const onAdStart = jest.fn()
@@ -606,7 +606,7 @@ describe('runWaterfall', () => {
       ;(Date.now as jest.Mock).mockReturnValueOnce(10000)
 
       runWaterfall(adTag, placeholder, {
-        ...opts,
+        ...testOptions,
         onAdStart,
         onError,
         onAdReady: noop,
@@ -619,7 +619,7 @@ describe('runWaterfall', () => {
       expect(requestAd).toHaveBeenCalledWith(
         adTag,
         expect.objectContaining({
-          ...opts,
+          ...testOptions,
           timeout: 1000
         })
       )
@@ -631,7 +631,7 @@ describe('runWaterfall', () => {
 
     test('must not continue the waterfall if ad run has timed out', async () => {
       const deferred = defer<void>()
-      const opts = {
+      const testOptions = {
         timeout: 1000
       }
       const onAdStart = jest.fn()
@@ -649,7 +649,7 @@ describe('runWaterfall', () => {
       )
 
       runWaterfall(adTag, placeholder, {
-        ...opts,
+        ...testOptions,
         onAdStart,
         onError,
         onAdReady: noop,
@@ -662,7 +662,7 @@ describe('runWaterfall', () => {
       expect(requestAd).toHaveBeenCalledWith(
         adTag,
         expect.objectContaining({
-          ...opts,
+          ...testOptions,
           timeout: 1000
         })
       )

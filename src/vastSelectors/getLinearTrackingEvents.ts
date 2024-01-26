@@ -1,7 +1,7 @@
 import {get, getAll, getText, getAttributes} from '../xml'
-import {ParsedAd, ParsedXML, VastTrackingEvent, Optional} from '../types'
-import parseOffset from './helpers/parseOffset'
-import getLinearCreative from './helpers/getLinearCreative'
+import type {ParsedAd, ParsedXML, VastTrackingEvent, Optional} from '../types'
+import {parseOffset} from './helpers/parseOffset'
+import {getLinearCreative} from './helpers/getLinearCreative'
 
 const getTrackingEvent = (
   trackingEventElement: ParsedXML
@@ -23,7 +23,7 @@ const getTrackingEvent = (
  * @param eventName If provided it will filter-out the array events against it.
  * @returns Array of Tracking event definitions
  */
-const getLinearTrackingEvents = (
+export const getLinearTrackingEvents = (
   ad: ParsedAd,
   eventName?: string
 ): Optional<VastTrackingEvent[]> => {
@@ -50,5 +50,3 @@ const getLinearTrackingEvents = (
     }
   }
 }
-
-export default getLinearTrackingEvents

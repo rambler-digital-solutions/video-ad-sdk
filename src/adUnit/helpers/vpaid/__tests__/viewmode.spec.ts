@@ -1,4 +1,4 @@
-import viewmode from '../viewmode'
+import {viewmode} from '../viewmode'
 
 describe('viewmode', () => {
   let origScreen: Screen

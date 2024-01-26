@@ -1,8 +1,8 @@
-import createVideoAdContainer from '../../../../adContainer/createVideoAdContainer'
-import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
-import renderIcons from '../renderIcons'
-import renderIcon from '../renderIcon'
-import canBeShown from '../canBeShown'
+import {createVideoAdContainer} from '../../../../adContainer/createVideoAdContainer'
+import {VideoAdContainer} from '../../../../adContainer/VideoAdContainer'
+import {renderIcons} from '../renderIcons'
+import {renderIcon} from '../renderIcon'
+import {canBeShown} from '../canBeShown'
 
 jest.mock('../renderIcon')
 jest.mock('../canBeShown')
@@ -11,7 +11,7 @@ let videoAdContainer: VideoAdContainer
 let logger: any
 let icons: any
 
-beforeEach(async () => {
+beforeEach(() => {
   videoAdContainer = createVideoAdContainer(document.createElement('div'))
   logger = {
     log: jest.fn()

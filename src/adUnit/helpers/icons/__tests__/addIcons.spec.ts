@@ -1,8 +1,8 @@
-import createVideoAdContainer from '../../../../adContainer/createVideoAdContainer'
-import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
-import addIcons from '../addIcons'
-import createResource from '../../resources/createResource'
-import canBeRendered from '../canBeRendered'
+import {createVideoAdContainer} from '../../../../adContainer/createVideoAdContainer'
+import {VideoAdContainer} from '../../../../adContainer/VideoAdContainer'
+import {addIcons} from '../addIcons'
+import {createResource} from '../../resources/createResource'
+import {canBeRendered} from '../canBeRendered'
 
 jest.mock('../../resources/createResource')
 jest.mock('../canBeRendered')
@@ -13,7 +13,7 @@ const waitFor = (element: HTMLElement, eventName: string): Promise<Event> =>
 let videoAdContainer: VideoAdContainer
 let logger: any
 
-beforeEach(async () => {
+beforeEach(() => {
   videoAdContainer = createVideoAdContainer(document.createElement('div'))
   logger = {error: jest.fn()}
 

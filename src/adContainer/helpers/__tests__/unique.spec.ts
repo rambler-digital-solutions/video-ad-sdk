@@ -1,4 +1,4 @@
-import unique from '../unique'
+import {unique} from '../unique'
 
 describe('unique', () => {
   test('must return a unique string using the passed namespace', () => {

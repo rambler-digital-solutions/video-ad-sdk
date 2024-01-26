@@ -1,5 +1,5 @@
 import MockDate from 'mockdate'
-import parseMacro from '../parseMacro'
+import {parseMacro} from '../parseMacro'
 
 test('parseMacro must replace the passed variables in the macro', () => {
   const macro = 'https://test.example.com/[ERRORCODE]/[BLA]'

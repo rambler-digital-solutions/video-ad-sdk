@@ -1,5 +1,5 @@
 import {get, getFirstChild, getText, getAttribute} from '../xml'
-import {
+import type {
   ParsedXML,
   ParsedAd,
   VastChain,
@@ -7,7 +7,7 @@ import {
   MediaFile,
   Optional
 } from '../types'
-import getLinearCreative from '../vastSelectors/helpers/getLinearCreative'
+import {getLinearCreative} from '../vastSelectors/helpers/getLinearCreative'
 import {
   isInline,
   getClickThrough,
@@ -16,7 +16,7 @@ import {
   getMediaFiles,
   getInteractiveFiles
 } from '../vastSelectors'
-import parseTime from '../vastSelectors/helpers/parseTime'
+import {parseTime} from '../vastSelectors/helpers/parseTime'
 
 const getAdSystem = (ad: ParsedAd): Optional<string> => {
   const adTypeElement = getFirstChild(ad)
@@ -47,7 +47,7 @@ interface Pricing {
 }
 
 const getPricing = (vastChain: VastChain): Pricing => {
-  const {ad} = vastChain[0]
+  const [{ad}] = vastChain
   const pricingElement = ad && getPricingElement(ad)
 
   if (pricingElement) {
@@ -151,14 +151,14 @@ const getUniversalIdElement = (
  * @param vastChain the {@link VastChain} from which we want the details.
  * @returns Returns a {@link VastChainDetails} object from the passed {@link VastChain}.
  */
-const getDetails = (vastChain: VastChain): VastChainDetails => {
+export const getDetails = (vastChain: VastChain): VastChainDetails => {
   const adIds = getAdIds(vastChain)
   const adSystems = getAdSystems(vastChain)
   const creatives = getCreatives(vastChain)
   const creativeIds = getCreativeIds(creatives)
   const creativeAdIds = getCreativeAdIds(creatives)
 
-  const {ad, parsedXML, XML} = vastChain[0]
+  const [{ad, parsedXML, XML}] = vastChain
   const {pricing, pricingCurrency, pricingModel} = getPricing(vastChain)
   const {category, categoryAuthority} = getCategory(ad)
 
@@ -249,5 +249,3 @@ const getDetails = (vastChain: VastChain): VastChainDetails => {
     vpaid
   }
 }
-
-export default getDetails

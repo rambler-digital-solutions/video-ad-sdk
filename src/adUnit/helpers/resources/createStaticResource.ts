@@ -1,12 +1,12 @@
-import {VastIcon} from '../../../types'
+import type {VastIcon} from '../../../types'
 
 interface StaticResourceOptions {
   document: Document
   data: VastIcon
 }
 
-const createStaticResource = (
-  src: string,
+export const createStaticResource = (
+  source: string,
   {document, data}: StaticResourceOptions
 ): HTMLImageElement => {
   const {height, width} = data
@@ -20,9 +20,7 @@ const createStaticResource = (
     image.height = height
   }
 
-  image.src = src
+  image.src = source
 
   return image
 }
-
-export default createStaticResource

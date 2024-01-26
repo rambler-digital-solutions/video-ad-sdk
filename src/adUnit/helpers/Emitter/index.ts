@@ -11,7 +11,7 @@ export interface Listener {
  *
  * @param logger Optional logger instance. Must comply to the [Console interface](https://developer.mozilla.org/es/docs/Web/API/Console).
  */
-class Emitter {
+export class Emitter {
   public logger: Console
   public events: Record<string, Listener[]>
 
@@ -28,7 +28,7 @@ class Emitter {
    * @returns The Emitter instance.
    */
   on(eventName: string, listener: Listener): this {
-    const events = this.events
+    const {events} = this
     const eventListeners = events[eventName] || (events[eventName] = [])
 
     eventListeners.push(listener)
@@ -44,11 +44,12 @@ class Emitter {
    * @returns The Emitter instance.
    */
   removeListener(eventName: string, listener: Listener): this {
-    const events = this.events
+    const {events} = this
     const eventListeners = events[eventName] || (events[eventName] = [])
 
     events[eventName] = eventListeners.filter(
-      (eListener) => eListener !== listener && eListener._ !== listener
+      (existedListener) =>
+        existedListener !== listener && existedListener._ !== listener
     )
 
     return this
@@ -97,7 +98,7 @@ class Emitter {
    * @returns Returns true if the event had listeners, false otherwise.
    */
   emit(eventName: string, ...args: any[]): boolean {
-    const events = this.events
+    const {events} = this
     const eventListeners = events[eventName] || (events[eventName] = [])
     const hasListeners = eventListeners.length > 0
 
@@ -114,5 +115,3 @@ class Emitter {
     return hasListeners
   }
 }
-
-export default Emitter

@@ -1,17 +1,17 @@
 import {trackError, isVastErrorCode, ErrorCode} from '../tracker'
-import {requestAd, requestNextAd, RequestAdOptions} from '../vastRequest'
-import VastError from '../vastRequest/helpers/vastError'
+import {requestAd, requestNextAd, type RequestAdOptions} from '../vastRequest'
+import {VastError} from '../vastRequest/helpers/vastError'
 import {getInteractiveFiles} from '../vastSelectors'
 import {VastAdUnit, VpaidAdUnit} from '../adUnit'
-import {
+import type {
   VastChain,
   Hooks,
   CancelFunction,
   PixelTracker,
   Optional
 } from '../types'
-import isIOS from '../utils/isIOS'
-import run, {RunOptions} from './run'
+import {isIos} from '../utils/isIos'
+import {run, type RunOptions} from './run'
 
 const isVpaid = (vastChain: VastChain): boolean =>
   Boolean(vastChain[0].ad && getInteractiveFiles(vastChain[0].ad))
@@ -24,7 +24,7 @@ const validateVastChain = (
     throw new Error('Invalid VastChain')
   }
 
-  const lastVastResponse = vastChain[0]
+  const [lastVastResponse] = vastChain
 
   if (!options.vpaidEnabled && isVpaid(vastChain)) {
     const error = new VastError(
@@ -83,17 +83,20 @@ const handleVastError = (
   }
 }
 
-export type WaterfallOptions = Omit<
+type WaterfallOptions = Omit<
   RunWaterfallOptions,
   'onAdStart' | 'onError' | 'onRunFinish'
 > &
   Required<Pick<RunWaterfallOptions, 'onAdStart' | 'onError' | 'onRunFinish'>>
 
+interface CancelWaterfallOptions {
+  isCanceled(): boolean
+}
+
 const waterfall = async (
   fetchVastChain: () => Promise<VastChain>,
   placeholder: HTMLElement,
-  {...options}: WaterfallOptions,
-  isCanceled: () => boolean
+  {isCanceled, ...options}: WaterfallOptions & CancelWaterfallOptions
 ): Promise<void> => {
   let vastChain: Optional<VastChain>
   let runEpoch!: number
@@ -163,8 +166,7 @@ const waterfall = async (
     waterfall(
       () => requestNextAd(vastChain as VastChain, options),
       placeholder,
-      {...options},
-      isCanceled
+      {...options, isCanceled}
     )
   }
 }
@@ -236,7 +238,7 @@ export interface RunWaterfallOptions extends RunOptions, RequestAdOptions {
  * @param options Options Map
  * @returns CancelFunction function. If called it will cancel the ad run. {@link runWaterfall~onRunFinish} will still be called;
  */
-const runWaterfall = (
+export const runWaterfall = (
   adTag: string,
   placeholder: HTMLElement,
   options: RunWaterfallOptions
@@ -260,16 +262,14 @@ const runWaterfall = (
   }
 
   // NOTE: It seems that if the video doesn't load synchronously inside a touchend or click event handler, the user gesture breaks on iOS and it won't allow a play.
-  if (options.videoElement && options.videoElement.paused && isIOS()) {
+  if (options.videoElement && options.videoElement.paused && isIos()) {
     options.videoElement.load()
   }
 
-  waterfall(
-    () => requestAd(adTag, resultOptions),
-    placeholder,
-    resultOptions,
+  waterfall(() => requestAd(adTag, resultOptions), placeholder, {
+    ...resultOptions,
     isCanceled
-  )
+  })
 
   return (): void => {
     canceled = true
@@ -279,5 +279,3 @@ const runWaterfall = (
     }
   }
 }
-
-export default runWaterfall

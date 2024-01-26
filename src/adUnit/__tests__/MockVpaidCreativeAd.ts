@@ -1,4 +1,4 @@
-import Emitter from '../helpers/Emitter'
+import {Emitter} from '../helpers/Emitter'
 import {
   handshakeVersion,
   initAd,
@@ -16,7 +16,7 @@ import {
   getAdRemainingTime
 } from '../helpers/vpaid/api'
 
-class MockVpaidCreativeAd extends Emitter {
+export class MockVpaidCreativeAd extends Emitter {
   version: string
   volume = 0.8
 
@@ -50,5 +50,3 @@ class MockVpaidCreativeAd extends Emitter {
     this.removeListener(event, listener)
   }
 }
-
-export default MockVpaidCreativeAd

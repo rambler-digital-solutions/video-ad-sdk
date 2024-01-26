@@ -1,4 +1,4 @@
-import waitFor from '../waitFor'
+import {waitFor} from '../waitFor'
 
 test('waitFor promise must resolve once the event occurs on the passed element', () => {
   const element = document.createElement('div')

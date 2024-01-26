@@ -1,6 +1,6 @@
+import type {VastIcon, VastChain, ParsedAd, Optional} from '../../../types'
 import {getIcons} from '../../../vastSelectors'
-import {VastIcon, VastChain, ParsedAd, Optional} from '../../../types'
-import getResource from '../resources/getResource'
+import {getResource} from '../resources/getResource'
 
 const UNKNOWN = 'UNKNOWN'
 
@@ -70,7 +70,7 @@ const chooseIcons = (icons: VastIcon[]): VastIcon[] => {
   }, [])
 }
 
-const retrieveIcons = (vastChain: VastChain): Optional<VastIcon[]> => {
+export const retrieveIcons = (vastChain: VastChain): Optional<VastIcon[]> => {
   const ads = vastChain.map(({ad}) => ad).filter(Boolean)
   const icons = ads.reduce<VastIcon[]>(
     (accumulator, ad: ParsedAd) => [...accumulator, ...(getIcons(ad) || [])],
@@ -83,5 +83,3 @@ const retrieveIcons = (vastChain: VastChain): Optional<VastIcon[]> => {
     return chooseIcons(uniqIcons)
   }
 }
-
-export default retrieveIcons

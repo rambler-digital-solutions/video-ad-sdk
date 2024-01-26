@@ -6,9 +6,9 @@ import {
   vpaidInlineParsedXML,
   vastVpaidInlineXML
 } from '../../../../../fixtures'
-import {VastChain} from '../../../../types'
-import VideoAdContainer from '../../../../adContainer/VideoAdContainer'
-import loadCreative from '../loadCreative'
+import type {VastChain} from '../../../../types'
+import {VideoAdContainer} from '../../../../adContainer/VideoAdContainer'
+import {loadCreative} from '../loadCreative'
 
 describe('loadCreative', () => {
   let vastChain: VastChain

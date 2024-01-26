@@ -1,9 +1,12 @@
-import {runWaterfall, VideoAdUnit} from '../src'
+/* eslint-disable no-console */
+import {runWaterfall, type VideoAdUnit} from '../src'
 import './styles.css'
 
 document.addEventListener('DOMContentLoaded', () => {
   const textArea = document.querySelector('#adTag') as HTMLTextAreaElement
-  const testBtn = document.querySelector('.vast-test-btn') as HTMLButtonElement
+  const testButton = document.querySelector(
+    '.vast-test-btn'
+  ) as HTMLButtonElement
   const videoElement = document.querySelector(
     '.vast-media video'
   ) as HTMLVideoElement
@@ -38,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const requestAdRun = (): void => {
     const adTag = textArea.value
-    const src = videoElement.src
+    const source = videoElement.src
 
     const resumeContent = (): void => {
       videoElement.play()
@@ -54,12 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('### onRunFinish')
       videoAdContainer.classList.remove('active')
 
-      if (videoElement.src === src) {
+      if (videoElement.src === source) {
         videoElement.play()
       } else {
         videoElement.addEventListener('contentloadedmetadata', resumeContent)
         videoElement.addEventListener('canplay', resumeContent)
-        videoElement.src = src
+        videoElement.src = source
         videoElement.load()
       }
     }
@@ -84,11 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const adTag = textArea.value
 
     if (adTag) {
-      testBtn.classList.add('active')
-      testBtn.addEventListener('click', requestAdRun)
+      testButton.classList.add('active')
+      testButton.addEventListener('click', requestAdRun)
     } else {
-      testBtn.classList.remove('active')
-      testBtn.removeEventListener('click', requestAdRun)
+      testButton.classList.remove('active')
+      testButton.removeEventListener('click', requestAdRun)
     }
   })
 })

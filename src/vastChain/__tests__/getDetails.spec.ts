@@ -9,8 +9,8 @@ import {
   noAdParsedXML
 } from '../../../fixtures'
 import {ErrorCode} from '../../tracker'
-import {VastChain} from '../../types'
-import getDetails from '../getDetails'
+import type {VastChain} from '../../types'
+import {getDetails} from '../getDetails'
 
 describe('getDetails', () => {
   let vastChain: VastChain

@@ -1,20 +1,22 @@
 import {
   createVideoAdUnit,
   VastAdUnit,
-  VastAdUnitOptions,
   VideoAdUnit,
+  VpaidAdUnit
+} from '../../adUnit'
+import type {
+  VastAdUnitOptions,
   VideoAdUnitOptions,
-  VpaidAdUnit,
   VpaidAdUnitOptions
 } from '../../adUnit'
 import {VideoAdContainer} from '../../adContainer'
 import {ErrorCode} from '../../tracker'
 import {getInteractiveFiles, getMediaFiles} from '../../vastSelectors'
-import canPlay from '../../adUnit/helpers/media/canPlay'
+import {canPlay} from '../../adUnit/helpers/media/canPlay'
 import {start, closeLinear} from '../../tracker/linearEvents'
 import {adStopped, adUserClose} from '../../adUnit/helpers/vpaid/api'
-import VastError from '../../vastRequest/helpers/vastError'
-import {VastChain, ParsedAd} from '../../types'
+import {VastError} from '../../vastRequest/helpers/vastError'
+import type {VastChain, ParsedAd} from '../../types'
 
 const validate = (
   vastChain: VastChain,
@@ -77,7 +79,7 @@ const tryToStartVpaidAd = (
   videoAdContainer: VideoAdContainer,
   options: VpaidAdUnitOptions & StartAdUnitOptions<VpaidAdUnit>
 ): Promise<VpaidAdUnit> => {
-  const inlineAd = vastChain[0].ad
+  const [{ad: inlineAd}] = vastChain
 
   if (!inlineAd || !hasVpaidCreative(inlineAd)) {
     const error = new VastError(
@@ -109,7 +111,11 @@ const startVastAd = (
   return startAdUnit(adUnit, options)
 }
 
-const startVideoAd = async (
+export type StartVideoAdOptions = VpaidAdUnitOptions &
+  VastAdUnitOptions &
+  StartAdUnitOptions<VastAdUnit | VpaidAdUnit>
+
+export const startVideoAd = async (
   vastChain: VastChain,
   videoAdContainer: VideoAdContainer,
   options: StartVideoAdOptions
@@ -119,7 +125,7 @@ const startVideoAd = async (
   try {
     return await tryToStartVpaidAd(vastChain, videoAdContainer, options)
   } catch (error) {
-    const inlineAd = vastChain[0].ad
+    const [{ad: inlineAd}] = vastChain
 
     if (inlineAd && hasVastCreative(inlineAd, videoAdContainer.videoElement)) {
       return startVastAd(vastChain, videoAdContainer, options)
@@ -128,9 +134,3 @@ const startVideoAd = async (
     throw error
   }
 }
-
-export type StartVideoAdOptions = VpaidAdUnitOptions &
-  VastAdUnitOptions &
-  StartAdUnitOptions<VastAdUnit | VpaidAdUnit>
-
-export default startVideoAd

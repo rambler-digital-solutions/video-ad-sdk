@@ -1,22 +1,22 @@
-import getResource from '../getResource'
+import {getResource} from '../getResource'
 
 test('getResource must get the source of the passed resource payload', () => {
-  const src = 'http://test.example.com/resource'
+  const source = 'http://test.example.com/resource'
 
   expect(getResource()).toBeUndefined()
   expect(
     getResource({
-      staticResource: src
+      staticResource: source
     })
-  ).toBe(src)
+  ).toBe(source)
   expect(
     getResource({
-      htmlResource: src
+      htmlResource: source
     })
-  ).toBe(src)
+  ).toBe(source)
   expect(
     getResource({
-      iFrameResource: src
+      iFrameResource: source
     })
-  ).toBe(src)
+  ).toBe(source)
 })

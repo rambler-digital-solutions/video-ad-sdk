@@ -1,4 +1,4 @@
-const safeCallback =
+export const safeCallback =
   (callback: (...args: any) => void, logger?: Console) =>
   (...args: any[]): void => {
     try {
@@ -7,5 +7,3 @@ const safeCallback =
       logger?.error(error)
     }
   }
-
-export default safeCallback

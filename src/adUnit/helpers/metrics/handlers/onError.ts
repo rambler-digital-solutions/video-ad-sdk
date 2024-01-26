@@ -1,10 +1,10 @@
 import {VideoAdContainer} from '../../../../adContainer'
+import type {CancelFunction} from '../../../../types'
 import {linearEvents, ErrorCode} from '../../../../tracker'
-import {CancelFunction} from '../../../../types'
 
 const {error} = linearEvents
 
-const onError = (
+export const onError = (
   {videoElement}: VideoAdContainer,
   callback: (event: string, mediaError?: MediaError) => void
 ): CancelFunction => {
@@ -26,5 +26,3 @@ const onError = (
     videoElement.removeEventListener('error', errorHandler)
   }
 }
-
-export default onError

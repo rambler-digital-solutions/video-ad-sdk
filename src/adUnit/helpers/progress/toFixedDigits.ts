@@ -1,11 +1,9 @@
-const toFixedDigits = (num: number, digits: number): string => {
-  let formattedNum = String(num)
+export const toFixedDigits = (number_: number, digits: number): string => {
+  let formattedNumber = String(number_)
 
-  while (formattedNum.length < digits) {
-    formattedNum = '0' + formattedNum
+  while (formattedNumber.length < digits) {
+    formattedNumber = `0${formattedNumber}`
   }
 
-  return formattedNum
+  return formattedNumber
 }
-
-export default toFixedDigits

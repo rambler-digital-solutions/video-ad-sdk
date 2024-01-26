@@ -3,7 +3,7 @@ import {
   vpaidInlineParsedXML,
   vastVpaidInlineXML
 } from '../../../fixtures'
-import VideoAdContainer from '../../adContainer/VideoAdContainer'
+import {VideoAdContainer} from '../../adContainer/VideoAdContainer'
 import {
   iconClick,
   iconView,
@@ -12,29 +12,29 @@ import {
   viewable,
   viewUndetermined
 } from '../../tracker/linearEvents'
-import {VastChain} from '../../types'
+import type {VastChain} from '../../types'
 import {getViewable} from '../../vastSelectors'
-import addIcons from '../helpers/icons/addIcons'
-import retrieveIcons from '../helpers/icons/retrieveIcons'
+import {addIcons} from '../helpers/icons/addIcons'
+import {retrieveIcons} from '../helpers/icons/retrieveIcons'
 import {
   onElementResize,
   onElementVisibilityChange
 } from '../helpers/dom/elementObservers'
-import VideoAdUnit, {_protected} from '../VideoAdUnit'
+import {preventManualProgress} from '../helpers/dom/preventManualProgress'
+import {VideoAdUnit, _protected} from '../VideoAdUnit'
 import {finish} from '../adUnitEvents'
-import preventManualProgress from '../helpers/dom/preventManualProgress'
 
 const mockDrawIcons = jest.fn()
 const mockRemoveIcons = jest.fn()
 const mockHasPendingRedraws = jest.fn(() => false)
 
-jest.mock('../helpers/icons/addIcons', () =>
-  jest.fn(() => ({
+jest.mock('../helpers/icons/addIcons', () => ({
+  addIcons: jest.fn(() => ({
     drawIcons: mockDrawIcons,
     hasPendingIconRedraws: mockHasPendingRedraws,
     removeIcons: mockRemoveIcons
   }))
-)
+}))
 jest.mock('../helpers/icons/retrieveIcons')
 jest.mock('../helpers/dom/elementObservers', () => ({
   onElementResize: jest.fn(),
@@ -176,9 +176,9 @@ describe('VideoAdUnit', () => {
 
       passedConfig.onIconClick(icons[0])
 
-      const passedArgs = await promise
+      const passedArguments = await promise
 
-      expect(passedArgs).toEqual([
+      expect(passedArguments).toEqual([
         {
           adUnit,
           data: icons[0],
@@ -215,9 +215,9 @@ describe('VideoAdUnit', () => {
 
       passedConfig.onIconView(icons[0])
 
-      const passedArgs = await promise
+      const passedArguments = await promise
 
-      expect(passedArgs).toEqual([
+      expect(passedArguments).toEqual([
         {
           adUnit,
           data: icons[0],

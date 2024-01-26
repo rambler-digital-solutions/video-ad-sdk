@@ -1,5 +1,5 @@
 import {linearEvents} from '../../../../../tracker'
-import onProgress from '../onProgress'
+import {onProgress} from '../onProgress'
 
 const {progress} = linearEvents
 let videoElement: HTMLVideoElement

@@ -1,17 +1,12 @@
-const getOrigin = (): string => {
-  const location = window.location
+export const getOrigin = (): string => {
+  const {origin, protocol, hostname, port} = window.location
 
   /* istanbul ignore else */
-  if (location.origin) {
-    return location.origin
-  } else {
-    return (
-      location.protocol +
-      '//' +
-      location.hostname +
-      (location.port ? ':' + location.port : '')
-    )
+  if (origin) {
+    return origin
   }
-}
 
-export default getOrigin
+  const resultPort = port ? `:${port}` : ''
+
+  return `${protocol}//${hostname}${resultPort}`
+}

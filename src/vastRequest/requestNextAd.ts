@@ -1,7 +1,7 @@
 import {getVASTAdTagURI, isWrapper} from '../vastSelectors'
-import {VastChain} from '../types'
-import requestAd, {RequestAdOptions} from './requestAd'
-import getNextAd from './helpers/getNextAd'
+import type {VastChain} from '../types'
+import {requestAd, type RequestAdOptions} from './requestAd'
+import {getNextAd} from './helpers/getNextAd'
 import {markAdAsRequested} from './helpers/adUtils'
 
 const validateChain = (vastChain: VastChain): void => {
@@ -41,19 +41,17 @@ export interface RequestNextAdOptions extends RequestAdOptions {
  * @returns Returns a Promise that will resolve with a VastChain with the newest VAST response at the beginning of the array.
  * If the {@link VastChain} had an error. The first VAST response of the array will contain an error and an errorCode entry.
  */
-const requestNextAd = (
+export const requestNextAd = (
   vastChain: VastChain,
   options: RequestNextAdOptions
 ): Promise<VastChain> => {
   validateChain(vastChain)
 
-  const vastResponse = vastChain[0]
+  const [vastResponse] = vastChain
   const nextAd = getNextAd(vastResponse, options)
 
   if (nextAd) {
-    const newVastResponse = Object.assign({}, vastResponse, {
-      ad: nextAd
-    })
+    const newVastResponse = {...vastResponse, ad: nextAd}
     const newVastChain = [newVastResponse, ...vastChain.slice(1)]
 
     markAdAsRequested(nextAd)
@@ -67,5 +65,3 @@ const requestNextAd = (
 
   return requestNextAd(vastChain.slice(1), options)
 }
-
-export default requestNextAd

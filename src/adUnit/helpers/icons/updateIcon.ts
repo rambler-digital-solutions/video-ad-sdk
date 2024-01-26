@@ -1,4 +1,4 @@
-import {VastIcon, RenderedVastIcon} from '../../../types'
+import type {VastIcon, RenderedVastIcon} from '../../../types'
 
 const isCustomXposition = (xPosition: string | number): xPosition is number =>
   !['left', 'right'].includes(String(xPosition).toLowerCase())
@@ -11,6 +11,7 @@ const calculateIconLeft = (
   iconWidth: number,
   drawnIcons: VastIcon[],
   phWidth: number
+  // eslint-disable-next-line max-params
 ): number => {
   const drawnIconsWidth = drawnIcons.reduce(
     (accumulator, icon) => accumulator + (icon.width ? icon.width + 1 : 0),
@@ -41,12 +42,12 @@ interface UpdateIconOptions {
   placeholder: HTMLElement
 }
 
-const updateIcon = (
+export const updateIcon = (
   icon: VastIcon,
   iconElement: HTMLElement,
   {drawnIcons, placeholder}: UpdateIconOptions
 ): RenderedVastIcon => {
-  const oldSignature = icon.signature
+  const {signature: oldSignature} = icon
   const rect = iconElement.getBoundingClientRect()
   const phRect = placeholder.getBoundingClientRect()
   const width = icon.width || rect.width
@@ -83,5 +84,3 @@ const updateIcon = (
     width
   })
 }
-
-export default updateIcon

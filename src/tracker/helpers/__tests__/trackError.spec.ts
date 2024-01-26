@@ -7,11 +7,11 @@ import {
   wrapperAd
 } from '../../../../fixtures'
 import {ErrorCode} from '../../errorCode'
-import {VastChain} from '../../../types'
-import pixelTracker from '../pixelTracker'
-import trackError from '../trackError'
+import type {VastChain} from '../../../types'
+import {pixelTracker} from '../pixelTracker'
+import {trackError} from '../trackError'
 
-jest.mock('../pixelTracker', () => jest.fn())
+jest.mock('../pixelTracker', () => ({pixelTracker: jest.fn()}))
 
 afterEach(() => {
   ;(pixelTracker as jest.Mock).mockClear()

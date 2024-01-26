@@ -1,4 +1,4 @@
-import canPlay from '../canPlay'
+import {canPlay} from '../canPlay'
 
 test('canPlay must delegate on the video element to know if the mediaFile is supported', () => {
   let supported = true

@@ -1,12 +1,12 @@
 import {getAds, isPodAd} from '../../../vastSelectors'
-import {ParsedXML} from '../../../types'
+import type {ParsedXML} from '../../../types'
 import {
   wrapperParsedXML,
   podParsedXML,
   waterfallParsedXML,
   wrapperAd
 } from '../../../../fixtures'
-import getNextAd from '../getNextAd'
+import {getNextAd} from '../getNextAd'
 import {markAdAsRequested, unmarkAdAsRequested} from '../adUtils'
 
 const markAdsAsRequested = (parsedXml: ParsedXML): void => {

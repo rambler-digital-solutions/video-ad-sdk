@@ -1,5 +1,5 @@
-import createVideoAdContainer from '../createVideoAdContainer'
-import VideoAdContainer from '../VideoAdContainer'
+import {createVideoAdContainer} from '../createVideoAdContainer'
+import {VideoAdContainer} from '../VideoAdContainer'
 
 let placeholder: HTMLElement
 

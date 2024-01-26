@@ -13,11 +13,9 @@ const mimeMap: Record<string, string> = {
   wmv: 'video/x-ms-wmv'
 }
 
-const guessMimeType = (src: string): string => {
-  const match = src.match(/\.([^./?]+)(\?[^/]+)?$/i)
-  const ext = match && match[1]
+export const guessMimeType = (source: string): string => {
+  const match = source.match(/\.([^./?]+)(\?[^/]+)?$/i)
+  const extension = match && match[1]
 
-  return (ext && mimeMap[ext]) || 'video/' + ext
+  return (extension && mimeMap[extension]) || `video/${extension}`
 }
-
-export default guessMimeType

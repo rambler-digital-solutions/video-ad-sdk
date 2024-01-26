@@ -1,11 +1,11 @@
-import {ExecutionContext} from '../types'
-import loadScript, {LoadScriptOptions} from './helpers/loadScript'
-import createAdVideoElement from './helpers/createAdVideoElement'
-import createAdContainer from './helpers/createAdContainer'
-import createIframe from './helpers/createIframe'
-import createSlot from './helpers/createSlot'
-import getContentDocument from './helpers/getContentDocument'
-import unique from './helpers/unique'
+import type {ExecutionContext} from '../types'
+import {loadScript, type LoadScriptOptions} from './helpers/loadScript'
+import {createAdVideoElement} from './helpers/createAdVideoElement'
+import {createAdContainer} from './helpers/createAdContainer'
+import {createIframe} from './helpers/createIframe'
+import {createSlot} from './helpers/createSlot'
+import {getContentDocument} from './helpers/getContentDocument'
+import {unique} from './helpers/unique'
 
 const nextId = unique('videoAdContainer')
 const hidden = Symbol('hidden')
@@ -25,7 +25,7 @@ export type AddScriptOptions = Omit<LoadScriptOptions, 'placeholder'>
 /**
  * This class provides everything necessary to contain and create a video ad within a given placeholder Element.
  */
-class VideoAdContainer {
+export class VideoAdContainer {
   public element: HTMLElement
   public slotElement?: HTMLElement
   public videoElement: HTMLVideoElement
@@ -73,7 +73,7 @@ class VideoAdContainer {
    * @param options Options map.
    */
   public async addScript(
-    src: string,
+    source: string,
     options: AddScriptOptions = {}
   ): Promise<HTMLScriptElement> {
     if (this.isDestroyed()) {
@@ -90,7 +90,7 @@ class VideoAdContainer {
 
     const placeholder = getContentDocument(iframe)?.body
 
-    return loadScript(src, {
+    return loadScript(source, {
       placeholder,
       ...options
     })
@@ -141,7 +141,3 @@ class VideoAdContainer {
     return this[hidden].destroyed
   }
 }
-
-export {LoadScriptOptions}
-
-export default VideoAdContainer

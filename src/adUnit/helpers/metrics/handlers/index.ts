@@ -1,15 +1,15 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {MetricHandlerData, CancelFunction} from '../../../../types'
-import onFullscreenChange from './onFullscreenChange'
-import onPlayPause from './onPlayPause'
-import onRewind from './onRewind'
-import onSkip from './onSkip'
-import onError from './onError'
-import onTimeUpdate from './onTimeUpdate'
-import onVolumeChange from './onVolumeChange'
-import onImpression from './onImpression'
-import onProgress from './onProgress'
-import onClickThrough from './onClickThrough'
+import type {MetricHandlerData, CancelFunction} from '../../../../types'
+import {onFullscreenChange} from './onFullscreenChange'
+import {onPlayPause} from './onPlayPause'
+import {onRewind} from './onRewind'
+import {onSkip} from './onSkip'
+import {onError} from './onError'
+import {onTimeUpdate} from './onTimeUpdate'
+import {onVolumeChange} from './onVolumeChange'
+import {onImpression} from './onImpression'
+import {onProgress} from './onProgress'
+import {onClickThrough} from './onClickThrough'
 
 type MetricHandler = (
   videoAdContainer: VideoAdContainer,
@@ -17,7 +17,7 @@ type MetricHandler = (
   data: MetricHandlerData
 ) => CancelFunction
 
-const handlers: MetricHandler[] = [
+export const metricHandlers: MetricHandler[] = [
   onClickThrough,
   onError,
   onFullscreenChange,
@@ -29,5 +29,3 @@ const handlers: MetricHandler[] = [
   onTimeUpdate,
   onVolumeChange
 ]
-
-export default handlers

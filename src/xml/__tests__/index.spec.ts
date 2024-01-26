@@ -1,3 +1,4 @@
+import type {ParsedXML} from '../../types'
 import {
   get,
   getAll,
@@ -6,8 +7,7 @@ import {
   getAttributes,
   getAttribute,
   parseXml
-} from '../'
-import {ParsedXML} from '../../types'
+} from '..'
 
 const xml = `<?xml version="1.0" encoding="utf-8"?>
 <note importance="high" logged="true">

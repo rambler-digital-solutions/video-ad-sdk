@@ -1,7 +1,7 @@
-import {VastIcon, RenderedVastIcon} from '../../../types'
-import {VideoAdContainer} from '../../../adContainer'
-import renderIcon from './renderIcon'
-import canBeShown from './canBeShown'
+import type {VastIcon, RenderedVastIcon} from '../../../types'
+import type {VideoAdContainer} from '../../../adContainer'
+import {renderIcon} from './renderIcon'
+import {canBeShown} from './canBeShown'
 
 interface RenderIconsOptions {
   videoAdContainer: VideoAdContainer
@@ -9,7 +9,7 @@ interface RenderIconsOptions {
   onIconClick?(icon: VastIcon): void
 }
 
-const renderIcons = (
+export const renderIcons = async (
   icons: VastIcon[],
   {onIconClick, videoAdContainer, logger = console}: RenderIconsOptions
 ): Promise<VastIcon[]> => {
@@ -39,25 +39,22 @@ const renderIcons = (
     iconElement?.parentNode?.removeChild(iconElement)
   })
 
-  return iconsToShow
-    .reduce<Promise<void>>(
-      (promise, icon: VastIcon) =>
-        promise
-          .then(() =>
-            renderIcon(icon, {
-              document,
-              drawnIcons,
-              onIconClick,
-              placeholder: element
-            })
-          )
-          .then((renderedIcon) => {
-            drawnIcons.push(renderedIcon)
-          })
-          .catch((error) => logger.log(error)),
-      Promise.resolve()
-    )
-    .then(() => drawnIcons)
-}
+  await iconsToShow.reduce<Promise<void>>(async (promise, icon: VastIcon) => {
+    try {
+      await promise
 
-export default renderIcons
+      const renderedIcon = await renderIcon(icon, {
+        document,
+        drawnIcons,
+        onIconClick,
+        placeholder: element
+      })
+
+      drawnIcons.push(renderedIcon)
+    } catch (error: any) {
+      logger.log(error)
+    }
+  }, Promise.resolve())
+
+  return drawnIcons
+}

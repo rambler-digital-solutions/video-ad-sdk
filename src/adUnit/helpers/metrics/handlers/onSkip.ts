@@ -1,22 +1,23 @@
 import {VideoAdContainer} from '../../../../adContainer'
-import {MetricHandlerData, CancelFunction} from '../../../../types'
+import type {MetricHandlerData, CancelFunction} from '../../../../types'
 import {linearEvents} from '../../../../tracker'
 
 const {skip} = linearEvents
+
 const createDefaultSkipControl = (): HTMLButtonElement => {
-  const skipBtn = document.createElement('button')
+  const skipButton = document.createElement('button')
 
-  skipBtn.classList.add('mol-vast-skip-control')
-  skipBtn.type = 'button'
-  skipBtn.innerHTML = 'skip'
-  skipBtn.style.position = 'absolute'
-  skipBtn.style.bottom = '15px'
-  skipBtn.style.right = '15px'
+  skipButton.classList.add('mol-vast-skip-control')
+  skipButton.type = 'button'
+  skipButton.innerHTML = 'skip'
+  skipButton.style.position = 'absolute'
+  skipButton.style.bottom = '15px'
+  skipButton.style.right = '15px'
 
-  return skipBtn
+  return skipButton
 }
 
-const onSkip = (
+export const onSkip = (
   videoAdContainer: VideoAdContainer,
   callback: (event: string) => void,
   {
@@ -64,5 +65,3 @@ const onSkip = (
     }
   }
 }
-
-export default onSkip

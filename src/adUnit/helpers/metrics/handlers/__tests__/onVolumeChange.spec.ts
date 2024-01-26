@@ -1,6 +1,6 @@
 import {linearEvents} from '../../../../../tracker'
 import {volumeChanged} from '../../../../adUnitEvents'
-import onVolumeChange from '../onVolumeChange'
+import {onVolumeChange} from '../onVolumeChange'
 
 const {mute, unmute} = linearEvents
 

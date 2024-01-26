@@ -8,7 +8,7 @@ import {
   isInline,
   isWrapper
 } from '../vastSelectors'
-import {
+import type {
   VastChain,
   VastResponse,
   WrapperOptions,
@@ -17,8 +17,8 @@ import {
   Optional,
   PixelTracker
 } from '../types'
-import fetch from './helpers/fetch'
-import VastError from './helpers/vastError'
+import {fetch} from './helpers/fetch'
+import {VastError} from './helpers/vastError'
 import {markAdAsRequested} from './helpers/adUtils'
 
 /**
@@ -49,6 +49,7 @@ const validateChain = (
     const error = new VastError('Wrapper Limit reached')
 
     error.code = ErrorCode.VAST_TOO_MANY_REDIRECTS
+
     throw error
   }
 }
@@ -139,7 +140,7 @@ const getOptions = (
   vastChain: VastChain,
   options: RequestAdOptions
 ): RequestAdOptions & WrapperOptions => {
-  const parentAd = vastChain[0]
+  const [parentAd] = vastChain
   const parentAdIsWrapper =
     Boolean(parentAd) && parentAd.ad && isWrapper(parentAd.ad)
   const wrapperOptions =
@@ -160,7 +161,7 @@ const getOptions = (
  * @returns Returns a Promise that will resolve with a VastChain with the newest VAST response at the beginning of the array.
  * If the {@link VastChain} had an error. The first VAST response of the array will contain an error and an errorCode entry.
  */
-const requestAd = async (
+export const requestAd = async (
   adTag: string,
   options: RequestAdOptions & WrapperOptions,
   vastChain: VastChain = []
@@ -232,5 +233,3 @@ const requestAd = async (
     return [vastAdResponse, ...vastChain]
   }
 }
-
-export default requestAd
