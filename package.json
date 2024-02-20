@@ -47,7 +47,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.7.2",
     "@commitlint/config-conventional": "^17.7.0",
-    "@rambler-tech/eslint-config": "^0.9.1",
+    "@rambler-tech/eslint-config": "^0.10.4",
     "@rambler-tech/prettier-config": "^0.1.0",
     "@rambler-tech/ts-config": "^0.1.0",
     "@rambler-tech/typedoc-config": "^0.3.0",
