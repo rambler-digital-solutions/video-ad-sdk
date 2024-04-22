@@ -262,8 +262,13 @@ export const runWaterfall = (
   }
 
   // NOTE: It seems that if the video doesn't load synchronously inside a touchend or click event handler, the user gesture breaks on iOS and it won't allow a play.
-  if (options.videoElement && options.videoElement.paused && isIos()) {
-    options.videoElement.load()
+  const shouldLoad =
+    isIos() &&
+    options.videoElement?.paused &&
+    options.videoElement?.canPlayType('application/vnd.apple.mpegurl')
+
+  if (shouldLoad) {
+    options.videoElement?.load()
   }
 
   waterfall(() => requestAd(adTag, resultOptions), placeholder, {
