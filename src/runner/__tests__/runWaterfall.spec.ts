@@ -82,6 +82,9 @@ describe('runWaterfall', () => {
       Object.defineProperty(videoElement, 'load', {
         value: jest.fn()
       })
+      Object.defineProperty(videoElement, 'canPlayType', {
+        value: jest.fn(() => true)
+      })
       ;(isIos as jest.Mock).mockReturnValue(true)
 
       runWaterfall(adTag, placeholder, {
